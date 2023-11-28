@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "parser": "@babel/eslint-parser",
+  "requireConfigFile": false, 
+  "rules": {
+    // Add rules here
+  },
+  "parserOptions": {
+    // Required for certain syntax usages
+    "ecmaVersion": 2020
+  },
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ]
+}
