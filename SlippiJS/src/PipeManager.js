@@ -1,4 +1,4 @@
-import * as net from 'net';
+const { net } = require("net");
 
 let PIPE_A_NAME = "request_pipe";
 let PIPE_B_NAME = "json_pipe";
@@ -8,9 +8,7 @@ let PIPE_PATH = "\\\\.\\pipe\\";
 // initalize pipe path prefix as let PIPE_PATH = '\\\\.\\pipe'
 
 /** pipe A (c# > TS)
- * open/connect to pipe using let readClient = net.createConnection(PIPE_PATH + PIPE_A_NAME, () => {console.log('woo baby we connected to da server')
- * process rquest with another callback function, using readClient.on('request', (reqest) => {console.log(request.doSomething()})
- * upon receiving "there's no more shit left to mine, we're leaving" message, close pipe
+ * returns the string requestData, contains info on the request coming through the pipe from C#
  */
 
 export function connectRequestPipe() {
@@ -20,6 +18,8 @@ export function connectRequestPipe() {
 
     requestClient.on('data', (data) => {
         console.log("data received through pipe A: " + data.toString());
+        var requestData = data.toString();
+        return requestData;
     });
 
     requestClient.on('end', () => {

@@ -1,5 +1,9 @@
 'use strict';
 
-import { connectRequestPipe, createJsonPipe } from "./PipeManager.js"
+const { handleConversionRequest } = require("./src/RequestManager");
+const { SlippiGame } = require("@slippi/slippi-js");
 
-createJsonPipe();
+//console.log(handleConversionRequest("Q:\\programming\\ribbit-review\\.slp files\\EdgeguardTestSheikFalco.slp"));
+var game = new SlippiGame("Q:\\programming\\ribbit-review\\.slp files\\EdgeguardTestSheikFalco.slp");
+var stats = game.getStats();
+console.log(stats.conversions);

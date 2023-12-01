@@ -26,7 +26,7 @@ namespace NamedPipeAPI
                 using (StreamWriter sw = new StreamWriter(pipeServer))
                 {
                     sw.AutoFlush = true;
-                    sw.WriteLine("ayo i would like to request a JSON pls"); // in future, this will be file location + request params
+                    sw.WriteLine("Q:\\programming\\ribbit-review\\.slp files\\EdgeguardTestSheikFalco"); // in future, this will be file location + request params
                     // in future, send message once all selected files have been requested
                     Debug.WriteLine("request to JS through pipe A has been written");
                 }
@@ -74,7 +74,6 @@ namespace NamedPipeAPI
                                 Debug.WriteLine(message);
                             }
                             
-
                         }
                     }
                 }

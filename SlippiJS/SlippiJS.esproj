@@ -1,5 +1,11 @@
 <Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.94-alpha">
   <ItemGroup>
-    <Folder Include="filters\" />
+    <Folder Include="src\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="filters\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="filters\**" />
   </ItemGroup>
 </Project>
