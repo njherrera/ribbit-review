@@ -17,61 +17,64 @@ var conversionListJSON = {
 */
 /**
  * @param {string} location file location of replay that c# is requesting in JSON form
- * @param {string} params signify what c# wants returned to it in JSON form
- * @returns {string} JSON file created with JSON.stringify that holds information matching request params
+ * @returns {local var} gameConversions JSON file created with JSON.stringify that holds information matching request params
  * returns JSON file of each conversion in the slp file at location param (one big JSON file of multiple replays in future?)
  * in future, call a helper method according to what the request calls for? (depends on how much parsing we can do on the c# side and what a conversion json gives us)
  */
-function handleConversionRequest(location) {
-    var game = new SlippiGame(location);
-    var stats = game.getStats();
+function getGameConversions(location) {
+    const game = new SlippiGame(location);
+    const stats = game.getStats();
+    const settings = game.getSettings();
 
-    var returnJSON = {
-        location: String,
-        playerInfo: [],
+    var gameConversions = {
+        gameLocation: location,
         gameSettings: [],
         conversionList: []
     };
+
+    gameConversions.gameSettings.push(settings);
+
     var conversions =
         stats === null || stats === void 0 ? void 0 : stats.conversions;
     conversions.forEach(function (conversion) {
-        addConversionToJSON(conversion, game, returnJSON)
+        gameConversions.conversionList.push(addConversion(conversion, game))
     })
-    return jsonFile;
+    return gameConversions;
 }
 
 /**
  * 
  * @param {ConversionType} conversion conversion from a given replay file that's being added to JSON sent through pipe B
- * @param {conversionsJSON} outputJSON JSON being sent through pipe B
  * @param {SlippiGame} game game the conversion belongs to
  */
-function addConversionToJSON(conversion, game, outputJSON) {
-    var firstConversionFrame = conversion.startFrame;
-    var lastConversionFrame = conversion.endFrame;
+function addConversion(conversion, game) {
+    const startFrameNum = conversion.startFrame;
+    const endFrameNum = conversion.endFrame;
 
-    var playerIndex = conversion.playerIndex;
-    var hitByIndex = conversion.hitByIndex;
+    const playerIndex = conversion.playerIndex;
+    const hitByIndex = conversion.lastHitBy;
 
-    var frames = game.getFrames();
+    const frames = game.getFrames();
 
     var conversionFile = {
-        playerIndexFrames: [],
+        pIndexFrames: [],
         hitByFrames: []
     };;
 
     for (
-        var currentFrame = firstConversionFrame;
-        currentFrame <= lastConversionFrame;
+        var currentFrame = startFrameNum;
+        currentFrame <= endFrameNum;
         currentFrame++
     ) {
-        conversionFile.playerIndexFrames.push(frames[currentFrame].players[playerIndex].post);
-        conversionFile.hitByFrames.push(frames[currentFrame].players[hitByIndex].post);
+        var pIndexFrame = frames[currentFrame].players[playerIndex].post;
+        var hitByFrame = frames[currentFrame].players[hitByIndex].post;
+        conversionFile.pIndexFrames.push(pIndexFrame);
+        conversionFile.hitByFrames.push(hitByFrame);
     }
 
-    outputJSON.conversionList.push(conversionFile);
+    return conversionFile;
 }
 
 module.exports = {
-    handleConversionRequest,
+    getGameConversions,
 }
