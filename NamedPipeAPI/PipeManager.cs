@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace NamedPipeAPI
 {
@@ -45,15 +46,11 @@ namespace NamedPipeAPI
             */
         }
 
-        /* createPipeIn method (pipe D)
-        * create client for pipe D (python > C#) with var pipeDClient = new NamedPipeClientStream("py_to_csharp", PipeDirection.In)
-        * connect to existing pipe with pipeDClient.Connect()
-        * make stream reader to read messages from pipe with pipeDsr = new StreamReader(pipeDClient)
-        * receive JSON file(s) with sr.ReadLine (other method more friendly to JSON files? ReadToEnd?)
-        * close pipe upon receiving "SHIT GET OUT" message
+        /* createPipeIn method (pipe B)
+         * in future, this will either stay open and read multiple JSONs, or read one big JSON that contains all of the info we need
         */
-        public static void connectJsonPipe()
-        {
+        public static string connectJsonPipe(){
+            string message = "";
             using (var pipeClient = new NamedPipeClientStream(".", PIPE_B_NAME, PipeDirection.In))
             {
 
@@ -65,16 +62,14 @@ namespace NamedPipeAPI
                 {
                     using (StreamReader sr = new StreamReader(pipeClient))
                     {
-                        string message = "";
                         if (sr.Peek() > 0)
                         {
                             message = sr.ReadLine();
                             while (message != null)
                             {
-                                Debug.WriteLine(message);
+                                return message;
                             }
-                            
-                        }
+                        } else return message;
                     }
                 }
                 catch (EndOfStreamException)
@@ -86,8 +81,8 @@ namespace NamedPipeAPI
                     Debug.WriteLine("error in pipe B: ERROR: {0} ", e.Message);
                 }
             }
+            return message;
         }
 
-        
     }
 }

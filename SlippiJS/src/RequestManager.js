@@ -57,19 +57,19 @@ function addConversion(conversion, game) {
     const frames = game.getFrames();
 
     var conversionFile = {
-        pIndexFrames: [],
-        hitByFrames: []
-    };;
+        beingHitFrames: [],
+        hittingFrames: []
+    };
 
     for (
         var currentFrame = startFrameNum;
         currentFrame <= endFrameNum;
         currentFrame++
     ) {
-        var pIndexFrame = frames[currentFrame].players[playerIndex].post;
-        var hitByFrame = frames[currentFrame].players[hitByIndex].post;
-        conversionFile.pIndexFrames.push(pIndexFrame);
-        conversionFile.hitByFrames.push(hitByFrame);
+        var beingHitFrame = frames[currentFrame].players[playerIndex].post;
+        var hittingFrame = frames[currentFrame].players[hitByIndex].post;
+        conversionFile.beingHitFrames.push(beingHitFrame);
+        conversionFile.hittingFrames.push(hittingFrame);
     }
 
     return conversionFile;

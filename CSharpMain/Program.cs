@@ -1,8 +1,9 @@
 ﻿using Avalonia;
 using System;
 using NamedPipeAPI;
+using CSharpParser;
 
-namespace RibbitReviewCSharp;
+namespace CSharpMain;
 
 class Program
 {

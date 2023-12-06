@@ -1,4 +1,5 @@
-const { net } = require("net");
+const net = require("net");
+const { getGameConversions } = require("./RequestManager");
 
 let PIPE_A_NAME = "request_pipe";
 let PIPE_B_NAME = "json_pipe";
@@ -11,7 +12,7 @@ let PIPE_PATH = "\\\\.\\pipe\\";
  * returns the string requestData, contains info on the request coming through the pipe from C#
  */
 
-export function connectRequestPipe() {
+function connectRequestPipe() {
     const requestClient = net.createConnection(PIPE_PATH + PIPE_A_NAME, () => {
         console.log("JS connected to request pipe!");
     });
@@ -31,13 +32,14 @@ export function connectRequestPipe() {
  * modify to include input param (for passing json)
  */
 
-export function createJsonPipe() {
+function createJsonPipe() {
     const jsonServer = net.createServer((c) => {
         console.log("C# client has connected to json pipe");
         c.on('end', () => {
             console.log("C# client has disconnected from json pipe")
         });
-        c.write('hello this is JS writing through pipe B, this will be a JSON file in the future :3\n');
+        let data = JSON.stringify(getGameConversions("Q:\\programming\\ribbit-review\\.slp files\\EdgeguardTestSheikFalco.slp"));
+        c.write(data + "\n");
         c.pipe(c);
     });
 
@@ -48,4 +50,9 @@ export function createJsonPipe() {
     jsonServer.listen(PIPE_PATH + PIPE_B_NAME, () => {
         console.log("JS json server is now listening for a connection on pipe B");
     });
+}
+
+module.exports = {
+    connectRequestPipe,
+    createJsonPipe
 }
