@@ -15,7 +15,7 @@ namespace CSharpParser.SlpJSObjects
         [JsonProperty("timerType")]
         public int? TimerType { get; set; }
         [JsonProperty("inGameMode")]
-        public int? InGameModen { get; set; }
+        public int? InGameMode { get; set; }
         [JsonProperty("friendlyFireEnabled")]
         public bool? FriendlyFireEnabled { get; set; }
         [JsonProperty("isTeams")]
