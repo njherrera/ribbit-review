@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,30 +8,44 @@ using System.Xml.Serialization;
 
 namespace CSharpParser.SlpJSObjects
 {
-    internal class GameSettings
+    public class GameSettings
     {
-        private string? slpVersion;
-        private int? timerType; 
-        private int? inGameMode; 
-        private bool? friendlyFireEnabled;
-        private bool? isTeams; // 0 if teams, non-zero if not
-        private int? stageId; // in-game stage ID
-        private int? startingTimerSeconds; // number of seconds timer starts at
-        private int? itemSpawnBehavior; // how frequently items spawn, -1 is off, 0 very low, 1 low, and so on
-        private int? enabledItems;
-        private List<Player> players; // info of players playing in game
-        private int? scene; // should always be 2
-        private int? gameMode; // 2 = versus mode, 8 = online
-        private int? language; // 0 = japanese, 1 = english
-        private Dictionary<string, int>? gameInfoBlock;
-        private int? randomSeed; // random seed before the game start
-        private bool? isPAL; 
-        private bool? isFrozenPS;
-        private Dictionary<string, string>? matchInfo;
+        [JsonProperty("slpVersion")]
+        public string SlpVersion { get; set; }
+        [JsonProperty("timerType")]
+        public int? TimerType { get; set; }
+        [JsonProperty("inGameMode")]
+        public int? InGameModen { get; set; }
+        [JsonProperty("friendlyFireEnabled")]
+        public bool? FriendlyFireEnabled { get; set; }
+        [JsonProperty("isTeams")]
+        public bool? IsTeams { get; set; }  // 0 if teams, non-zero if not
+        [JsonProperty("itemSpawnBehavior")]
+        public int? ItemSpawnBehavior { get; set; }  // how frequently items spawn, -1 is off, 0 very low, 1 low, and so on
+        [JsonProperty("stageId")]
+        public int? StageId { get; set; }  // in-game stage ID
+        [JsonProperty("startingTimerSeconds")]
+        public int? StartingTimerSeconds { get; set; }  // number of seconds timer starts at
+        [JsonProperty("enabledItems")]
+        public double? EnabledItems { get; set; }
+        [JsonProperty("players")]
+        public List<Player> Players { get; set; }  // info of players playing in game
+        [JsonProperty("scene")]
+        public int? Scene { get; set; }  // should always be 2
+        [JsonProperty("gameMode")]
+        public int? GameMode { get; set; }  // 2 = versus mode, 8 = online
+        [JsonProperty("language")]
+        public int? Language { get; set; }  // 0 = japanese, 1 = english
+        [JsonProperty("gameInfoBlock")]
+        public Dictionary<string, string>? GameInfoBlock { get; set; }
+        [JsonProperty("randomSeed")]
+        public int? RandomSeed { get; set; }  // random seed before the game start
+        [JsonProperty("isPAL")]
+        public bool? IsPAL { get; set; }
+        [JsonProperty("isFrozenPS")]
+        public bool? IsFrozenPS { get; set; }
+        [JsonProperty("matchInfo")]
+        public Dictionary<string, string>? MatchInfo { get; set; }
 
-        public GameSettings()
-        {
-            
-        }
     }
 }

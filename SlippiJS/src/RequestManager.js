@@ -28,11 +28,9 @@ function getGameConversions(location) {
 
     var gameConversions = {
         gameLocation: location,
-        gameSettings: [],
+        gameSettings: settings,
         conversionList: []
     };
-
-    gameConversions.gameSettings.push(settings);
 
     var conversions =
         stats === null || stats === void 0 ? void 0 : stats.conversions;

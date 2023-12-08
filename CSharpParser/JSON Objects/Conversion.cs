@@ -4,17 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpParser.SlpJSObjects;
+using Newtonsoft.Json;
 
 namespace CSharpParser.JSON_Objects
 {
     public class Conversion
     {
-        private List<PostFrame> beingHitFrames;
-        private List<PostFrame> hittingFrames;
-
-        public Conversion()
-        {
-            
-        }
+  
+        public List<PostFrame> beingHitFrames { get; set; }
+        public List<PostFrame> hittingFrames { get; set; }
     }
 }

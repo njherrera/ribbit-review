@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSharpParser.SlpJSObjects
 {
-    internal class SelfInducedSpeeds
+    public class SelfInducedSpeeds
     {
         private double? airX; // 	Negative means left, Positive means right
         private double? y; // 		Negative means down, Positive means up

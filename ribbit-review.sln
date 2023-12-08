@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74B53000-219D-4659-8BF4-655D8BB74A44}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		SlippiJS\nuget.config = SlippiJS\nuget.config
 		README.md = README.md
 	EndProjectSection
 EndProject

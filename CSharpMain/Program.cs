@@ -2,6 +2,9 @@
 using System;
 using NamedPipeAPI;
 using CSharpParser;
+using CSharpParser.JSON_Objects;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace CSharpMain;
 
@@ -22,6 +25,8 @@ class Program
     //        .LogToTrace();
     static void Main(string[] args)
     {
-        PipeManager.connectJsonPipe();
+        string testJson = PipeManager.connectJsonPipe();
+        GameConversions conversions = JsonConvert.DeserializeObject<GameConversions>(testJson.ToString());
+        Debug.WriteLine(conversions.ConversionList.Count);
     }
 }
