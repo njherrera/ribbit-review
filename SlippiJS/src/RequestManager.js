@@ -44,6 +44,7 @@ function getGameConversions(location) {
  * 
  * @param {ConversionType} conversion conversion from a given replay file that's being added to JSON sent through pipe B
  * @param {SlippiGame} game game the conversion belongs to
+ * adds a given conversion in a replay to JSON file of all conversions in a replay
  */
 function addConversion(conversion, game) {
     const startFrameNum = conversion.startFrame;

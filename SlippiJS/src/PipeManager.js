@@ -4,12 +4,10 @@ const { getGameConversions } = require("./RequestManager");
 let PIPE_A_NAME = "request_pipe";
 let PIPE_B_NAME = "json_pipe";
 let PIPE_PATH = "\\\\.\\pipe\\";
-// initalize name for pipe A as let PIPE_B_NAME = 'request_pipe'
-// initialize name for pipe B as let PIPE_C_NAME = 'json_pipe'
-// initalize pipe path prefix as let PIPE_PATH = '\\\\.\\pipe'
 
 /** pipe A (c# > TS)
- * returns the string requestData, contains info on the request coming through the pipe from C#
+ * receives a request for a JSON file from c#
+ * in future will include file location(s) and possibly params for JSON
  */
 
 function connectRequestPipe() {
@@ -29,7 +27,7 @@ function connectRequestPipe() {
 }
 
 /** pipe B (TS > c#)
- * modify to include input param (for passing json)
+ * passes a JSON file matching request from pipe A to c#
  */
 
 function createJsonPipe() {

@@ -14,6 +14,9 @@ namespace NamedPipeAPI
         private static string PIPE_A_NAME = "request_pipe";
         private static string PIPE_B_NAME = "json_pipe";
 
+        /* pipe A (c# > JS), sends a request for JSON file(s) to JS
+         * in future include specific params for the JSON file?
+        */ 
         public static void createRequestPipe()
         {
             var pipeServer = new NamedPipeServerStream(PIPE_A_NAME, PipeDirection.Out);
@@ -46,7 +49,7 @@ namespace NamedPipeAPI
             */
         }
 
-        /* createPipeIn method (pipe B)
+        /* pipe B (JS > c#), receives a JSON file matching request from JS
          * in future, this will either stay open and read multiple JSONs, or read one big JSON that contains all of the info we need
         */
         public static string connectJsonPipe(){
