@@ -27,5 +27,16 @@ namespace CSharpParser.JSON_Objects
         {
             return $"Game location: {this.GameLocation}, Settings: {this.GameSettings.ToString}, Number of conversions: {this.ConversionList.Count()}";
         }
+
+        public static GameConversions jsonToConversions(string jsonFile)
+        {
+            GameConversions conversions = JsonConvert.DeserializeObject<GameConversions>(jsonFile);
+            return conversions;
+        }
+
+        public static string conversionsToJson(GameConversions conversions)
+        {
+            return JsonConvert.SerializeObject(conversions, Formatting.Indented);
+        }
     }
 }

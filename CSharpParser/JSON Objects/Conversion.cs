@@ -10,10 +10,13 @@ namespace CSharpParser.JSON_Objects
 {
     public class Conversion
     {
-  
+
         /* one Conversion holds all the post-update frames for both players involved in the conversion, where beingHitFrames = player being hit and hittingFrames = player hitting 
          * at the moment this CANNOT handle doubles conversions of only two lists, also because slippi stats itself isn't fully functional for doubles replays
-        */ 
+        */
+        public bool didKill { get; set; }
+        public List<Move> moves { get; set; }
+        public string openingType { get; set; }
         public List<PostFrame> beingHitFrames { get; set; }
         public List<PostFrame> hittingFrames { get; set; }
     }

@@ -107,7 +107,8 @@ function getEdgeguards(replayPath, outputJSON) {
                 startFrame: conversion.startFrame,
                 endFrame: conversion.endFrame,
             }
-            outputJSON.queue.push(queueItem)
+            outpu
+            tJSON.queue.push(queueItem)
         }
     })
 }

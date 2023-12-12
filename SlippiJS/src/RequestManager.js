@@ -56,6 +56,9 @@ function addConversion(conversion, game) {
     const frames = game.getFrames();
 
     var conversionFile = {
+        didKill: conversion.didKill,
+        moves: conversion.moves,
+        openingType: conversion.openingType,
         beingHitFrames: [],
         hittingFrames: []
     };

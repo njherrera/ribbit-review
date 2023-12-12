@@ -26,7 +26,5 @@ class Program
     static void Main(string[] args)
     {
         string testJson = PipeManager.connectJsonPipe();
-        GameConversions conversions = JsonConvert.DeserializeObject<GameConversions>(testJson.ToString());
-        Debug.WriteLine(conversions.ConversionList.Count);
     }
 }
