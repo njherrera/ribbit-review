@@ -9,7 +9,7 @@ namespace CSharpParser.Filters
 {
     public static class Edgeguards
     {
-        public static void addToJson(GameConversions gameConversions, PlaybackQueue dolphinQueue) 
+        public static void addToQueue(GameConversions gameConversions, PlaybackQueue dolphinQueue) 
         {
             foreach (Conversion conversion in gameConversions.ConversionList)
             {
@@ -22,14 +22,14 @@ namespace CSharpParser.Filters
             }
         }
 
-        private static bool isEdgeguard(Conversion conversion, int? stageId)
+        public static bool isEdgeguard(Conversion conversion, int? stageId)
         {
             bool isEdgeguardPosition = false;
             double ledgePosition = getLedgePositions(stageId);
             double leftLedge = ledgePosition * -1;
             double rightLedge = ledgePosition;
 
-            for (int i = 0; i <= conversion.beingHitFrames.Count(); i++)
+            for (int i = 0; i < conversion.beingHitFrames.Count(); i++)
             {
                 double? convertingXPosition = conversion.hittingFrames.ElementAt(i).positionX;
                 double? converteeXPosition = conversion.beingHitFrames.ElementAt(i).positionX;
@@ -42,7 +42,7 @@ namespace CSharpParser.Filters
             return isEdgeguardPosition;
         }
 
-        private static double getLedgePositions(int? stageId)
+        public static double getLedgePositions(int? stageId)
         {
             switch (stageId)
             {

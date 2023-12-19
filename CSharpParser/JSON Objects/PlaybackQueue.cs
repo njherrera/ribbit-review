@@ -10,5 +10,11 @@ namespace CSharpParser.JSON_Objects
     {
         public string mode { get; set; }
         public List<QueueItem> queue { get; set; }
+
+        public PlaybackQueue()
+        {
+            queue = new List<QueueItem>();
+            mode = "playback";
+        }
     }
 }
