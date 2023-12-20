@@ -13,6 +13,7 @@ testJSONs/
 *.user
 *.sln.docstates
 .vs/
+userVars.cs
 
 # Build results
 

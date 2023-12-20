@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpParser.Filters;
 using CSharpParser.JSON_Objects;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace CSharpTests.ParserTests.FilterTests
@@ -44,6 +46,28 @@ namespace CSharpTests.ParserTests.FilterTests
             PlaybackQueue pbackQueue = new PlaybackQueue();
             Edgeguards.addToQueue(testConversions, pbackQueue);
             Assert.AreEqual(pbackQueue.queue.Count(), 12);
+        }
+
+        [TestMethod]
+        public void testPlayingQueue()
+        {
+            string cmdText;
+            PlaybackQueue pbackQueue = new PlaybackQueue();
+            Edgeguards.addToQueue(testConversions, pbackQueue);
+            string edgeguardJson = JsonConvert.SerializeObject(pbackQueue);
+            cmdText = "/C C:\\Users\\mucho\\AppData\\Roaming\\Slippi Launcher\\playback\\Slippi Dolphin -i" + edgeguardJson;
+
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            // cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.Arguments = cmdText;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.Start();
+            
+            cmd.WaitForExit();
+            Debug.WriteLine(cmd.StandardOutput.ToString());
+            string cmdOutput = cmd.StandardOutput.ReadToEnd();
+            Assert.IsFalse(cmdOutput.Contains("Error message text"));
         }
     }
 }

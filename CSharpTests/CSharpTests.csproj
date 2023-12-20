@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CSharpGUI\CSharpGUI.csproj" />
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
     <ProjectReference Include="..\NamedPipeAPI\NamedPipeAPI.csproj" />
   </ItemGroup>
