@@ -2,7 +2,7 @@
 
 ribbit-review is split into 4 main parts and 2 languages in terms of the application itself, and will likely stay that way for some time (names themselves are also a work in progress):
 
-## CSharpMain:
+## CSharpGUI:
 
 Has references to CSharpParser and NamedPipeAPI but *not* JS code, and is currently the default testing ground for C# logic but in future will handle the UI.
 
