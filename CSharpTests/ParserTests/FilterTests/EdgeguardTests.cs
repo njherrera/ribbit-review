@@ -34,45 +34,52 @@ namespace CSharpTests.ParserTests.FilterTests
         [TestMethod]
         public void testIsEdgeguard()
         {
-            Edgeguards edgeguards = new Edgeguards();
             Conversion shouldBeEdgeuard = testConversions.ConversionList.ElementAt(6);
             Conversion notAnEdgeguard = testConversions.ConversionList.ElementAt(2);
-            Assert.IsTrue(edgeguards.isInstance(shouldBeEdgeuard, testConversions.GameSettings));
-            Assert.IsFalse(edgeguards.isInstance(notAnEdgeguard, testConversions.GameSettings));
+            Assert.IsTrue(Edgeguards.isInstance(shouldBeEdgeuard, testConversions.GameSettings));
+            Assert.IsFalse(Edgeguards.isInstance(notAnEdgeguard, testConversions.GameSettings));
         }
 
         [TestMethod]
         public void testAddToQueue()
         {
-            Edgeguards edgeguards = new Edgeguards();
             PlaybackQueue pbackQueue = new PlaybackQueue();
-            edgeguards.addToQueue(testConversions, pbackQueue);
+            Edgeguards.addToQueue(testConversions, pbackQueue);
             Assert.AreEqual(pbackQueue.queue.Count(), 12);
         }
 
         [TestMethod]
         public void testPlayingQueue()
         {
-            Edgeguards edgeguards = new Edgeguards();
             string cmdText;
             PlaybackQueue pbackQueue = new PlaybackQueue();
-            edgeguards.addToQueue(testConversions, pbackQueue);
+            Edgeguards.addToQueue(testConversions, pbackQueue);
             string edgeguardJson = JsonConvert.SerializeObject(pbackQueue, Formatting.Indented);
             string jsonPath = @"Q:\programming\ribbit-review\testJSONs\EdgeguardsJSON.json";
             File.WriteAllText(jsonPath, edgeguardJson);
-            cmdText = "/C " + userVars.dolphinPath + " -i " + jsonPath + " -e " + userVars.meleePath;
+            cmdText = userVars.dolphinPath + " -i " + jsonPath + " -e " + userVars.meleePath;
 
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
-            // cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.Arguments = cmdText;
+            cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.OutputDataReceived += (sender, args) => Debug.WriteLine("received output: {0}", args.Data);
+            cmd.StartInfo.RedirectStandardError = true;
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.UseShellExecute = false;
+
+            cmd.ErrorDataReceived += (object sender, DataReceivedEventArgs args) => Debug.Write("error received: " + args.Data);
+            cmd.OutputDataReceived += (object sender, DataReceivedEventArgs args) => Debug.WriteLine("received output: {0}", args.Data);
+            cmd.EnableRaisingEvents = true;
+
             cmd.Start();
+            cmd.BeginOutputReadLine();
+            cmd.BeginErrorReadLine();
+
+            cmd.StandardInput.WriteLine(cmdText);
+            cmd.StandardInput.WriteLine("exit");
 
             cmd.WaitForExit();
-            string output = cmd.StandardOutput.ReadToEnd();
-            Console.WriteLine(output);
+            Assert.IsTrue(cmd.ExitCode == 0);
         }
     }
 }
