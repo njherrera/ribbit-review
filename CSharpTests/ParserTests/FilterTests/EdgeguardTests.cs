@@ -34,40 +34,45 @@ namespace CSharpTests.ParserTests.FilterTests
         [TestMethod]
         public void testIsEdgeguard()
         {
+            Edgeguards edgeguards = new Edgeguards();
             Conversion shouldBeEdgeuard = testConversions.ConversionList.ElementAt(6);
             Conversion notAnEdgeguard = testConversions.ConversionList.ElementAt(2);
-            Assert.IsTrue(Edgeguards.isEdgeguard(shouldBeEdgeuard, testConversions.GameSettings.StageId));
-            Assert.IsFalse(Edgeguards.isEdgeguard(notAnEdgeguard, testConversions.GameSettings.StageId));
+            Assert.IsTrue(edgeguards.isInstance(shouldBeEdgeuard, testConversions.GameSettings));
+            Assert.IsFalse(edgeguards.isInstance(notAnEdgeguard, testConversions.GameSettings));
         }
 
         [TestMethod]
         public void testAddToQueue()
         {
+            Edgeguards edgeguards = new Edgeguards();
             PlaybackQueue pbackQueue = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueue);
+            edgeguards.addToQueue(testConversions, pbackQueue);
             Assert.AreEqual(pbackQueue.queue.Count(), 12);
         }
 
         [TestMethod]
         public void testPlayingQueue()
         {
+            Edgeguards edgeguards = new Edgeguards();
             string cmdText;
             PlaybackQueue pbackQueue = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueue);
-            string edgeguardJson = JsonConvert.SerializeObject(pbackQueue);
-            cmdText = "/C C:\\Users\\mucho\\AppData\\Roaming\\Slippi Launcher\\playback\\Slippi Dolphin -i" + edgeguardJson;
+            edgeguards.addToQueue(testConversions, pbackQueue);
+            string edgeguardJson = JsonConvert.SerializeObject(pbackQueue, Formatting.Indented);
+            string jsonPath = @"Q:\programming\ribbit-review\testJSONs\EdgeguardsJSON.json";
+            File.WriteAllText(jsonPath, edgeguardJson);
+            cmdText = "/C " + userVars.dolphinPath + " -i " + jsonPath + " -e " + userVars.meleePath;
 
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
             // cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.Arguments = cmdText;
             cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.OutputDataReceived += (sender, args) => Debug.WriteLine("received output: {0}", args.Data);
             cmd.Start();
-            
+
             cmd.WaitForExit();
-            Debug.WriteLine(cmd.StandardOutput.ToString());
-            string cmdOutput = cmd.StandardOutput.ReadToEnd();
-            Assert.IsFalse(cmdOutput.Contains("Error message text"));
+            string output = cmd.StandardOutput.ReadToEnd();
+            Console.WriteLine(output);
         }
     }
 }

@@ -4,37 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpParser.JSON_Objects;
+using CSharpParser.SlpJSObjects;
 
 namespace CSharpParser.Filters
 {
-    public static class Edgeguards
+    public class Edgeguards : IFilter
     {
-        public static void addToQueue(GameConversions gameConversions, PlaybackQueue dolphinQueue) 
+
+        public static void addToQueue(GameConversions gameConversions, PlaybackQueue pbackQueue)
         {
             foreach (Conversion conversion in gameConversions.ConversionList)
             {
-                if (conversion.beingHitFrames.Count() > 0 && isEdgeguard(conversion, gameConversions.GameSettings.StageId) == true)
+                if (conversion.beingHitFrames.Count() > 0 && isInstance(conversion, gameConversions.GameSettings) == true)
                 {
-                    QueueItem qi = new QueueItem(gameConversions.GameLocation, conversion.beingHitFrames.First().frame, conversion.beingHitFrames.Last().frame);
-                    dolphinQueue.queue.Add(qi);
+                    int? startFrame = conversion.beingHitFrames.First().frame;
+                    int? endFrame = conversion.beingHitFrames.Last().frame;
+                    QueueItem qi = new QueueItem(gameConversions.GameLocation, startFrame, endFrame);
+                    pbackQueue.queue.Add(qi);
                 }
                 else continue;
             }
         }
 
-        public static bool isEdgeguard(Conversion conversion, int? stageId)
+        public static bool isInstance(Conversion conversion, GameSettings settings)
         {
             bool isEdgeguardPosition = false;
-            double ledgePosition = getLedgePositions(stageId);
+            double ledgePosition = getLedgePositions(settings.StageId);
             double leftLedge = ledgePosition * -1;
             double rightLedge = ledgePosition;
 
             for (int i = 0; i < conversion.beingHitFrames.Count(); i++)
             {
-                double? convertingXPosition = conversion.hittingFrames.ElementAt(i).positionX;
+                double? converterXPosition = conversion.hittingFrames.ElementAt(i).positionX;
                 double? converteeXPosition = conversion.beingHitFrames.ElementAt(i).positionX;
 
-                if (((converteeXPosition < leftLedge) && (converteeXPosition < convertingXPosition)) || ((converteeXPosition > rightLedge) && (converteeXPosition > convertingXPosition)))
+                if (((converteeXPosition < leftLedge) && (converteeXPosition < converterXPosition)) || ((converteeXPosition > rightLedge) && (converteeXPosition > converterXPosition)))
                 {
                     isEdgeguardPosition = true;
                 } else continue;
@@ -68,5 +72,6 @@ namespace CSharpParser.Filters
                     return 0;
             }
         }
+
     }
 }
