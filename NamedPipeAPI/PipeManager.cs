@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Pipes;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO.Pipes;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace NamedPipeAPI
 {
@@ -13,24 +7,35 @@ namespace NamedPipeAPI
     {
         private static string PIPE_A_NAME = "request_pipe";
         private static string PIPE_B_NAME = "json_pipe";
+        private static NamedPipeServerStream _pipeServerStream;
 
-        /* pipe A (c# > JS), sends a request for JSON file(s) to JS
-         * in future include specific params for the JSON file?
+        /* pipe A (c# > JS)
+         * createRequestPipe creates a named pipe to send requests for .slp files through
         */ 
         public static void createRequestPipe()
         {
-            var pipeServer = new NamedPipeServerStream(PIPE_A_NAME, PipeDirection.Out);
+            _pipeServerStream = new NamedPipeServerStream(PIPE_A_NAME, PipeDirection.Out);
 
             Debug.WriteLine("pipe A waiting for connection");
-            pipeServer.WaitForConnection();
+            _pipeServerStream.WaitForConnection();
 
             Debug.WriteLine("C# has connected to pipe A");
+            /* perform closing and disposing upon exit of program/file selection tool - pipes are kept open while program is running (will need to verify that they close on exit)
+            pipeServer.Close();
+            pipeServer.Dispose();
+            */
+        }
+
+        public static void sendRequest(string filePath)
+        {
+            filePath = filePath.Trim();
+            Debug.WriteLine(filePath);
             try
             {
-                using (StreamWriter sw = new StreamWriter(pipeServer))
+                using (StreamWriter sw = new StreamWriter(_pipeServerStream))
                 {
                     sw.AutoFlush = true;
-                    sw.WriteLine("Q:\\programming\\ribbit-review\\.slp files\\EdgeguardTestSheikFalco"); // in future, this will be file location + request params
+                    sw.WriteLine(filePath); // in future, this will be file location + request params
                     // in future, send message once all selected files have been requested
                     Debug.WriteLine("request to JS through pipe A has been written");
                 }
@@ -43,10 +48,6 @@ namespace NamedPipeAPI
             {
                 Debug.WriteLine("error in pipe A: ERROR: {0} ", e.Message);
             }
-            /* perform closing and disposing upon exit of program/file selection tool - pipes are kept open while program is running (will need to verify that they close on exit)
-            pipeServer.Close();
-            pipeServer.Dispose();
-            */
         }
 
         /* pipe B (JS > c#), receives a JSON file matching request from JS

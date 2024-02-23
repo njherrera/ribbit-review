@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:GUI.ViewModels"
+			 x:DataType="vm:MainViewModel"
+			 x:CompileBindings="True"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700" 
+             x:Class="GUI.Views.MainView">
+	<Design.DataContext>
+		<vm:MainViewModel />
+	</Design.DataContext>
+
+	<StackPanel>
+		<!-- Title bar-->
+		<Grid Background="Gray" Height= "25">
+			<StackPanel Grid.Column="0">
+				<Label FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center">ribbit review</Label>
+			</StackPanel>
+		</Grid>
+		<!--User connect code area-->
+		<Grid Background="BlanchedAlmond" Height="100" Width="1000">
+			<StackPanel Margin="0 15">
+				<TextBlock HorizontalAlignment="Center" Grid.Column="0">Enter your connect code (or in-game tag for locally recorded games): </TextBlock>
+				<TextBox Width="200" Margin="0 5"></TextBox>
+			</StackPanel>
+		</Grid>
+		<!--Filter selection + search options-->
+		<Grid Background="GhostWhite" Height="450" ColumnDefinitions="500, 500">
+			<StackPanel>
+
+			</StackPanel>
+		</Grid>
+		<!--Filter application buttons-->
+		<Grid Background="LightGray" Height="125" ColumnDefinitions="500, 500">
+			<Button Content="Apply filter to games (results in JSON file)" Command="{Binding ApplyFilterCommand}" HorizontalAlignment="Center" Grid.Column="0"/>
+			<Button HorizontalAlignment="Center" Grid.Column="1" x:Name="message">Select JSON to watch in replay viewer</Button>
+		</Grid>
+	</StackPanel>
+</UserControl>

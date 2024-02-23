@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using NamedPipeAPI;
 
 namespace GUI
 {
@@ -20,5 +21,6 @@ namespace GUI
                 .WithInterFont()
                 .LogToTrace()
                 .UseReactiveUI();
+
     }
 }

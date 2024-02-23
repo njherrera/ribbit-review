@@ -1,20 +1,6 @@
 const { SlippiGame } = require("@slippi/slippi-js");
+const { readFileSync } = require("fs");
 
-// move to separate class?
-
-/** 
-var conversionJSON = {
-    playerIndexFrames: (Array),
-    hitByFrames: (Array)
-};
-
-var conversionListJSON = {
-    location: String,
-    playerInfo: (Array),
-    gameSettings: (Array),
-    conversionList: (Array)
-}
-*/
 /**
  * @param {string} location file location of replay that c# is requesting in JSON form
  * @returns {local var} gameConversions JSON file created with JSON.stringify that holds information matching request params
@@ -22,7 +8,8 @@ var conversionListJSON = {
  * in future, call a helper method according to what the request calls for? (depends on how much parsing we can do on the c# side and what a conversion json gives us)
  */
 function getGameConversions(location) {
-    const game = new SlippiGame(location);
+    var buffer = readFileSync(location);
+    const game = new SlippiGame(buffer);
     const stats = game.getStats();
     const settings = game.getSettings();
 

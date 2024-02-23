@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpParser.SlpJSObjects;
@@ -31,6 +32,9 @@ namespace CSharpParser.JSON_Objects
         public static GameConversions jsonToConversions(string jsonFile)
         {
             GameConversions conversions = JsonConvert.DeserializeObject<GameConversions>(jsonFile);
+            string encodedPath = conversions.GameLocation;
+            string decodedPath = Uri.UnescapeDataString(encodedPath);
+            conversions.GameLocation = decodedPath.Replace(@"file:///", "");  // cuts out "file:///" from the file's path
             return conversions;
         }
 

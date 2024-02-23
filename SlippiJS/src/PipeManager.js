@@ -1,11 +1,12 @@
 const net = require("net");
 const { getGameConversions } = require("./RequestManager");
+const { existsSync } = require("fs");
 
 let PIPE_A_NAME = "request_pipe";
 let PIPE_B_NAME = "json_pipe";
 let PIPE_PATH = "\\\\.\\pipe\\";
 
-/** pipe A (c# > TS)
+/** pipe A (c# > JS)
  * receives a request for a JSON file from c#
  * in future will include file location(s) and possibly params for JSON
  */
@@ -17,8 +18,15 @@ function connectRequestPipe() {
 
     requestClient.on('data', (data) => {
         console.log("data received through pipe A: " + data.toString());
-        var requestData = data.toString();
-        return requestData;
+        var requestedPath = data.toString();
+        pathURL = new URL(requestedPath);
+        if (existsSync(pathURL)) {
+            console.log("The requested file exists");
+            createJsonPipe(pathURL);
+        } else {
+            console.log("JS does not see the requested file, existsSync check failed");
+        }
+        
     });
 
     requestClient.on('end', () => {
@@ -26,17 +34,17 @@ function connectRequestPipe() {
     });
 }
 
-/** pipe B (TS > c#)
+/** pipe B (JS > c#)
  * passes a JSON file matching request from pipe A to c#
  */
 
-function createJsonPipe() {
+function createJsonPipe(filePath) {
     const jsonServer = net.createServer((c) => {
         console.log("C# client has connected to json pipe");
         c.on('end', () => {
             console.log("C# client has disconnected from json pipe")
         });
-        let data = JSON.stringify(getGameConversions("Q:\\programming\\ribbit-review\\.slp files\\EdgeguardTestSheikFalco.slp"));
+        let data = JSON.stringify(getGameConversions(filePath));
         c.write(data + "\n");
         c.pipe(c);
     });
