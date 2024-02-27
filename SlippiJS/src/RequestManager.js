@@ -8,7 +8,7 @@ const { readFileSync } = require("fs");
  * in future, call a helper method according to what the request calls for? (depends on how much parsing we can do on the c# side and what a conversion json gives us)
  */
 function getGameConversions(location) {
-    var buffer = readFileSync(location);
+    var buffer = readFileSync(location); // reading file location into a buffer, THEN making a SlippiGame w/ the buffer is a workaround for JS not having same file access perms that C# does
     const game = new SlippiGame(buffer);
     const stats = game.getStats();
     const settings = game.getSettings();

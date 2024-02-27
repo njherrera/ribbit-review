@@ -72,10 +72,6 @@ namespace GUI.ViewModels
                 if (file is null) return string.Empty;
 
                 var result = file.Path.ToString();
-                //string filePath = result.Replace(@"file:///", "");  // cuts out "file:///" from the file's path
-                //string[] paths = result.Split('/');
-                //fullPath = Path.Combine(paths);
-                //filePath = filePath.Replace(@"/", "\\");
                 fullPath = result;
             }
             catch (Exception e)

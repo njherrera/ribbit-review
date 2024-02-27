@@ -31,7 +31,15 @@ namespace GUI.Services
             Patterns = new[] { "*.slp" }
         };
 
+        public static FilePickerFileType DolphinExe { get; } = new("Dolphin instance")
+        {
+            Patterns = new[] { "Slippi Dolphin.exe" }
+        };
 
+        public static FilePickerFileType MeleeIso { get; } = new("SSBM Iso")
+        {
+            Patterns = new[] {"*Melee*1.02*.iso"}
+        };
         public async Task<IStorageFile?> SaveFileAsync()
         {
             return await _target.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
