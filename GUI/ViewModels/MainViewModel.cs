@@ -116,7 +116,7 @@ namespace GUI.ViewModels
         private async void checkForPaths()
         {
 #if DEBUG
-            string devPath = @"Q:/programming/ribbit-review/GUI/UserVars.xml";
+            string devPath = @"Q:/programming/ribbit-review/GUI/UserPaths.xml";
             if (File.Exists(devPath)){
                 paths = deserializeUserPaths(devPath);
             } else {
