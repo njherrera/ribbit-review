@@ -145,7 +145,9 @@ namespace GUI.ViewModels
                     var result = await SelectMeleeIso(cancelToken);
 
                     paths = new UserPaths(defaultPlaybackPath, result);
-                    serializeUserPaths(paths, devPath);
+                    string RRFolder = Path.Combine(AppData, "Ribbit Review");
+                    Directory.CreateDirectory(RRFolder);
+                    serializeUserPaths(paths, Path.Combine(RRFolder, "UserPaths.xml"));
                 }
             }
             /* check for serialized xml instance of UserPaths.cs
