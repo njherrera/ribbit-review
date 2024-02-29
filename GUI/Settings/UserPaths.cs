@@ -6,5 +6,18 @@ using System.Threading.Tasks;
 
 namespace GUI.Settings
 {
-    public record UserPaths(string PlaybackExeLocation, string MeleeIsoLocation);
+    public class UserPaths
+    {
+        public string PlaybackExePath;
+
+        public string MeleeIsoPath;
+
+        public UserPaths(string ExePath, string IsoPath) 
+        {
+            PlaybackExePath = ExePath;
+            MeleeIsoPath = IsoPath;
+        }
+
+        private UserPaths() { }
+    }
 }

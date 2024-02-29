@@ -34,7 +34,7 @@
 		<!--Filter application buttons-->
 		<Grid Background="LightGray" Height="125" ColumnDefinitions="500, 500">
 			<Button Content="Apply filter to games (results in JSON file)" Command="{Binding ApplyFilterCommand}" HorizontalAlignment="Center" Grid.Column="0"/>
-			<Button HorizontalAlignment="Center" Grid.Column="1" x:Name="message">Select JSON to watch in replay viewer</Button>
+			<Button Content="Select JSON to watch in replay viewer" Command="{Binding ViewJsonCommand}" HorizontalAlignment="Center" Grid.Column="1"/>
 		</Grid>
 	</StackPanel>
 </UserControl>

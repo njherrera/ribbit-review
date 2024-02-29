@@ -4,7 +4,6 @@ using Avalonia.Markup.Xaml;
 using GUI.Services;
 using GUI.ViewModels;
 using GUI.Views;
-using IoCFileOps.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using NamedPipeAPI;

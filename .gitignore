@@ -7,14 +7,18 @@
 
 # test JSONs
 testJSONs/
-.slp files/
+
+# dev variables
+CSharpTests/userVars.cs
+GUI/UserPaths.xml
 
 # User-specific files
 *.suo
 *.user
 *.sln.docstates
 .vs/
-CSharpTests/userVars.cs
+
+
 
 # Build results
 
