@@ -7,9 +7,9 @@ namespace GUI.Services
 {
     public class FilesService : IFilesService
     {
-        private readonly Window _target;
+        private Window _target;
 
-        public FilesService(Window target)
+        public void setTargetWindow(Window target)
         {
             _target = target;
         }

@@ -26,11 +26,18 @@ function connectRequestPipe() {
         } else {
             console.log("JS does not see the requested file, existsSync check failed");
         }
-        
     });
 
-    requestClient.on('end', () => {
-        console.log("JS disconnected from request pipe")
+    requestClient.on('error', (err) => {
+        if (err.message.indexOf('ENOENT') > -1) {
+            setTimeout(() => {
+                connectRequestPipe();
+            }, 1000);
+        }
+    });
+
+    requestClient.on('close', () => {
+        console.log("JS pipe A client disconnected")
     });
 }
 

@@ -7,6 +7,7 @@ using GUI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using NamedPipeAPI;
+using CommunityToolkit.Mvvm.DependencyInjection;
 
 namespace GUI
 {
@@ -21,18 +22,19 @@ namespace GUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+
+                var services = new ServiceCollection();
+                FilesService filesService = new();
+                services.AddSingleton<IFilesService>(filesService);
+                Services = services.BuildServiceProvider();
+                Ioc.Default.ConfigureServices(Services);
+
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = new MainViewModel(),
                 };
-
-                var services = new ServiceCollection();
-
-                services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
-
-                Services = services.BuildServiceProvider();
-
-                PipeManager.createRequestPipe();
+                
+                //PipeManager.createRequestPipe();
             }
 
             base.OnFrameworkInitializationCompleted();

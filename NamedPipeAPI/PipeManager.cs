@@ -35,7 +35,7 @@ namespace NamedPipeAPI
                 using (StreamWriter sw = new StreamWriter(_pipeServerStream))
                 {
                     sw.AutoFlush = true;
-                    sw.WriteLine(filePath); // in future, this will be file location + request params
+                    sw.WriteLine(filePath);
                     // in future, send message once all selected files have been requested
                     Debug.WriteLine("request to JS through pipe A has been written");
                 }

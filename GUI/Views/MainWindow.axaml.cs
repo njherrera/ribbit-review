@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using GUI.Services;
 
 namespace GUI.Views
 {
@@ -7,6 +9,8 @@ namespace GUI.Views
         public MainWindow()
         {
             InitializeComponent();
+            var service = (FilesService)Ioc.Default.GetRequiredService<IFilesService>();
+            service.setTargetWindow(this);
         }
     }
 }

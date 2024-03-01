@@ -19,6 +19,7 @@ using CSharpParser.SlpJSObjects;
 using GUI.Settings;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
+using CommunityToolkit.Mvvm.DependencyInjection;
 
 namespace GUI.ViewModels
 {
@@ -36,6 +37,7 @@ namespace GUI.ViewModels
             ViewJsonCommand = new RelayCommand(ViewJson);
             filterJson = "";
             selectedSettings = new GameSettings();
+            checkForPaths();
         }
 
         
@@ -45,6 +47,7 @@ namespace GUI.ViewModels
         {
             /* currently applies filter to ONE replay file
              */
+            PipeManager.createRequestPipe();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectSlpFile(cancelToken);
@@ -67,7 +70,7 @@ namespace GUI.ViewModels
             ErrorMessages?.Clear();
             try
             {
-                var filesService = App.Current?.Services?.GetService<IFilesService>();
+                var filesService = Ioc.Default.GetService<IFilesService>();
                 if (filesService is null)
                 {
                     throw new NullReferenceException("Missing File Service instance.");
@@ -91,7 +94,7 @@ namespace GUI.ViewModels
             ErrorMessages?.Clear();
             try
             {
-                var filesService = App.Current?.Services?.GetService<IFilesService>();
+                var filesService = Ioc.Default.GetService<IFilesService>();
                 if (filesService is null) throw new NullReferenceException("Missing File Service instance.");
 
                 var file = await filesService.SaveFileAsync();
@@ -109,59 +112,35 @@ namespace GUI.ViewModels
 
         public ICommand ViewJsonCommand { get; }
 
-        private async void ViewJson()
+        private void ViewJson()
         {
-            checkForPaths();
         }
-        private async void checkForPaths()
+        public void checkForPaths()
         {
 #if DEBUG
             string devPath = @"Q:/programming/ribbit-review/GUI/UserPaths.xml";
-            if (File.Exists(devPath)){
+            if (File.Exists(devPath))
+            {
                 paths = deserializeUserPaths(devPath);
-            } else {
-                var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string defaultPlaybackPath = Path.Combine(AppData, "Slippi Launcher", "playback", "Slippi Dolphin.exe");
-
-                CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-                CancellationToken cancelToken = cancelTokenSource.Token;
-                var result = await SelectMeleeIso(cancelToken);
-                
-                paths = new UserPaths(defaultPlaybackPath, result);
-                serializeUserPaths(paths, devPath);
+            } 
+            else 
+            { 
+               CreateUserPaths(devPath); 
             }
 #endif
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            { 
                 var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                 string pathsLocation = Path.Combine(AppData, "Ribbit Review", "UserPaths.xml");
                 if (File.Exists(pathsLocation))
                 {
                     paths = deserializeUserPaths(pathsLocation);
-                } else {
-                    string defaultPlaybackPath = Path.Combine(AppData, "Slippi Launcher", "playback", "Slippi Dolphin.exe");
-
-                    CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-                    CancellationToken cancelToken = cancelTokenSource.Token;
-                    var result = await SelectMeleeIso(cancelToken);
-
-                    paths = new UserPaths(defaultPlaybackPath, result);
-                    string RRFolder = Path.Combine(AppData, "Ribbit Review");
-                    Directory.CreateDirectory(RRFolder);
-                    serializeUserPaths(paths, Path.Combine(RRFolder, "UserPaths.xml"));
+                } 
+                else 
+                { 
+                    CreateUserPaths(pathsLocation); 
                 }
             }
-            /* check for serialized xml instance of UserPaths.cs
-            * if no saved instance:
-            *      check default playback dolphin path for instance of dolphin .exe at
-            *          windows: %APPDATA/Slippi Launcher/playback
-            *          linux: ~/.config/Slippi Launcher/playback
-            *          macOS(?): ~/Library/Application Support/Slippi Launcher/playback
-            *          (paths for slippi dolphin installs are LOCKED)
-            *      prompt for melee .iso path
-            * if saved instance:
-            *      read paths from saved UserPaths
-            *      check that paths are valid (files exist)
-            */
         }
 
         private void serializeUserPaths(UserPaths paths, string fileName)
@@ -187,7 +166,7 @@ namespace GUI.ViewModels
             ErrorMessages?.Clear();
             try
             {
-                var filesService = App.Current?.Services?.GetService<IFilesService>();
+                var filesService = Ioc.Default.GetService<IFilesService>();
                 if (filesService is null)
                 {
                     throw new NullReferenceException("Missing File Service instance.");
@@ -204,6 +183,25 @@ namespace GUI.ViewModels
                 ErrorMessages?.Add(e.Message);
             }
             return fullPath;
+        }
+
+        private async void CreateUserPaths(string fileLocation)
+        {
+            // dolphin install paths are locked, so this should be the same for every user
+            // windows: %APPDATA%/Slippi Launcher/playback
+            // linux: ~/.config/Slippi Launcher/playback
+            // macOS: ~/Library/Application Support/Slippi Launcher/playback
+            var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string defaultPlaybackPath = Path.Combine(AppData, "Slippi Launcher", "playback", "Slippi Dolphin.exe");
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            CancellationToken cancelToken = cancelTokenSource.Token;
+            var result = await SelectMeleeIso(cancelToken);
+
+            paths = new UserPaths(defaultPlaybackPath, result);
+            string RRFolder = Path.Combine(AppData, "Ribbit Review");
+            Directory.CreateDirectory(RRFolder);
+            serializeUserPaths(paths, Path.Combine(RRFolder, "UserPaths.xml"));
         }
     }
 }
