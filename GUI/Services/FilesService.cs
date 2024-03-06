@@ -26,6 +26,18 @@ namespace GUI.Services
             return files.Count >= 1 ? files[0] : null;
         }
 
+        public async Task<IStorageFile?> OpenJsonFileAsync()
+        {
+            var files = await _target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+            {
+                Title = "Choose Slippi replay file",
+                FileTypeFilter = new[] { JsonFile }, // only shows .json files in the choose file window
+                AllowMultiple = false
+            });
+
+            return files.Count >= 1 ? files[0] : null;
+        }
+
         public async Task<IStorageFile?> OpenIsoFileAsync()
         {
             var files = await _target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()

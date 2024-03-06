@@ -34,7 +34,7 @@ namespace GUI
                     DataContext = new MainViewModel(),
                 };
                 
-                //PipeManager.createRequestPipe();
+                PipeManager.createRequestPipe();
             }
 
             base.OnFrameworkInitializationCompleted();

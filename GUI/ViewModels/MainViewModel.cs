@@ -20,13 +20,13 @@ using GUI.Settings;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using System.Xml;
 
 namespace GUI.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        private string filterJson;
-        private UserPaths paths;
+        private UserPaths userPaths;
 
         [ObservableProperty]
         private GameSettings selectedSettings;
@@ -35,7 +35,6 @@ namespace GUI.ViewModels
         { 
             ApplyFilterCommand = new RelayCommand(ApplyFilter);
             ViewJsonCommand = new RelayCommand(ViewJson);
-            filterJson = "";
             selectedSettings = new GameSettings();
             checkForPaths();
         }
@@ -47,7 +46,6 @@ namespace GUI.ViewModels
         {
             /* currently applies filter to ONE replay file
              */
-            PipeManager.createRequestPipe();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectSlpFile(cancelToken);
@@ -57,13 +55,71 @@ namespace GUI.ViewModels
 
             GameConversions fileConversions = GameConversions.jsonToConversions(returnJson);
             PlaybackQueue returnQueue = new PlaybackQueue();
-            
-            Edgeguards.addToQueue(fileConversions, returnQueue);
-            filterJson = JsonConvert.SerializeObject(returnQueue, Formatting.Indented);
 
-            await SaveFile();
+            Edgeguards.addToQueue(fileConversions, returnQueue);
+            string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
+
+            await SaveJsonFile(filterJson);
         }
 
+        public ICommand ViewJsonCommand { get; }
+
+        private async void ViewJson()
+        {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            CancellationToken cancelToken = cancelTokenSource.Token;
+            var result = await SelectJsonFile(cancelToken);
+
+            // making an array of dolphin exe params because ArgumentList naturally handles paths with spaces in them
+            // passing --cout gets us access to dolphin's output feed, and in the current playback build skipping through a queue json in the replay viewer breaks the playbackqueue
+            string[] dolphinParamList = { "-i", result, "-e", userPaths.MeleeIsoPath, "--cout", "--hide-seekbar" };
+            runCmdPrompt(dolphinParamList);
+        }
+
+
+        private void runCmdPrompt(string[] dolphinParams)
+        {
+            using (var dolphin = new Process())
+            {
+                // using ArgumentList because it naturally handles file path params with spaces in them
+                // this means we don't need to worry about passing specifically verbatim string literals for paths
+                ProcessStartInfo startInfo = new ProcessStartInfo()
+                { ArgumentList =
+                    {
+                        dolphinParams[0],
+                        dolphinParams[1],
+                        dolphinParams[2],
+                        dolphinParams[3],
+                        dolphinParams[4],
+                        dolphinParams[5],
+                    }
+                };
+                startInfo.FileName = userPaths.PlaybackExePath;
+                startInfo.CreateNoWindow = true;
+                startInfo.RedirectStandardOutput = true;
+                startInfo.RedirectStandardError = true;
+                startInfo.UseShellExecute = false;
+                dolphin.StartInfo = startInfo;
+
+                dolphin.EnableRaisingEvents = true;
+                dolphin.OutputDataReceived += (object sender, DataReceivedEventArgs args) =>
+                {
+                    if ((args.Data != null) && args.Data.Contains("NO_GAME"))
+                    {
+                        dolphin.Kill(); // after reaching the end of a playback queue, dolphin emits [NO_GAME] output and we kill the process at that point
+                    }
+                    else Debug.WriteLine("received output: ", args.Data);
+                };
+                dolphin.ErrorDataReceived += (object sender, DataReceivedEventArgs args) => Debug.Write("error received: " + args.Data);
+
+                dolphin.Start();
+                dolphin.BeginOutputReadLine();
+                dolphin.BeginErrorReadLine();
+                dolphin.WaitForExit();
+            }
+        }
+        
+        // helper method used for selecting .slp file(s) to apply filter to
         private async Task<string> SelectSlpFile(CancellationToken token)
         {
             string fullPath = "";
@@ -89,7 +145,33 @@ namespace GUI.ViewModels
             return fullPath;
         }
 
-        private async Task SaveFile()
+        // helper method for selecting .json file to load into playback dolphin
+        // this can only select *one* .json file
+        private async Task<string> SelectJsonFile(CancellationToken token)
+        {
+            string fullPath = "";
+            ErrorMessages?.Clear();
+            try
+            {
+                var filesService = Ioc.Default.GetService<IFilesService>();
+                if (filesService is null)
+                {
+                    throw new NullReferenceException("Missing File Service instance.");
+                }
+
+                var file = await filesService.OpenJsonFileAsync();
+                if (file is null) return string.Empty;
+
+                var result = file.Path.ToString();
+                fullPath = result.Replace(@"file:///", "");
+            }
+            catch (Exception e)
+            {
+                ErrorMessages?.Add(e.Message);
+            }
+            return fullPath;
+        }
+        private async Task SaveJsonFile(string json)
         {
             ErrorMessages?.Clear();
             try
@@ -100,7 +182,7 @@ namespace GUI.ViewModels
                 var file = await filesService.SaveFileAsync();
                 if (file is null) return;
 
-                var stream = new MemoryStream(Encoding.Default.GetBytes((string)filterJson));
+                var stream = new MemoryStream(Encoding.Default.GetBytes((string)json));
                 await using var writeStream = await file.OpenWriteAsync();
                 await stream.CopyToAsync(writeStream);
             }
@@ -110,18 +192,17 @@ namespace GUI.ViewModels
             }
         }
 
-        public ICommand ViewJsonCommand { get; }
-
-        private void ViewJson()
-        {
-        }
+        // checkForPaths() is run at the end of the MainViewModel constructor, and checks for a saved instance of the user's playback dolphin .exe and melee .iso paths
+        // we need these paths in order to view a json file in playback dolphin, since they're both passed as arguments to command prompt
+        // if the user has never booted up ribbit review before or their saved paths are missing, they'll be prompted for their melee .iso after the main view loads up and their paths will be saved to disk
+        // if the user has booted up ribbit review, their paths will be loaded from disks and they can proceed to use the program
         public void checkForPaths()
         {
 #if DEBUG
             string devPath = @"Q:/programming/ribbit-review/GUI/UserPaths.xml";
             if (File.Exists(devPath))
             {
-                paths = deserializeUserPaths(devPath);
+                userPaths = deserializeUserPaths(devPath);
             } 
             else 
             { 
@@ -134,10 +215,15 @@ namespace GUI.ViewModels
                 string pathsLocation = Path.Combine(AppData, "Ribbit Review", "UserPaths.xml");
                 if (File.Exists(pathsLocation))
                 {
-                    paths = deserializeUserPaths(pathsLocation);
+                    userPaths = deserializeUserPaths(pathsLocation);
                 } 
                 else 
-                { 
+                {
+                    string RRFolder = Path.Combine(AppData, "Ribbit Review");
+                    if (!Directory.Exists(RRFolder))
+                    {
+                        Directory.CreateDirectory(RRFolder);
+                    }
                     CreateUserPaths(pathsLocation); 
                 }
             }
@@ -145,8 +231,7 @@ namespace GUI.ViewModels
 
         private void serializeUserPaths(UserPaths paths, string fileName)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(UserPaths));
-            // To write to a file, create a StreamWriter object.  
+            XmlSerializer serializer = new XmlSerializer(typeof(UserPaths)); 
             StreamWriter myWriter = new StreamWriter(fileName);
             serializer.Serialize(myWriter, paths);
             myWriter.Close();
@@ -198,10 +283,9 @@ namespace GUI.ViewModels
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectMeleeIso(cancelToken);
 
-            paths = new UserPaths(defaultPlaybackPath, result);
-            string RRFolder = Path.Combine(AppData, "Ribbit Review");
-            Directory.CreateDirectory(RRFolder);
-            serializeUserPaths(paths, Path.Combine(RRFolder, "UserPaths.xml"));
+            userPaths = new UserPaths(defaultPlaybackPath, result);
+            serializeUserPaths(userPaths, fileLocation);
         }
+
     }
 }

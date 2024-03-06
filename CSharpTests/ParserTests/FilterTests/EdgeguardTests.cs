@@ -57,15 +57,16 @@ namespace CSharpTests.ParserTests.FilterTests
             string edgeguardJson = JsonConvert.SerializeObject(pbackQueue, Formatting.Indented);
             string jsonPath = @"Q:\programming\ribbit-review\testJSONs\EdgeguardsJSON.json";
             File.WriteAllText(jsonPath, edgeguardJson);
-            cmdText = userVars.dolphinPath + " -i " + jsonPath + " -e " + userVars.meleePath;
+            cmdText ="-i " + jsonPath + " -e " + userVars.meleePath;
 
             Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.FileName = userVars.dolphinPath;
             cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.RedirectStandardOutput = true;
             cmd.StartInfo.RedirectStandardError = true;
-            cmd.StartInfo.RedirectStandardInput = true;
+            //cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.UseShellExecute = false;
+            cmd.StartInfo.Arguments = cmdText;
 
             cmd.ErrorDataReceived += (object sender, DataReceivedEventArgs args) => Debug.Write("error received: " + args.Data);
             cmd.OutputDataReceived += (object sender, DataReceivedEventArgs args) => Debug.WriteLine("received output: {0}", args.Data);
@@ -75,8 +76,7 @@ namespace CSharpTests.ParserTests.FilterTests
             cmd.BeginOutputReadLine();
             cmd.BeginErrorReadLine();
 
-            cmd.StandardInput.WriteLine(cmdText);
-            cmd.StandardInput.WriteLine("exit");
+            //cmd.StandardInput.WriteLine(cmdText);
 
             cmd.WaitForExit();
             Assert.IsTrue(cmd.ExitCode == 0);
