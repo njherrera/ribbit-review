@@ -26,6 +26,8 @@ namespace GUI.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
+        // TODO: (2) add filter settings/choose filter element to UI
+        // TODO: (4) add game settings element to UI
         private UserPaths userPaths;
 
         [ObservableProperty]
@@ -45,6 +47,7 @@ namespace GUI.ViewModels
         private async void ApplyFilter()
         {
             /* currently applies filter to ONE replay file
+             * TODO: (3) implement application to multiple games
              */
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;

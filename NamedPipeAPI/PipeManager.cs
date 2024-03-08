@@ -28,6 +28,7 @@ namespace NamedPipeAPI
 
         public static void sendRequest(string filePath)
         {
+            // getting System.ObjectDisposedException (cannot access a closed pipe) after trying to apply filter to a second replay
             filePath = filePath.Trim();
             Debug.WriteLine(filePath);
             try

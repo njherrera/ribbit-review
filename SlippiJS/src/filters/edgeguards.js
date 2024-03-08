@@ -1,3 +1,10 @@
+/*
+
+UNUSED EARLY CODE
+
+This edgeguards class is from an earlier version of the project, and is now unused (parsing is done in C# instead)
+It was used as the basis for CSharpParser.Filters.Edgeguards, but now mostly exists just to have a JS version of the logic in case I need it
+
 'use strict'
 Object.defineProperty(exports, '__esModule', { value: true })
 var slippi_js_1 = require('@slippi/slippi-js')
@@ -148,3 +155,4 @@ fs.writeFile(
 // const frames_ = game.getFrames();
 // console.log(frames_[0].players); // Print frame when timer starts counting down
 //console.log(stats.conversions);
+*/

@@ -8,6 +8,9 @@
 # test JSONs
 testJSONs/
 
+# test .slp files
+.slp*files/
+
 # dev variables
 CSharpTests/userVars.cs
 GUI/UserPaths.xml

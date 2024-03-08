@@ -51,6 +51,7 @@ function createJsonPipe(filePath) {
         c.on('end', () => {
             console.log("C# client has disconnected from json pipe")
         });
+        // for multiple replays, gather JSON files into list before sending them through the pipe?
         let data = JSON.stringify(getGameConversions(filePath));
         c.write(data + "\n");
         c.pipe(c);

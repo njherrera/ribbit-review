@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpParser.Filters;
 using CSharpParser.JSON_Objects;
+using CSharpParser.SlpJSObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

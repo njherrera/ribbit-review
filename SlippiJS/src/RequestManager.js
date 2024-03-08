@@ -10,21 +10,27 @@ const { readFileSync } = require("fs");
 function getGameConversions(location) {
     var buffer = readFileSync(location); // reading file location into a buffer, THEN making a SlippiGame w/ the buffer is a workaround for JS not having same file access perms that C# does
     const game = new SlippiGame(buffer);
-    const stats = game.getStats();
     const settings = game.getSettings();
+    if (settings.isTeams == true) {
+        console.log("doubles game passed to getGameConversions");
+        // HACK: this currently causess an error if passed back through pipe B, but when implementing multiple games i can check before sending back through pipe B
+        return "doubles game";
+    } else {
+        const stats = game.getStats();
 
-    var gameConversions = {
-        gameLocation: location,
-        gameSettings: settings,
-        conversionList: []
-    };
+        var gameConversions = {
+            gameLocation: location,
+            gameSettings: settings,
+            conversionList: []
+        };
 
-    var conversions =
-        stats === null || stats === void 0 ? void 0 : stats.conversions;
-    conversions.forEach(function (conversion) {
-        gameConversions.conversionList.push(addConversion(conversion, game))
-    })
-    return gameConversions;
+        var conversions =
+            stats === null || stats === void 0 ? void 0 : stats.conversions;
+        conversions.forEach(function (conversion) {
+            gameConversions.conversionList.push(addConversion(conversion, game))
+        })
+        return gameConversions;
+    }
 }
 
 /**
@@ -37,13 +43,17 @@ function addConversion(conversion, game) {
     const startFrameNum = conversion.startFrame;
     const endFrameNum = conversion.endFrame;
 
-    const playerIndex = conversion.playerIndex;
-    const hitByIndex = conversion.lastHitBy;
+    const playerBeingHit = conversion.playerIndex;
+    const playerHitting = conversion.lastHitBy;
 
     const frames = game.getFrames();
 
     var conversionFile = {
+        playerBeingHit: playerBeingHit,
+        playerHitting: playerHitting,
         didKill: conversion.didKill,
+        startPercent: conversion.startPercent,
+        endPercent: conversion.endPercent,
         moves: conversion.moves,
         openingType: conversion.openingType,
         beingHitFrames: [],
@@ -55,8 +65,8 @@ function addConversion(conversion, game) {
         currentFrame <= endFrameNum;
         currentFrame++
     ) {
-        var beingHitFrame = frames[currentFrame].players[playerIndex].post;
-        var hittingFrame = frames[currentFrame].players[hitByIndex].post;
+        var beingHitFrame = frames[currentFrame].players[playerBeingHit].post;
+        var hittingFrame = frames[currentFrame].players[playerHitting].post;
         conversionFile.beingHitFrames.push(beingHitFrame);
         conversionFile.hittingFrames.push(hittingFrame);
     }
