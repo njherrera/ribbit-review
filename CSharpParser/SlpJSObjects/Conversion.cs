@@ -14,10 +14,12 @@ namespace CSharpParser.SlpJSObjects
          * at the moment this CANNOT handle doubles conversions, since slippi stats itself isn't functional for doubles replays
         */
         public int playerBeingHit { get; set; }
-        public int playerHitting { get; set; }
+        public string beingHitConnectCode { get; set; }
+        public string playerHitting { get; set; }
+        public string hittingConnectCode { get; set; }
         public bool didKill { get; set; }
         public float startPercent { get; set; }
-        public float endPercent { get; set; }
+        public float? endPercent { get; set; }
         public List<Move> moves { get; set; }
         public string openingType { get; set; }
         public List<PostFrame> beingHitFrames { get; set; }

@@ -27,7 +27,7 @@ function getGameConversions(location) {
         var conversions =
             stats === null || stats === void 0 ? void 0 : stats.conversions;
         conversions.forEach(function (conversion) {
-            gameConversions.conversionList.push(addConversion(conversion, game))
+            gameConversions.conversionList.push(addConversion(conversion, game, settings))
         })
         return gameConversions;
     }
@@ -37,20 +37,26 @@ function getGameConversions(location) {
  * 
  * @param {ConversionType} conversion conversion from a given replay file that's being added to JSON sent through pipe B
  * @param {SlippiGame} game game the conversion belongs to
+ * @param {GameStartType} settings settings from game the conversion belongs to
  * adds a given conversion in a replay to JSON file of all conversions in a replay
  */
-function addConversion(conversion, game) {
+function addConversion(conversion, game, settings) {
     const startFrameNum = conversion.startFrame;
     const endFrameNum = conversion.endFrame;
 
     const playerBeingHit = conversion.playerIndex;
+    const pbhConnectCode = settings.players[playerBeingHit].connectCode;
     const playerHitting = conversion.lastHitBy;
+    const phConnectCode = settings.players[playerHitting].connectCode;
 
     const frames = game.getFrames();
 
+    // here we're setting up a JSON object that will eventually become an instance of the CSharpParser.SlpJSObjects.Conversion type
     var conversionFile = {
         playerBeingHit: playerBeingHit,
+        beingHitConnectCode: pbhConnectCode,
         playerHitting: playerHitting,
+        hittingConnectCode: phConnectCode,
         didKill: conversion.didKill,
         startPercent: conversion.startPercent,
         endPercent: conversion.endPercent,

@@ -3,14 +3,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:GUI.ViewModels"
+			 xmlns:views="using:GUI.Views"
+			 xmlns:dataTemplates="using:GUI.DataTemplates"
 			 x:DataType="vm:MainViewModel"
 			 x:CompileBindings="True"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700" 
              x:Class="GUI.Views.MainView">
-	<Design.DataContext>
-		<vm:MainViewModel />
-	</Design.DataContext>
 
+	<UserControl.DataTemplates>
+		
+	</UserControl.DataTemplates>
 	<StackPanel>
 		<!-- Title bar-->
 		<Grid Background="Gray" Height= "25">
@@ -25,10 +27,10 @@
 				<TextBox Width="200" Margin="0 5"></TextBox>
 			</StackPanel>
 		</Grid>
-		<!--Filter selection + search options-->
-		<Grid Background="GhostWhite" Height="450" ColumnDefinitions="500, 500">
-			<StackPanel>
-
+		<!--Filter settings + game settings-->
+		<Grid Background="DarkGray" Height="450" ColumnDefinitions="500, 500">
+			<StackPanel Grid.Column="0">
+				<ContentControl Content="{Binding ActiveFilterVM}"/>
 			</StackPanel>
 		</Grid>
 		<!--Filter application buttons-->

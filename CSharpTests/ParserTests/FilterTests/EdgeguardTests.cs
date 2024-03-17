@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSharpParser.Filters;
+using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
 using CSharpParser.SlpJSObjects;
 using Newtonsoft.Json;
@@ -17,6 +18,8 @@ namespace CSharpTests.ParserTests.FilterTests
     {
         JObject o1 = JObject.Parse(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardTest.txt"));
         GameConversions testConversions = GameConversions.jsonToConversions(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardTest.txt"));
+        Edgeguards Edgeguards = new Edgeguards();
+
         [TestMethod]
         public void testGetLedgePositions()
         {
@@ -44,8 +47,9 @@ namespace CSharpTests.ParserTests.FilterTests
         [TestMethod]
         public void testAddToQueue()
         {
+            EdgeguardSettings eSettings = new EdgeguardSettings();
             PlaybackQueue pbackQueue = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueue);
+            Edgeguards.addToQueue(testConversions, pbackQueue, eSettings);
             Assert.AreEqual(pbackQueue.queue.Count(), 12);
         }
 
@@ -54,7 +58,8 @@ namespace CSharpTests.ParserTests.FilterTests
         {
             string cmdText;
             PlaybackQueue pbackQueue = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueue);
+            EdgeguardSettings eSettings = new EdgeguardSettings();
+            Edgeguards.addToQueue(testConversions, pbackQueue, eSettings);
             string edgeguardJson = JsonConvert.SerializeObject(pbackQueue, Formatting.Indented);
             string jsonPath = @"Q:\programming\ribbit-review\testJSONs\EdgeguardsJSON.json";
             File.WriteAllText(jsonPath, edgeguardJson);

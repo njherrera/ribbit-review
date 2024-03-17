@@ -20,7 +20,10 @@ using GUI.Settings;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CSharpParser.Filters.Settings;
 using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GUI.ViewModels
 {
@@ -31,13 +34,18 @@ namespace GUI.ViewModels
         private UserPaths userPaths;
 
         [ObservableProperty]
-        private GameSettings selectedSettings;
+        private FilterViewModel _activeFilterVM;
+
+        public List<FilterViewModel> AvailableFilterVMs { get; } = new List<FilterViewModel>()
+        {
+            new EdgeguardViewModel()
+        };
 
         public MainViewModel() 
         { 
             ApplyFilterCommand = new RelayCommand(ApplyFilter);
             ViewJsonCommand = new RelayCommand(ViewJson);
-            selectedSettings = new GameSettings();
+            _activeFilterVM = AvailableFilterVMs[0];
             checkForPaths();
         }
 
@@ -59,7 +67,7 @@ namespace GUI.ViewModels
             GameConversions fileConversions = GameConversions.jsonToConversions(returnJson);
             PlaybackQueue returnQueue = new PlaybackQueue();
 
-            Edgeguards.addToQueue(fileConversions, returnQueue);
+            //Edgeguards.addToQueue(fileConversions, returnQueue);
             string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
 
             await SaveJsonFile(filterJson);

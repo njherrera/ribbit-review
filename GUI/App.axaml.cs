@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using NamedPipeAPI;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CSharpParser.Filters.Settings;
 
 namespace GUI
 {
@@ -22,7 +23,6 @@ namespace GUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-
                 var services = new ServiceCollection();
                 FilesService filesService = new();
                 services.AddSingleton<IFilesService>(filesService);

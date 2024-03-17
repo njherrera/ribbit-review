@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CSharpParser.Filters.Settings
+﻿namespace CSharpParser.Filters.Settings
 {
     public class EdgeguardSettingsBuilder : FilterSettingsBuilder
     {
         private EdgeguardSettings _settings = new EdgeguardSettings();
-
-        public override FilterSettings build()
+        public override FilterSettings Settings
         {
-            return _settings;
+            get
+            {
+                return this._settings;
+            }
+        }
+
+        public EdgeguardSettings Build()
+        {
+            return this._settings;
         }
     }
 }

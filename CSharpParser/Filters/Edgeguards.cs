@@ -3,30 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
 using CSharpParser.SlpJSObjects;
 
 namespace CSharpParser.Filters
 {
-    public class Edgeguards : IFilter
+    public class Edgeguards : Filter
     {
 
-        public static void addToQueue(GameConversions gameConversions, PlaybackQueue pbackQueue)
-        {
-            foreach (Conversion conversion in gameConversions.ConversionList)
-            {
-                if (conversion.beingHitFrames.Count() > 0 && isInstance(conversion, gameConversions.GameSettings) == true)
-                {
-                    int? startFrame = conversion.beingHitFrames.First().frame;
-                    int? endFrame = conversion.beingHitFrames.Last().frame;
-                    QueueItem qi = new QueueItem(gameConversions.GameLocation, startFrame, endFrame);
-                    pbackQueue.queue.Add(qi);
-                }
-                else continue;
-            }
-        }
-
-        public static bool isInstance(Conversion conversion, GameSettings settings)
+        public override bool isInstance(Conversion conversion, GameSettings settings)
         {
             bool isEdgeguardPosition = false;
             double ledgePosition = getLedgePositions(settings.StageId);
