@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
+using CSharpParser.JSON_Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,8 @@ namespace GUI.ViewModels
             ConversionDidKillCommand = new RelayCommand(ConversionDidKill);
             ConversionDidNotKillCommand = new RelayCommand(ConversionDidNotKill);
         }
+
+        public abstract void applyFilter(GameConversions gameConversions, PlaybackQueue playbackQueue);
         public override string ToString()
         {
             return this.FilterType.ToString();
@@ -85,7 +88,7 @@ namespace GUI.ViewModels
         }
 
         partial void OnConversionKilledChanged(bool? value)
-        {
+         {
             Builder.addConversionKilled(value);
         }
     }

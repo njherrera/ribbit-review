@@ -29,12 +29,20 @@ namespace GUI.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        // TODO: (2) add filter settings/choose filter element to UI
+        // TODO: (2) add choose filter element to UI
         // TODO: (4) add game settings element to UI
         private UserPaths userPaths;
 
         [ObservableProperty]
         private FilterViewModel _activeFilterVM;
+
+        [ObservableProperty]
+        private string _connectCode;
+
+        partial void OnConnectCodeChanged(string value)
+        {
+            ActiveFilterVM.UserID = value;
+        }
 
         public List<FilterViewModel> AvailableFilterVMs { get; } = new List<FilterViewModel>()
         {
@@ -67,7 +75,7 @@ namespace GUI.ViewModels
             GameConversions fileConversions = GameConversions.jsonToConversions(returnJson);
             PlaybackQueue returnQueue = new PlaybackQueue();
 
-            //Edgeguards.addToQueue(fileConversions, returnQueue);
+            ActiveFilterVM.applyFilter(fileConversions, returnQueue);
             string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
 
             await SaveJsonFile(filterJson);

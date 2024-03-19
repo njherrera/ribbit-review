@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using CSharpParser.JSON_Objects;
 
 namespace GUI.ViewModels
 {
@@ -32,6 +33,12 @@ namespace GUI.ViewModels
             }
         }
 
-        private Edgeguards _filter = new Edgeguards(); 
+        private Edgeguards _filter = new Edgeguards();
+
+        public override void applyFilter(GameConversions gameConversions, PlaybackQueue playbackQueue)
+        {
+            EdgeguardSettings edgeguardSettings = _builder.Build();
+            this.Filter.addToQueue(gameConversions, playbackQueue, edgeguardSettings);
+        }
     }
 }
