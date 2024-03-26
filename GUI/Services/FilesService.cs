@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using GUI.Services;
@@ -14,16 +15,16 @@ namespace GUI.Services
             _target = target;
         }
 
-        public async Task<IStorageFile?> OpenSlpFileAsync()
+        public async Task<IReadOnlyList<IStorageFile>?> OpenSlpFilesAsync()
         {
             var files = await _target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
             {
                 Title = "Choose Slippi replay file",
                 FileTypeFilter = new[] { SlpFile }, // only shows .slp files in the choose file window
-                AllowMultiple = false
+                AllowMultiple = true
             });
 
-            return files.Count >= 1 ? files[0] : null;
+            return files.Count >= 1 ? files : null;
         }
 
         public async Task<IStorageFile?> OpenJsonFileAsync()

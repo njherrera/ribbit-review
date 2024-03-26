@@ -16,7 +16,9 @@ namespace CSharpParser.JSON_Objects
 
         public QueueItem(string filePath, int? startingFrame, int? endingFrame)
         {
-            this.path = filePath;
+            string encodedPath = filePath;
+            string decodedPath = Uri.UnescapeDataString(encodedPath);
+            this.path = decodedPath.Replace(@"file:///", "");  // cuts out "file:///" from the file's path
             this.startFrame = startingFrame;
             this.endFrame = endingFrame;
             this.gameStartAt = "";

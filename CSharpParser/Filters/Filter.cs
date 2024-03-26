@@ -12,6 +12,7 @@ namespace CSharpParser.Filters
     public abstract class Filter
     {
         public FilterType FilterType { get; init; }
+
         public void addToQueue(GameConversions gameConversions, PlaybackQueue pbackQueue, FilterSettings fSettings)
         {
             foreach (Conversion conversion in gameConversions.ConversionList)
@@ -26,6 +27,7 @@ namespace CSharpParser.Filters
                 else continue;
             }
         }
+
         public abstract bool isInstance(Conversion conversion, GameSettings settings);
 
         public override string ToString()

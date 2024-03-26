@@ -5,13 +5,14 @@
 			 xmlns:vm="using:GUI.ViewModels"
 			 xmlns:views="using:GUI.Views"
 			 xmlns:dataTemplates="using:GUI.DataTemplates"
+			 xmlns:models="using:GUI.Models"
+			 xmlns:helpers="using:GUI.Helpers"
 			 x:DataType="vm:MainViewModel"
 			 x:CompileBindings="True"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700" 
              x:Class="GUI.Views.MainView">
 
 	<UserControl.DataTemplates>
-		
 	</UserControl.DataTemplates>
 	<StackPanel>
 		<!-- Title bar-->
@@ -27,11 +28,70 @@
 				<TextBox Width="200" Margin="0 5" Text="{Binding ConnectCode}"/>
 			</StackPanel>
 		</Grid>
-		<!--Filter settings + game settings-->
+		<!--Filter settings-->
 		<Grid Background="DarkGray" Height="450" ColumnDefinitions="500, 500">
 			<StackPanel Grid.Column="0">
 				<ContentControl Content="{Binding ActiveFilterVM}"/>
 			</StackPanel>
+			<!--User character-->
+			<DockPanel Width="500" Height="450" Grid.Column="1">
+				<StackPanel Orientation="Horizontal" 
+							Width="500" DockPanel.Dock="Top" 
+							Margin="5,10,5,10" Spacing="10">
+					<TextBlock TextWrapping="Wrap"
+							   Margin="15,20,0,20"
+							   FontSize="16"
+						       Width="300">Select user character:</TextBlock>
+					<ComboBox ItemsSource="{Binding AvailableChars}"
+							  SelectedIndex="0"
+							  SelectedItem="{Binding SelectedUserChar}"
+							  Margin="0,14">
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="models:CharacterType">
+								<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+				<!--Opponent character-->
+				<StackPanel Orientation="Horizontal"
+							Width="500" DockPanel.Dock="Top"
+							Margin="5,10,5,10" Spacing="10">
+					<TextBlock TextWrapping="Wrap"
+							   Margin="15,20,0,20"
+							   FontSize="16"
+						       Width="300">Select opponent's character:</TextBlock>
+					<ComboBox ItemsSource="{Binding AvailableChars}"
+							  SelectedIndex="0"
+							  SelectedItem="{Binding SelectedOpponentChar}"
+							  Margin="0,14">
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="models:CharacterType">
+								<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+				<!--Selected stage-->
+				<StackPanel Orientation="Horizontal"
+							Width="500" DockPanel.Dock="Top"
+							Margin="5,10,5,10" Spacing="10">
+					<TextBlock TextWrapping="Wrap"
+							   Margin="15,20,0,20"
+							   FontSize="16"
+						       Width="300">Select stage:</TextBlock>
+					<ComboBox ItemsSource="{Binding AvailableStages}"
+							  SelectedIndex="0"
+							  SelectedItem="{Binding SelectedStage}"
+							  Margin="0,14">
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="models:LegalStageType">
+								<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+			</DockPanel>
 		</Grid>
 		<!--Filter application buttons-->
 		<Grid Background="LightGray" Height="125" ColumnDefinitions="500, 500">

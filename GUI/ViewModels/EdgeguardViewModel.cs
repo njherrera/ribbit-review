@@ -35,10 +35,21 @@ namespace GUI.ViewModels
 
         private Edgeguards _filter = new Edgeguards();
 
-        public override void applyFilter(GameConversions gameConversions, PlaybackQueue playbackQueue)
+        public override void applyFilter(List<GameConversions> allGameConversions, PlaybackQueue playbackQueue)
         {
+            
             EdgeguardSettings edgeguardSettings = _builder.Build();
-            this.Filter.addToQueue(gameConversions, playbackQueue, edgeguardSettings);
+            foreach (GameConversions conversions in allGameConversions)
+            {
+                // TODO: call checkGameSettings before calling addToQueue
+                this.Filter.addToQueue(conversions, playbackQueue, edgeguardSettings);
+            }
+        }
+
+        public override bool checkGameSettings(GameConversions gameConversions)
+        {
+            // TODO: implement checkGameSettings
+            throw new NotImplementedException();
         }
     }
 }

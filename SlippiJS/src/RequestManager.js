@@ -2,10 +2,25 @@ const { SlippiGame } = require("@slippi/slippi-js");
 const { readFileSync } = require("fs");
 
 /**
- * @param {string} location file location of replay that c# is requesting in JSON form
- * @returns {local var} gameConversions JSON file created with JSON.stringify that holds information matching request params
- * returns JSON file of each conversion in the slp file at location param (one big JSON file of multiple replays in future?)
- * in future, call a helper method according to what the request calls for? (depends on how much parsing we can do on the c# side and what a conversion json gives us)
+ * 
+ * @param {string} filePaths
+ * @returns {allConversions} array of gameConversions objects, one for each requested location
+ */
+function getAllConversions(filePaths) {
+    var allConversions = []
+
+    let pathsArray = filePaths.split(",");
+    for (let i = 0; i < pathsArray.length; i++) {
+        let pathURL = new URL(pathsArray[i]);
+        var pathConversions = getGameConversions(pathURL);
+        allConversions.push(pathConversions);
+    }
+    return allConversions;
+}
+
+/**
+ * @param {string} location file URL of replay that c# is requesting 
+ * @returns {gameConversions} JSON object that holds all the conversions/game info for the replay at the location
  */
 function getGameConversions(location) {
     var buffer = readFileSync(location); // reading file location into a buffer, THEN making a SlippiGame w/ the buffer is a workaround for JS not having same file access perms that C# does
@@ -13,8 +28,6 @@ function getGameConversions(location) {
     const settings = game.getSettings();
     if (settings.isTeams == true) {
         console.log("doubles game passed to getGameConversions");
-        // HACK: this currently causess an error if passed back through pipe B, but when implementing multiple games i can check before sending back through pipe B
-        return "doubles game";
     } else {
         const stats = game.getStats();
 
@@ -81,5 +94,5 @@ function addConversion(conversion, game, settings) {
 }
 
 module.exports = {
-    getGameConversions,
+    getAllConversions,
 }

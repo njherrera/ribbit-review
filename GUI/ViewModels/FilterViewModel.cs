@@ -44,7 +44,9 @@ namespace GUI.ViewModels
             ConversionDidNotKillCommand = new RelayCommand(ConversionDidNotKill);
         }
 
-        public abstract void applyFilter(GameConversions gameConversions, PlaybackQueue playbackQueue);
+        public abstract void applyFilter(List<GameConversions> allGameConversions, PlaybackQueue playbackQueue);
+
+        public abstract bool checkGameSettings(GameConversions gameConversions);
         public override string ToString()
         {
             return this.FilterType.ToString();

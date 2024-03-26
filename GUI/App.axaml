@@ -5,6 +5,7 @@
 			 xmlns:dataTemplates="using:GUI.DataTemplates"
 			 xmlns:viewModels="using:GUI.ViewModels"
 			 xmlns:views="using:GUI.Views"
+			 xmlns:helpers="using:GUI.Helpers"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -14,6 +15,10 @@
 			<views:EdgeguardView/>
 		</DataTemplate>
     </Application.DataTemplates>
+
+	<Application.Resources>
+		<helpers:EnumToStringConverter x:Key="EnumToStringConverter" />
+	</Application.Resources>
   
     <Application.Styles>
         <FluentTheme />

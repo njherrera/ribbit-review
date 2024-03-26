@@ -24,12 +24,12 @@ using CSharpParser.Filters.Settings;
 using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
+using GUI.Models;
 
 namespace GUI.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        // TODO: (2) add choose filter element to UI
         // TODO: (4) add game settings element to UI
         private UserPaths userPaths;
 
@@ -38,6 +38,38 @@ namespace GUI.ViewModels
 
         [ObservableProperty]
         private string _connectCode;
+
+        [ObservableProperty]
+        private CharacterType _selectedUserChar;
+
+        [ObservableProperty]
+        private CharacterType _selectedOpponentChar;
+
+        [ObservableProperty]
+        private LegalStageType _selectedStage;
+
+        public CharacterType[] AvailableChars { get; } = Enum.GetValues<CharacterType>();
+
+        public LegalStageType[] AvailableStages { get; } = Enum.GetValues<LegalStageType>();
+
+        partial void OnSelectedUserCharChanged(CharacterType value)
+        {
+            // TODO: pass int enum value to ActiveFilterVM
+            // TODO: think about whether we should check GameSettings in main VM or in active filter VM
+            throw new NotImplementedException();
+        }
+
+        partial void OnSelectedOpponentCharChanged(CharacterType value)
+        {
+            // TODO: pass int enum value to ActiveFilterVM
+            throw new NotImplementedException();
+        }
+
+        partial void OnSelectedStageChanged(LegalStageType value)
+        {
+            // TODO: pass int enum value to ActiveFilterVM
+            throw new NotImplementedException();
+        }
 
         partial void OnConnectCodeChanged(string value)
         {
@@ -62,20 +94,18 @@ namespace GUI.ViewModels
 
         private async void ApplyFilter()
         {
-            /* currently applies filter to ONE replay file
-             * TODO: (3) implement application to multiple games
-             */
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
-            var result = await SelectSlpFile(cancelToken);
+            var result = await SelectSlpFiles(cancelToken);
 
-            PipeManager.sendRequest(result);
+            string requestedPaths = String.Join(",", result);
+            PipeManager.sendRequest(requestedPaths);
             string returnJson = PipeManager.connectJsonPipe();
 
-            GameConversions fileConversions = GameConversions.jsonToConversions(returnJson);
+            List<GameConversions> requestedConversions = JsonConvert.DeserializeObject<List<GameConversions>>(returnJson);
             PlaybackQueue returnQueue = new PlaybackQueue();
 
-            ActiveFilterVM.applyFilter(fileConversions, returnQueue);
+            ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
             string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
 
             await SaveJsonFile(filterJson);
@@ -139,9 +169,9 @@ namespace GUI.ViewModels
         }
         
         // helper method used for selecting .slp file(s) to apply filter to
-        private async Task<string> SelectSlpFile(CancellationToken token)
+        private async Task<List<string>> SelectSlpFiles(CancellationToken token)
         {
-            string fullPath = "";
+            List<string> fullPaths = new List<string>();
             ErrorMessages?.Clear();
             try
             {
@@ -151,17 +181,19 @@ namespace GUI.ViewModels
                     throw new NullReferenceException("Missing File Service instance.");
                 }
 
-                var file = await filesService.OpenSlpFileAsync();
-                if (file is null) return string.Empty;
-
-                var result = file.Path.ToString();
-                fullPath = result;
+                var files = await filesService.OpenSlpFilesAsync();
+                var result = files.ToList();
+                foreach (Avalonia.Platform.Storage.IStorageFile file in result)
+                {
+                    string filePath = file.Path.ToString();
+                    fullPaths.Add(filePath);
+                }
             }
             catch (Exception e)
             {
                 ErrorMessages?.Add(e.Message);
             }
-            return fullPath;
+            return fullPaths;
         }
 
         // helper method for selecting .json file to load into playback dolphin

@@ -26,18 +26,17 @@ namespace NamedPipeAPI
             */
         }
 
-        public static void sendRequest(string filePath)
+        public static void sendRequest(string filePaths)
         {
             // getting System.ObjectDisposedException (cannot access a closed pipe) after trying to apply filter to a second replay
-            filePath = filePath.Trim();
-            Debug.WriteLine(filePath);
+            Debug.WriteLine(filePaths.ToString());
             try
             {
                 using (StreamWriter sw = new StreamWriter(_pipeServerStream))
                 {
-                    sw.AutoFlush = true;
-                    sw.WriteLine(filePath);
-                    // in future, send message once all selected files have been requested
+                    sw.AutoFlush = false;
+                    sw.WriteLine(filePaths);
+                    sw.Flush();
                     Debug.WriteLine("request to JS through pipe A has been written");
                 }
             }

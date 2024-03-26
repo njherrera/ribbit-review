@@ -1,5 +1,5 @@
 const net = require("net");
-const { getGameConversions } = require("./RequestManager");
+const { getAllConversions } = require("./RequestManager");
 const { existsSync } = require("fs");
 
 let PIPE_A_NAME = "request_pipe";
@@ -18,14 +18,8 @@ function connectRequestPipe() {
 
     requestClient.on('data', (data) => {
         console.log("data received through pipe A: " + data.toString());
-        var requestedPath = data.toString();
-        pathURL = new URL(requestedPath);
-        if (existsSync(pathURL)) {
-            console.log("The requested file exists");
-            createJsonPipe(pathURL);
-        } else {
-            console.log("JS does not see the requested file, existsSync check failed");
-        }
+        var requestedPaths = data.toString();
+        createJsonPipe(requestedPaths);
     });
 
     requestClient.on('error', (err) => {
@@ -45,14 +39,14 @@ function connectRequestPipe() {
  * passes a JSON file matching request from pipe A to c#
  */
 
-function createJsonPipe(filePath) {
+function createJsonPipe(filePaths) {
     const jsonServer = net.createServer((c) => {
         console.log("C# client has connected to json pipe");
         c.on('end', () => {
             console.log("C# client has disconnected from json pipe")
         });
-        // for multiple replays, gather JSON files into list before sending them through the pipe?
-        let data = JSON.stringify(getGameConversions(filePath));
+        // sending JSON of GameConversions objects back through the pipe
+        let data = JSON.stringify(getAllConversions(filePaths));
         c.write(data + "\n");
         c.pipe(c);
     });
