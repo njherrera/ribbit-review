@@ -11,7 +11,7 @@
             }
         }
 
-        public EdgeguardSettings Build()
+        public override FilterSettings Build()
         {
             return this._settings;
         }

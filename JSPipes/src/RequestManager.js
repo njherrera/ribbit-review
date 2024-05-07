@@ -3,11 +3,11 @@ const { readFileSync } = require("fs");
 
 /**
  * 
- * @param {string} filePaths
+ * @param {string} filePaths comma-separated list of requested file paths 
  * @returns {allConversions} array of gameConversions objects, one for each requested location
  */
 function getAllConversions(filePaths) {
-    var allConversions = []
+    let allConversions = []
 
     let pathsArray = filePaths.split(",");
     for (let i = 0; i < pathsArray.length; i++) {
@@ -23,7 +23,7 @@ function getAllConversions(filePaths) {
  * @returns {gameConversions} JSON object that holds all the conversions/game info for the replay at the location
  */
 function getGameConversions(location) {
-    var buffer = readFileSync(location); // reading file location into a buffer, THEN making a SlippiGame w/ the buffer is a workaround for JS not having same file access perms that C# does
+    let buffer = readFileSync(location); // reading file location into a buffer, THEN making a SlippiGame w/ the buffer is a workaround for JS not having same file access perms that C# does
     const game = new SlippiGame(buffer);
     const settings = game.getSettings();
     if (settings.isTeams == true) {
@@ -31,13 +31,13 @@ function getGameConversions(location) {
     } else {
         const stats = game.getStats();
 
-        var gameConversions = {
+        let gameConversions = {
             gameLocation: location,
             gameSettings: settings,
             conversionList: []
         };
 
-        var conversions =
+        let conversions =
             stats === null || stats === void 0 ? void 0 : stats.conversions;
         conversions.forEach(function (conversion) {
             gameConversions.conversionList.push(addConversion(conversion, game, settings))
@@ -79,13 +79,12 @@ function addConversion(conversion, game, settings) {
         hittingFrames: []
     };
 
-    for (
-        var currentFrame = startFrameNum;
+    for (var currentFrame = startFrameNum;
         currentFrame <= endFrameNum;
-        currentFrame++
-    ) {
-        var beingHitFrame = frames[currentFrame].players[playerBeingHit].post;
-        var hittingFrame = frames[currentFrame].players[playerHitting].post;
+        currentFrame++)
+    {
+        let beingHitFrame = frames[currentFrame].players[playerBeingHit].post;
+        let hittingFrame = frames[currentFrame].players[playerHitting].post;
         conversionFile.beingHitFrames.push(beingHitFrame);
         conversionFile.hittingFrames.push(hittingFrame);
     }

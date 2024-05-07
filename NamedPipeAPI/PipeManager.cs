@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipes;
 using System.Diagnostics;
+using System.Text;
 
 namespace NamedPipeAPI
 {
@@ -8,41 +9,42 @@ namespace NamedPipeAPI
         private static string PIPE_A_NAME = "request_pipe";
         private static string PIPE_B_NAME = "json_pipe";
         private static NamedPipeServerStream _pipeServerStream;
+        private static NamedPipeClientStream _pipeClientStream;
 
+        // TODO: keep pipes open until program is closed
         /* pipe A (c# > JS)
          * createRequestPipe creates a named pipe to send requests for .slp files through
-        */ 
-        public static void createRequestPipe()
+        */
+        public static void  openRequestPipe()
         {
             _pipeServerStream = new NamedPipeServerStream(PIPE_A_NAME, PipeDirection.Out);
-
-            Debug.WriteLine("pipe A waiting for connection");
+            Debug.WriteLine("C# server: waiting for connection");
             _pipeServerStream.WaitForConnection();
 
-            Debug.WriteLine("C# has connected to pipe A");
-            /* perform closing and disposing upon exit of program/file selection tool - pipes are kept open while program is running (will need to verify that they close on exit)
-            pipeServer.Close();
-            pipeServer.Dispose();
-            */
+            Debug.WriteLine("C# server: client has connected");
         }
 
+        // call this upon exit of program
+        public static void closeRequestPipe()
+        {
+            _pipeServerStream.Close();
+        }
         public static void sendRequest(string filePaths)
         {
-            // getting System.ObjectDisposedException (cannot access a closed pipe) after trying to apply filter to a second replay
             Debug.WriteLine(filePaths.ToString());
             try
             {
                 using (StreamWriter sw = new StreamWriter(_pipeServerStream))
                 {
-                    sw.AutoFlush = false;
+                    sw.AutoFlush = true;
                     sw.WriteLine(filePaths);
-                    sw.Flush();
-                    Debug.WriteLine("request to JS through pipe A has been written");
+                    Debug.WriteLine("request has been sent through pipe A");
+                    sw.Close();
                 }
-            }
+             }            
             catch (EndOfStreamException)
             {
-                Debug.WriteLine("TS client disconnected, closing pipe A now");
+                Debug.WriteLine("TS client disconnected, closing pipe A server");
             }
             catch (IOException e) // in case pipe is broken 
             {
@@ -51,41 +53,49 @@ namespace NamedPipeAPI
         }
 
         /* pipe B (JS > c#), receives a JSON file matching request from JS
-         * in future, this will either stay open and read multiple JSONs, or read one big JSON that contains all of the info we need
         */
-        public static string connectJsonPipe(){
-            string message = "";
-            using (var pipeClient = new NamedPipeClientStream(".", PIPE_B_NAME, PipeDirection.In))
-            {
 
-                Debug.WriteLine("C# attempting to connect to pipe B");
-                pipeClient.Connect();
+        public static string readJson()
+        {
+            _pipeClientStream = new NamedPipeClientStream(".", PIPE_B_NAME, PipeDirection.In);
 
-                Debug.WriteLine("C# has connected to pipe B");
+            Debug.WriteLine("C# client: attempting connection");
+            _pipeClientStream.Connect();
+            Debug.WriteLine("C# client: connected, reading JSON now");
+
                 try
                 {
-                    using (StreamReader sr = new StreamReader(pipeClient))
+                    using (StreamReader sr = new StreamReader(_pipeClientStream))
                     {
-                        if (sr.Peek() > 0)
+                    if (sr.Peek() > 0)
+                    {
+                        Debug.WriteLine("C# client: sr.Peek > 0, reading data from pipe now");
+                        string message;
+                        while ((message = sr.ReadLine()) != null)
                         {
-                            message = sr.ReadLine();
-                            while (message != null)
-                            {
-                                return message;
-                            }
-                        } else return message;
+                            Debug.WriteLine("C# client: received message from server");
+                            sr.Close();
+                            return message;
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("C# client: sr.Peek < 0, nothing in pipe to read");
+                        return "";
+                    }
                     }
                 }
                 catch (EndOfStreamException)
                 {
-                    Debug.WriteLine("JS server disconnected, pipe B is closed");
+                    Debug.WriteLine("C# client: JS server disconnected, pipe B is closed");
                 }
                 catch (IOException e)
                 {
                     Debug.WriteLine("error in pipe B: ERROR: {0} ", e.Message);
                 }
-            }
-            return message;
+
+            // can return null if stream is read when there's nothing in it
+            return "";
         }
 
     }

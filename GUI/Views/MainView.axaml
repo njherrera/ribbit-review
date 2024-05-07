@@ -25,7 +25,7 @@
 		<Grid Background="BlanchedAlmond" Height="100" Width="1000">
 			<StackPanel Margin="0 15">
 				<TextBlock HorizontalAlignment="Center" Grid.Column="0">Enter your connect code (or in-game tag for locally recorded games): </TextBlock>
-				<TextBox Width="200" Margin="0 5" Text="{Binding ConnectCode}"/>
+				<TextBox Width="200" Margin="0 5" Text="{Binding ActiveFilterVM.UserID}"/>
 			</StackPanel>
 		</Grid>
 		<!--Filter settings-->

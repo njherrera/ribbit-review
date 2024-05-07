@@ -30,14 +30,10 @@ namespace GUI.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        // TODO: (4) add game settings element to UI
         private UserPaths userPaths;
 
         [ObservableProperty]
         private FilterViewModel _activeFilterVM;
-
-        [ObservableProperty]
-        private string _connectCode;
 
         [ObservableProperty]
         private CharacterType _selectedUserChar;
@@ -54,26 +50,17 @@ namespace GUI.ViewModels
 
         partial void OnSelectedUserCharChanged(CharacterType value)
         {
-            // TODO: pass int enum value to ActiveFilterVM
-            // TODO: think about whether we should check GameSettings in main VM or in active filter VM
-            throw new NotImplementedException();
+            ActiveFilterVM.userCharId = (int)value;
         }
 
         partial void OnSelectedOpponentCharChanged(CharacterType value)
         {
-            // TODO: pass int enum value to ActiveFilterVM
-            throw new NotImplementedException();
+            ActiveFilterVM.opponentCharId = (int)value;
         }
 
         partial void OnSelectedStageChanged(LegalStageType value)
         {
-            // TODO: pass int enum value to ActiveFilterVM
-            throw new NotImplementedException();
-        }
-
-        partial void OnConnectCodeChanged(string value)
-        {
-            ActiveFilterVM.UserID = value;
+            ActiveFilterVM.stageId = (int)value;
         }
 
         public List<FilterViewModel> AvailableFilterVMs { get; } = new List<FilterViewModel>()
@@ -98,9 +85,9 @@ namespace GUI.ViewModels
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectSlpFiles(cancelToken);
 
-            string requestedPaths = String.Join(",", result);
+            string requestedPaths = string.Join(",", result);
             PipeManager.sendRequest(requestedPaths);
-            string returnJson = PipeManager.connectJsonPipe();
+            string returnJson = PipeManager.readJson();
 
             List<GameConversions> requestedConversions = JsonConvert.DeserializeObject<List<GameConversions>>(returnJson);
             PlaybackQueue returnQueue = new PlaybackQueue();
@@ -108,6 +95,7 @@ namespace GUI.ViewModels
             ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
             string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
 
+            PipeManager.openRequestPipe();
             await SaveJsonFile(filterJson);
         }
 

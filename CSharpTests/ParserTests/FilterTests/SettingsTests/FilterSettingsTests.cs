@@ -30,7 +30,7 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
             EdgeguardSettingsBuilder sheikBuilder = new EdgeguardSettingsBuilder();
             sheikBuilder.addUserID("mmrp#834");
             sheikBuilder.addConvertingPlayer("user");
-            EdgeguardSettings sheikConverting = sheikBuilder.Build();
+            EdgeguardSettings sheikConverting = (EdgeguardSettings)sheikBuilder.Build();
             
             PlaybackQueue pbackQueueSheik = new PlaybackQueue();
             Edgeguards.addToQueue(testConversions, pbackQueueSheik, sheikConverting);
@@ -38,7 +38,7 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
             EdgeguardSettingsBuilder falcoBuilder = new EdgeguardSettingsBuilder();
             falcoBuilder.addUserID("mmrp#834");
             falcoBuilder.addConvertingPlayer("opponent");
-            EdgeguardSettings falcoConverting = falcoBuilder.Build();
+            EdgeguardSettings falcoConverting = (EdgeguardSettings)falcoBuilder.Build();
 
             PlaybackQueue pbackQueueFalco = new PlaybackQueue();
             Edgeguards.addToQueue(testConversions, pbackQueueFalco, falcoConverting);
@@ -54,7 +54,7 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
             sheikBuilder.addUserID("MMRP#834");
             sheikBuilder.addConvertingPlayer("user");
             sheikBuilder.addConversionKilled(true);
-            EdgeguardSettings sheikKilled = sheikBuilder.Build();
+            EdgeguardSettings sheikKilled = (EdgeguardSettings)sheikBuilder.Build();
 
             PlaybackQueue sheikQueue = new PlaybackQueue();
             Edgeguards.addToQueue(testConversions, sheikQueue, sheikKilled);
@@ -63,7 +63,7 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
             falcoBuilder.addUserID("mmrp#834");
             falcoBuilder.addConvertingPlayer("opponent");
             falcoBuilder.addConversionKilled(true);
-            EdgeguardSettings falcoConverting = falcoBuilder.Build();
+            EdgeguardSettings falcoConverting = (EdgeguardSettings)falcoBuilder.Build();
 
             PlaybackQueue pbackQueueFalco = new PlaybackQueue();
             Edgeguards.addToQueue(testConversions, pbackQueueFalco, falcoConverting);

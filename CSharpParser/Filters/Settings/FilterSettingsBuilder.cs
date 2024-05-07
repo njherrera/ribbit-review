@@ -57,5 +57,7 @@ namespace CSharpParser.Filters.Settings
             Settings.openingType = openingType;
             return this;
         }
+
+        public abstract FilterSettings Build();
     }
 }

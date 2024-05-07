@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
+using CSharpParser.SlpJSObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,21 +16,25 @@ namespace GUI.ViewModels
     public abstract partial class FilterViewModel : ViewModelBase
     {
         [ObservableProperty]
-        private string? userID;
+        private string? _userID;
         [ObservableProperty]
-        private string? convertingPlayer;
+        private string? _convertingPlayer;
         [ObservableProperty]
-        private bool? conversionKilled;
+        private bool? _conversionKilled;
         [ObservableProperty]
-        private int? startingPercent;
+        private int? _startingPercent;
         [ObservableProperty]
-        private int? endingPercent;
+        private int? _endingPercent;
         [ObservableProperty]
-        private int[]? movesUsed;
+        private int[]? _movesUsed;
         [ObservableProperty]
-        private int? startingMove;
+        private int? _startingMove;
         [ObservableProperty]
-        private string? openingType;
+        private string? _openingType;
+
+        public int? userCharId;
+        public int? opponentCharId;
+        public int? stageId;
         public FilterType FilterType { get; init; }
 
         public abstract FilterSettingsBuilder Builder { get; }
@@ -44,9 +49,40 @@ namespace GUI.ViewModels
             ConversionDidNotKillCommand = new RelayCommand(ConversionDidNotKill);
         }
 
-        public abstract void applyFilter(List<GameConversions> allGameConversions, PlaybackQueue playbackQueue);
+        public void applyFilter(List<GameConversions> allGameConversions, PlaybackQueue playbackQueue)
+        {
+            FilterSettings fSettings = Builder.Build();
+            foreach (GameConversions conversions in allGameConversions)
+            {
+                if (checkGameSettings(conversions) == true)
+                {
+                    this.Filter.addToQueue(conversions, playbackQueue, fSettings);
+                }
+            }
+        }
 
-        public abstract bool checkGameSettings(GameConversions gameConversions);
+        private bool checkGameSettings(GameConversions gameConversions)
+        {
+            if (userCharId != null)
+            {
+                string userCodeCaps = UserID.ToUpper();
+                List<Player> gamePlayers = gameConversions.GameSettings.Players;
+                return gamePlayers.Exists(x => (x.connectCode == userCodeCaps) && (x.characterId == userCharId));
+            }
+            else if (opponentCharId != null)
+            {
+                string userCodeCaps = UserID.ToUpper();
+                List<Player> gamePlayers = gameConversions.GameSettings.Players;
+                return gamePlayers.Exists(x => (x.connectCode != userCodeCaps) && (x.characterId == opponentCharId));
+            }
+            else if (stageId != null)
+            {
+                int? gameStageId = gameConversions.GameSettings.StageId;
+                return stageId.Equals(gameStageId);
+            }
+            else { return true; }
+        }
+
         public override string ToString()
         {
             return this.FilterType.ToString();
