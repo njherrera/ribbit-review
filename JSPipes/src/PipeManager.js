@@ -4,7 +4,7 @@ const { getAllConversions } = require("./RequestManager");
 const PIPE_A_NAME = "request_pipe";
 const PIPE_B_NAME = "json_pipe";
 const PIPE_PATH = "\\\\.\\pipe\\";
-var requestedPaths = null;
+var dataReceived = null;
 
 /** pipe A (c# > JS)
  * receives a request for a JSON file from c#
@@ -13,12 +13,12 @@ var requestedPaths = null;
 
 function connectClient() {
     var requestClient = net.createConnection(PIPE_PATH + PIPE_A_NAME, () => {
-        console.log("JS client: connected to server!");
+        //console.log("JS client: connected to server!");
     });
     var completePaths = "";
 
     requestClient.on('data', (data) => {
-        console.log("JS client: data received through pipe A:" + data.toString());
+        //console.log("JS client: data received through pipe A:" + data.toString());
         let receivedPaths = data.toString();
         completePaths += receivedPaths;
     });
@@ -26,7 +26,7 @@ function connectClient() {
     requestClient.on('error', (err) => {
         if (err.message.indexOf('ENOENT') > -1) {
             setTimeout(() => {
-                console.log("JS client: attempting to re-connect");
+                //console.log("JS client: attempting to re-connect");
                 connectClient();
             }, 1000);
         }
@@ -34,16 +34,16 @@ function connectClient() {
     });
 
     requestClient.on('end', () => {
-        console.log("JS client: end event triggered");
+        //console.log("JS client: end event triggered");
         if (completePaths.length > 0) {
-            console.log("JS client: creating JS server");
-            requestedPaths = completePaths;
-            console.log("JS client: current requestedPaths value post-assignment: " + requestedPaths);
+            //console.log("JS client: creating JS server");
+            dataReceived = completePaths;
+            //console.log("JS client: current requestedPaths value post-assignment: " + requestedPaths);
         }
     });
 
     requestClient.on('close', () => {
-        console.log("JS client: disconnected")
+        //console.log("JS client: disconnected")
     });
 }
 
@@ -53,29 +53,34 @@ function connectClient() {
 
 function startServer() {
     const jsonServer = net.createServer(function (socket) {
-        console.log("JS server: C# client has connected to json pipe");
+        //console.log("JS server: C# client has connected to json pipe");
         socket.on('end', () => {
-            console.log("JS server: C# client has disconnected, restarting JS client now");
+            //console.log("JS server: C# client has disconnected, restarting JS client now");
             connectClient();
         });
         // sending requested JSON data to C# client
-        console.log("JS server: calling getAllConversions using sendJsonData method");
-        let returnConversions = getAllConversions(requestedPaths);
-        console.log("allConversions length: " + returnConversions.length)
+        //console.log("JS server: calling getAllConversions using sendJsonData method");
+        const splitRequest = dataReceived.split('|');
+        const gameConstraints = splitRequest[0];
+        const requestedPaths = splitRequest[1];
+        let returnConversions = getAllConversions(gameConstraints, requestedPaths);
+        //console.log("allConversions length: " + returnConversions.length)
+        // TODO: split up data before stringifying
         let data = JSON.stringify(returnConversions);
-        console.log("JS server: called getAllConversions, writing data through pipe");
+        //console.log("JS server: called getAllConversions, writing data through pipe");
+        // TODO: send JSON objects through pipe in groups of ~5
         socket.write(data + "\n");
-        console.log("JS server: write executed successfully")
+        //console.log("JS server: write executed successfully")
         socket.pipe(socket);
-        console.log("JS server: pipe executed successfully")
+        //console.log("JS server: pipe executed successfully")
     });
 
     jsonServer.on('close', () => {
-        console.log("JS server: closed")
+        //console.log("JS server: closed")
     });
 
     jsonServer.listen(PIPE_PATH + PIPE_B_NAME, () => {
-        console.log("JS server: now listening for a connection on pipe B");
+        //console.log("JS server: now listening for a connection on pipe B");
     });
 }
 
@@ -92,7 +97,6 @@ let PIPE_B_NAME = "json_pipe";
 let PIPE_PATH = "\\\\.\\pipe\\";
 
 
-// TODO: keep pipes open until program is closed
 
 *//** pipe A (c# > JS)
  * receives a request for a JSON file from c#
@@ -149,7 +153,6 @@ function connectRequestPipe() {
 *//** pipe B (JS > c#)
  * passes a JSON file matching request from pipe A to c#
  *//*
-// TODO: set allowHalfOpen to "true" so pipe doesn't automatically close after writing data
 function createJsonPipe(filePaths) {
     const jsonServer = net.createServer((c) => {
         console.log("C# client has connected to json pipe");

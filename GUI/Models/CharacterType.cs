@@ -10,59 +10,61 @@ namespace GUI.Models
 {
     public enum CharacterType
     {
+        // since melee/slippi stats character IDs start at 0 with falcon, this messes up using a default "Any character" enum with a value of 0
+        // as a workaround, character IDs are shifted up by 1 here and then shifted back down in MainViewModel after the user selects a character
         [Description("Any character")]
-        None,
+        None = 0,
         [Description("Captain Falcon")]
-        Captain_Falcon = 0,
+        Captain_Falcon = 1,
         [Description("Donkey Kong")]
-        Donkey_Kong = 1,
+        Donkey_Kong = 2,
         [Description("Fox")]
-        Fox = 2,
+        Fox = 3,
         [Description("Mr. Game & Watch")]
-        Game_and_Watch = 3,
+        Game_and_Watch = 4,
         [Description("Kirby")]
-        Kirby =  4,
+        Kirby =  5,
         [Description("Bowser")]
-        Bowser = 5,
+        Bowser = 6,
         [Description("Link")]
-        Link = 6,
+        Link = 7,
         [Description("Luigi")]
-        Luigi = 7,
+        Luigi = 8,
         [Description("Mario")]
-        Mario = 8,
+        Mario = 9,
         [Description("Marth")]
-        Marth = 9,
+        Marth = 10,
         [Description("Mewtwo")]
-        Mewtwo = 10,
+        Mewtwo = 11,
         [Description("Ness")]
-        Ness = 11,
+        Ness = 12,
         [Description("Peach")]
-        Peach = 12,
+        Peach = 13,
         [Description("Pikachu")]
-        Pkachu = 13,
+        Pkachu = 14,
         [Description("Ice Climbers")]
-        Ice_Climbers = 14,
+        Ice_Climbers = 15,
         [Description("Jigglypuff")]
-        Jigglypuff = 15,
+        Jigglypuff = 16,
         [Description("Samus")]
-        Samus = 16,
+        Samus = 17,
         [Description("Yoshi")]
-        Yoshi = 17,
+        Yoshi = 18,
         [Description("Zelda")]
-        Zelda = 18,
+        Zelda = 19,
         [Description("Sheik")]
-        Sheik = 19,
+        Sheik = 20,
         [Description("Falco")]
-        Falco = 20,
+        Falco = 21,
         [Description("Young Link")]
-        Young_Link = 21,
+        Young_Link = 22,
         [Description("Dr. Mario")]
-        Dr_Mario = 22,
+        Dr_Mario = 23,
         [Description("Roy")]
-        Roy = 23,
+        Roy = 24,
         [Description("Pichu")]
-        Pichu = 24,
+        Pichu = 25,
         [Description("Ganondorf")]
-        Ganondorf = 25
+        Ganondorf = 26
     }
 }

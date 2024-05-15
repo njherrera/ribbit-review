@@ -61,15 +61,18 @@ namespace GUI.ViewModels
             }
         }
 
+        // TODO: eliminate check here
         private bool checkGameSettings(GameConversions gameConversions)
         {
-            if (userCharId != null)
+            // checking if CharID >= 0 after checking for null because of workaround used in MainViewModel
+            // if user selects a character and then selects "any character", the CharId will be -1
+            if ((userCharId != null) && (userCharId >= 0)) 
             {
                 string userCodeCaps = UserID.ToUpper();
                 List<Player> gamePlayers = gameConversions.GameSettings.Players;
                 return gamePlayers.Exists(x => (x.connectCode == userCodeCaps) && (x.characterId == userCharId));
             }
-            else if (opponentCharId != null)
+            else if ((opponentCharId != null) && (userCharId >= 0))
             {
                 string userCodeCaps = UserID.ToUpper();
                 List<Player> gamePlayers = gameConversions.GameSettings.Players;

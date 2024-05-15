@@ -48,14 +48,22 @@ namespace GUI.ViewModels
 
         public LegalStageType[] AvailableStages { get; } = Enum.GetValues<LegalStageType>();
 
+        new Dictionary<string, int?> gameSettingsDict = new Dictionary<string, int?>
+        {
+            {"uId", null },
+            {"uChar", null},
+            {"oChar", null},
+            {"stage", null }
+        };
+
         partial void OnSelectedUserCharChanged(CharacterType value)
         {
-            ActiveFilterVM.userCharId = (int)value;
+            ActiveFilterVM.userCharId = ((int)value - 1);
         }
 
         partial void OnSelectedOpponentCharChanged(CharacterType value)
         {
-            ActiveFilterVM.opponentCharId = (int)value;
+            ActiveFilterVM.opponentCharId = ((int)value - 1);
         }
 
         partial void OnSelectedStageChanged(LegalStageType value)
@@ -68,15 +76,15 @@ namespace GUI.ViewModels
             new EdgeguardViewModel()
         };
 
-        public MainViewModel() 
-        { 
+        public MainViewModel()
+        {
             ApplyFilterCommand = new RelayCommand(ApplyFilter);
             ViewJsonCommand = new RelayCommand(ViewJson);
             _activeFilterVM = AvailableFilterVMs[0];
             checkForPaths();
         }
 
-        
+
         public ICommand ApplyFilterCommand { get; }
 
         private async void ApplyFilter()
@@ -85,7 +93,19 @@ namespace GUI.ViewModels
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectSlpFiles(cancelToken);
 
-            string requestedPaths = string.Join(",", result);
+            Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> // using this to pass GameSettings constraints to JS
+            { // once user has clicked the apply filter button, their config is locked-in and we can grab it from the active filter VM
+                {"userId", ActiveFilterVM.UserID},
+                {"userChar", ActiveFilterVM.userCharId.ToString()},
+                {"oppChar", ActiveFilterVM.opponentCharId.ToString()},
+                {"stageId", ActiveFilterVM.stageId.ToString()}
+            };
+            string constraints = "";
+            foreach( KeyValuePair<string, string?> kvp in gameSettingsDict)
+            {
+                constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
+            }
+            string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
             PipeManager.sendRequest(requestedPaths);
             string returnJson = PipeManager.readJson();
 
@@ -145,7 +165,7 @@ namespace GUI.ViewModels
                     {
                         dolphin.Kill(); // after reaching the end of a playback queue, dolphin emits [NO_GAME] output and we kill the process at that point
                     }
-                    else Debug.WriteLine("received output: ", args.Data);
+                    //else Debug.WriteLine("received output: ", args.Data);
                 };
                 dolphin.ErrorDataReceived += (object sender, DataReceivedEventArgs args) => Debug.Write("error received: " + args.Data);
 
