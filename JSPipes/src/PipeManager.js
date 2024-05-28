@@ -64,20 +64,24 @@ function startServer() {
         const gameConstraints = splitRequest[0];
         const requestedPaths = splitRequest[1];
         let returnConversions = getAllConversions(gameConstraints, requestedPaths);
-        //console.log("allConversions length: " + returnConversions.length)
-        // TODO: split up data before stringifying
-        let data = JSON.stringify(returnConversions);
-        //console.log("JS server: called getAllConversions, writing data through pipe");
-        // TODO: send JSON objects through pipe in groups of ~5
-        socket.write(data + "\n");
-        //console.log("JS server: write executed successfully")
+        let chunkSize = 5;
+        let arrayOfCArrays = [];
+        for (let i = 0; i < returnConversions.length; i += chunkSize) {
+            arrayOfCArrays.push(returnConversions.slice(i, i + chunkSize));
+        }
+        arrayOfCArrays.forEach((array) => {
+            let data = JSON.stringify(array);
+            socket.write(data);
+            console.log("JS Server: sent a batch of JSON objects through pipe");
+        })
+        socket.write("\n");
         socket.pipe(socket);
         //console.log("JS server: pipe executed successfully")
     });
 
     jsonServer.on('close', () => {
         //console.log("JS server: closed")
-    });
+    }); 
 
     jsonServer.listen(PIPE_PATH + PIPE_B_NAME, () => {
         //console.log("JS server: now listening for a connection on pipe B");
@@ -88,96 +92,3 @@ module.exports = {
     connectClient,
     startServer
 }
-
-
-/*
-
-let PIPE_A_NAME = "request_pipe";
-let PIPE_B_NAME = "json_pipe";
-let PIPE_PATH = "\\\\.\\pipe\\";
-
-
-
-*//** pipe A (c# > JS)
- * receives a request for a JSON file from c#
- * in future will include file location(s) and possibly params for JSON
- *//*
-
-function connectRequestPipe() {
-    var requestClient = net.createConnection(PIPE_PATH + PIPE_A_NAME, () => {
-        console.log("JS connected to request pipe!");
-    });
-    var completeData = "";
-
-    requestClient.on('data', (data) => {
-        console.log("data received through pipe A:" + data.toString());
-        let received = data.toString();
-        completeData += received;
-    });
-*//*        if (data.toString().valueOf() == new String("FINISHED").valueOf())
-        {
-            console.log("FINISHED received through pipe A")
-            let filePaths = receivedData;
-            receivedData = ""; // doing it this way so that we don't go back into connectRequestPipe to reset the string after calling createJsonPipe
-            createJsonPipe(filePaths);
-        }
-        else
-        {
-            console.log("data received through pipe A:" + data.toString());
-            receivedData += data.toString();
-        }*//*
-
-    requestClient.on('error', (err) => {
-        if (err.message.indexOf('ENOENT') > -1) {
-            setTimeout(() => {
-                console.log("pipe A client attempting to re-connect");
-                connectRequestPipe();
-            }, 1000);
-        }
-        console.log(err.message);
-    });
-
-    requestClient.on('end', () => {
-        console.log("pipe A client end event triggered");
-        if (completeData.length > 0) {
-            console.log("creating pipe B server");
-            createJsonPipe(completeData);
-        }
-    });
-
-    requestClient.on('close', () => {
-        console.log("JS pipe A client disconnected")
-    });
-}
-
-*//** pipe B (JS > c#)
- * passes a JSON file matching request from pipe A to c#
- *//*
-function createJsonPipe(filePaths) {
-    const jsonServer = net.createServer((c) => {
-        console.log("C# client has connected to json pipe");
-        c.on('end', () => {
-            console.log("C# pipe B client has disconnected from server, connecting pipe A client now");
-            //connectRequestPipe(); // re-connecting pipe A in case the user requests more replays
-        });
-        // sending JSON of GameConversions objects back through the pipe
-        let returnJSON = JSON.stringify(getAllConversions(filePaths));
-        let data = returnJSON;
-        console.log("JS server: called getAllConversions, writing data through pipe");
-        c.write(data + "\n");
-    });
-
-    jsonServer.on('error', (err) => {
-        var errorMessage = err.message;
-        console.log("error from pipe B server:" + errorMessage);
-    });
-
-    jsonServer.listen(PIPE_PATH + PIPE_B_NAME, () => {
-        console.log("pipe B server now listening for a connection");
-    });
-}
-
-module.exports = {
-    connectRequestPipe,
-    createJsonPipe
-}*/

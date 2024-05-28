@@ -16,7 +16,7 @@ namespace GUI.ViewModels
     public abstract partial class FilterViewModel : ViewModelBase
     {
         [ObservableProperty]
-        private string? _userID;
+        private string? _userId;
         [ObservableProperty]
         private string? _convertingPlayer;
         [ObservableProperty]
@@ -54,15 +54,11 @@ namespace GUI.ViewModels
             FilterSettings fSettings = Builder.Build();
             foreach (GameConversions conversions in allGameConversions)
             {
-                if (checkGameSettings(conversions) == true)
-                {
-                    this.Filter.addToQueue(conversions, playbackQueue, fSettings);
-                }
+                this.Filter.addToQueue(conversions, playbackQueue, fSettings);
             }
         }
 
-        // TODO: eliminate check here
-        private bool checkGameSettings(GameConversions gameConversions)
+/*        private bool checkGameSettings(GameConversions gameConversions)
         {
             // checking if CharID >= 0 after checking for null because of workaround used in MainViewModel
             // if user selects a character and then selects "any character", the CharId will be -1
@@ -84,7 +80,7 @@ namespace GUI.ViewModels
                 return stageId.Equals(gameStageId);
             }
             else { return true; }
-        }
+        }*/
 
         public override string ToString()
         {
@@ -118,7 +114,7 @@ namespace GUI.ViewModels
             this.ConversionKilled = false;
         }
 
-        partial void OnUserIDChanged(string? value)
+        partial void OnUserIdChanged(string? value)
         {
             Builder.addUserID(value);
         }

@@ -55,7 +55,6 @@ namespace NamedPipeAPI
 
         /* pipe B (JS > c#), receives a JSON file matching request from JS
         */
-        // TODO: keep open until each group of JSON files has come through
         public static string readJson()
         {
             _pipeClientStream = new NamedPipeClientStream(".", PIPE_B_NAME, PipeDirection.In);

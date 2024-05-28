@@ -36,6 +36,9 @@ namespace GUI.ViewModels
         private FilterViewModel _activeFilterVM;
 
         [ObservableProperty]
+        private string _userCode;
+
+        [ObservableProperty]
         private CharacterType _selectedUserChar;
 
         [ObservableProperty]
@@ -56,6 +59,10 @@ namespace GUI.ViewModels
             {"stage", null }
         };
 
+        partial void OnUserCodeChanged(string value)
+        {
+            ActiveFilterVM.UserId = value.ToUpper();
+        }
         partial void OnSelectedUserCharChanged(CharacterType value)
         {
             ActiveFilterVM.userCharId = ((int)value - 1);
@@ -95,7 +102,7 @@ namespace GUI.ViewModels
 
             Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> // using this to pass GameSettings constraints to JS
             { // once user has clicked the apply filter button, their config is locked-in and we can grab it from the active filter VM
-                {"userId", ActiveFilterVM.UserID},
+                {"userId", ActiveFilterVM.UserId},
                 {"userChar", ActiveFilterVM.userCharId.ToString()},
                 {"oppChar", ActiveFilterVM.opponentCharId.ToString()},
                 {"stageId", ActiveFilterVM.stageId.ToString()}
@@ -108,11 +115,17 @@ namespace GUI.ViewModels
             string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
             PipeManager.sendRequest(requestedPaths);
             string returnJson = PipeManager.readJson();
+            // TODO: figure out what this JSON string looks like/how it differs from previous JSON string
 
-            List<GameConversions> requestedConversions = JsonConvert.DeserializeObject<List<GameConversions>>(returnJson);
+            // HACK: the GameConversion objects are sent over from JS in batches of 5 to avoid a string too long error from JSON.Stringify, and as a result we're working with a List of List<GameConversions> here 
+            // may end up optimizing this to use the "Deserialize Stream" implementation from https://www.newtonsoft.com/json/help/html/Performance.htm
+            List<List<GameConversions>> requestedConversions = JsonConvert.DeserializeObject<List<List<GameConversions>>>(returnJson);
             PlaybackQueue returnQueue = new PlaybackQueue();
 
-            ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
+            foreach (var conversionList in requestedConversions)
+            {
+                ActiveFilterVM.applyFilter(conversionList, returnQueue);
+            }
             string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
 
             PipeManager.openRequestPipe();
