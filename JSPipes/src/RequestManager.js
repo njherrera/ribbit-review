@@ -62,7 +62,7 @@ function createConstraintsObject(constraints) {
 function checkGameConstraints(constraints, settings) {
     // checking w/ separate if statements to make sure all relevant checks are executed
     if (settings.isTeams == true) {
-        console.log("doubles game passed to getGameConversions");
+        //console.log("doubles game passed to getGameConversions");
         return false;
     }
     if (constraints.userChar !== "") { 
@@ -70,33 +70,33 @@ function checkGameConstraints(constraints, settings) {
         // need to handle case where userPlayer = undefined by also returning false (similar thing w/ checking oppChar)
         const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
         if (userPlayer == undefined) {
-            console.log("userPlayer undefined, returning false");
+            //console.log("userPlayer undefined, returning false");
             return false;
         }
         let passesCheck = (parseInt(constraints.userChar) == userPlayer.characterId);
         if (passesCheck == false) {
-            console.log("user char does not match, returning false");
+            //console.log("user char does not match, returning false");
             return false;
         } // if int ID of user char does not match, return false - if true, continue with if statements
     }
     if (constraints.oppChar !== "") {
         const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
         if (userPlayer == undefined) {
-            console.log("userPlayer undefined, returning false");
+            //console.log("userPlayer undefined, returning false");
             return false;
         }
 
         const oPlayer = settings.players.find(element => element.connectCode.toString() != constraints.userId.toString());
         let passesCheck = (parseInt(constraints.oppChar) == oPlayer.characterId);
         if (passesCheck == false) {
-            console.log("opponent character does not match, returning false");
+            //console.log("opponent character does not match, returning false");
             return false;
         }
     }
     if (constraints.stageId !== "") {
         let passesCheck = (parseInt(constraints.stageId) == settings.stageId);
         if (passesCheck == false) {
-            console.log("stage does not match, returning false");
+            //console.log("stage does not match, returning false");
             return false;
         }
     }
@@ -116,7 +116,7 @@ function getGameConversions(location, constraints) {
     const settings = game.getSettings();
 
     if (checkGameConstraints(constraints, settings) == true) {
-        console.log("replay matches constraints");
+        //console.log("replay matches constraints");
         const stats = game.getStats();
 
         let gameConversions = {
@@ -132,7 +132,7 @@ function getGameConversions(location, constraints) {
         })
         return gameConversions;
     } else {
-        console.log("replay does not match constraints");
+        //console.log("replay does not match constraints");
         return null;
     }
 }

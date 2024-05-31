@@ -32,9 +32,6 @@ namespace GUI.ViewModels
         [ObservableProperty]
         private string? _openingType;
 
-        public int? userCharId;
-        public int? opponentCharId;
-        public int? stageId;
         public FilterType FilterType { get; init; }
 
         public abstract FilterSettingsBuilder Builder { get; }

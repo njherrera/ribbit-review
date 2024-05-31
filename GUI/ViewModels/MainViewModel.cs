@@ -25,6 +25,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 using GUI.Models;
+using GUI.Helpers.StringReaderStream;
 
 namespace GUI.ViewModels
 {
@@ -59,23 +60,41 @@ namespace GUI.ViewModels
             {"stage", null }
         };
 
+        private int? userCharId, opponentCharId, stageId;
         partial void OnUserCodeChanged(string value)
         {
             ActiveFilterVM.UserId = value.ToUpper();
         }
         partial void OnSelectedUserCharChanged(CharacterType value)
         {
-            ActiveFilterVM.userCharId = ((int)value - 1);
+            // checking for value == 0 because if the user selects a character, THEN selects "any character", the int value will be 0 and we want to set it to null instead
+            // this (and the next two values) will be passed to JS to filter replays with, so we want to make sure that these values are always valid character/stage codes as per slippi js
+            // default enum values have a value of 0, and since "Any Character" is our default enum value it then has a value of 0
+            // this causes problems for slippi js, since melee character ID's start with falcon, representing him w/ 0 and incrementing up by 1 from there (and in CharacterType his enum value is 1)
+            // therefore, we're assigning it to userCharId as (int)value -1 to get around that IF the enum value is that of a melee character (and not 0 for "any character")
+            // similar thing happening w/ stageId, where again "any stage" has an enum value of 0 and we want to represent that as null for slippi js's sake
+            if ((int) value == 0) 
+            {
+                this.userCharId = null;
+            } else { this.userCharId = ((int)value - 1); }
         }
 
         partial void OnSelectedOpponentCharChanged(CharacterType value)
         {
-            ActiveFilterVM.opponentCharId = ((int)value - 1);
+            if ((int)value == 0)
+            {
+                this.opponentCharId = null;
+            }
+            else { this.opponentCharId = ((int)value - 1); }
         }
 
         partial void OnSelectedStageChanged(LegalStageType value)
         {
-            ActiveFilterVM.stageId = (int)value;
+            if ((int)value == 0)
+            {
+                this.stageId = null;
+            }
+            else { this.stageId = ((int)value - 1); }
         }
 
         public List<FilterViewModel> AvailableFilterVMs { get; } = new List<FilterViewModel>()
@@ -103,29 +122,37 @@ namespace GUI.ViewModels
             Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> // using this to pass GameSettings constraints to JS
             { // once user has clicked the apply filter button, their config is locked-in and we can grab it from the active filter VM
                 {"userId", ActiveFilterVM.UserId},
-                {"userChar", ActiveFilterVM.userCharId.ToString()},
-                {"oppChar", ActiveFilterVM.opponentCharId.ToString()},
-                {"stageId", ActiveFilterVM.stageId.ToString()}
+                {"userChar", this.userCharId.ToString()},
+                {"oppChar", this.opponentCharId.ToString()},
+                {"stageId", this.stageId.ToString()}
             };
             string constraints = "";
-            foreach( KeyValuePair<string, string?> kvp in gameSettingsDict)
+            foreach (KeyValuePair<string, string?> kvp in gameSettingsDict)
             {
                 constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
             }
             string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
             PipeManager.sendRequest(requestedPaths);
-            string returnJson = PipeManager.readJson();
-            // TODO: figure out what this JSON string looks like/how it differs from previous JSON string
-
-            // HACK: the GameConversion objects are sent over from JS in batches of 5 to avoid a string too long error from JSON.Stringify, and as a result we're working with a List of List<GameConversions> here 
-            // may end up optimizing this to use the "Deserialize Stream" implementation from https://www.newtonsoft.com/json/help/html/Performance.htm
-            List<List<GameConversions>> requestedConversions = JsonConvert.DeserializeObject<List<List<GameConversions>>>(returnJson);
-            PlaybackQueue returnQueue = new PlaybackQueue();
-
-            foreach (var conversionList in requestedConversions)
+            List<GameConversions> requestedConversions = new List<GameConversions>();
+            using (StringReaderStream jsonStream = new StringReaderStream(PipeManager.readJson()))
+            using (StreamReader sr = new StreamReader(jsonStream))
+            using (JsonTextReader reader = new JsonTextReader(sr))
             {
-                ActiveFilterVM.applyFilter(conversionList, returnQueue);
+                reader.SupportMultipleContent = true;
+                var serializer = new JsonSerializer();
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonToken.StartObject)
+                    {
+                        GameConversions gc = serializer.Deserialize<GameConversions>(reader);
+                        requestedConversions.Add(gc);
+                    }
+                }
             }
+            Debug.WriteLine("bazinga");
+
+            PlaybackQueue returnQueue = new PlaybackQueue(); 
+            ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
             string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
 
             PipeManager.openRequestPipe();
