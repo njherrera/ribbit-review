@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GUI.Models;
 using GUI.Helpers.StringReaderStream;
+using System.Collections.Immutable;
 
 namespace GUI.ViewModels
 {
@@ -149,7 +150,6 @@ namespace GUI.ViewModels
                     }
                 }
             }
-            Debug.WriteLine("bazinga");
 
             PlaybackQueue returnQueue = new PlaybackQueue(); 
             ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
@@ -231,6 +231,16 @@ namespace GUI.ViewModels
 
                 var files = await filesService.OpenSlpFilesAsync();
                 var result = files.ToList();
+                // .slp file names are in standard iso datetime format (YYYYMMDDTHHMMSS (date, T, time)), so we can use that to sort the list by date created without getting funky with avalonia IStorageFile properties
+                // code still looks a bit stinky, but every .slp file is formatted the same way (the T inbetween date and time and no colons/hyphens/what have you between different parts make it a bit funky for parsing as a DateTime)
+                result.Sort((x, y) =>
+                {
+                    string xPathTrimmed = Path.GetFileNameWithoutExtension(x.Name.Substring(5));
+                    DateTime xDT = new DateTime(int.Parse(xPathTrimmed.Substring(0, 4)), int.Parse(xPathTrimmed.Substring(4, 2)), int.Parse(xPathTrimmed.Substring(6, 2)), int.Parse(xPathTrimmed.Substring(9, 2)), int.Parse(xPathTrimmed.Substring(11, 2)), int.Parse(xPathTrimmed.Substring(13, 2)));
+                    string yPathTrimmed = Path.GetFileNameWithoutExtension(y.Name.Substring(5));
+                    DateTime yDT = new DateTime(int.Parse(yPathTrimmed.Substring(0, 4)), int.Parse(yPathTrimmed.Substring(4, 2)), int.Parse(yPathTrimmed.Substring(6, 2)), int.Parse(yPathTrimmed.Substring(9, 2)), int.Parse(yPathTrimmed.Substring(11, 2)), int.Parse(yPathTrimmed.Substring(13, 2)));
+                    return DateTime.Compare(xDT, yDT);
+                });
                 foreach (Avalonia.Platform.Storage.IStorageFile file in result)
                 {
                     string filePath = file.Path.ToString();
