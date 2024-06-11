@@ -134,7 +134,9 @@ namespace GUI.ViewModels
             }
             string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
             PipeManager.sendRequest(requestedPaths);
+
             List<GameConversions> requestedConversions = new List<GameConversions>();
+
             using (StringReaderStream jsonStream = new StringReaderStream(PipeManager.readJson()))
             using (StreamReader sr = new StreamReader(jsonStream))
             using (JsonTextReader reader = new JsonTextReader(sr))
@@ -235,10 +237,10 @@ namespace GUI.ViewModels
                 // code still looks a bit stinky, but every .slp file is formatted the same way (the T inbetween date and time and no colons/hyphens/what have you between different parts make it a bit funky for parsing as a DateTime)
                 result.Sort((x, y) =>
                 {
-                    string xPathTrimmed = Path.GetFileNameWithoutExtension(x.Name.Substring(5));
-                    DateTime xDT = new DateTime(int.Parse(xPathTrimmed.Substring(0, 4)), int.Parse(xPathTrimmed.Substring(4, 2)), int.Parse(xPathTrimmed.Substring(6, 2)), int.Parse(xPathTrimmed.Substring(9, 2)), int.Parse(xPathTrimmed.Substring(11, 2)), int.Parse(xPathTrimmed.Substring(13, 2)));
-                    string yPathTrimmed = Path.GetFileNameWithoutExtension(y.Name.Substring(5));
-                    DateTime yDT = new DateTime(int.Parse(yPathTrimmed.Substring(0, 4)), int.Parse(yPathTrimmed.Substring(4, 2)), int.Parse(yPathTrimmed.Substring(6, 2)), int.Parse(yPathTrimmed.Substring(9, 2)), int.Parse(yPathTrimmed.Substring(11, 2)), int.Parse(yPathTrimmed.Substring(13, 2)));
+                    ReadOnlySpan<char> xPathTrimmed = Path.GetFileNameWithoutExtension(x.Name.Substring(5));
+                    DateTime xDT = new DateTime(int.Parse(xPathTrimmed.Slice(0, 4)), int.Parse(xPathTrimmed.Slice(4, 2)), int.Parse(xPathTrimmed.Slice(6, 2)), int.Parse(xPathTrimmed.Slice(9, 2)), int.Parse(xPathTrimmed.Slice(11, 2)), int.Parse(xPathTrimmed.Slice(13, 2)));
+                    ReadOnlySpan<char> yPathTrimmed = Path.GetFileNameWithoutExtension(y.Name.Substring(5));
+                    DateTime yDT = new DateTime(int.Parse(yPathTrimmed.Slice(0, 4)), int.Parse(yPathTrimmed.Slice(4, 2)), int.Parse(yPathTrimmed.Slice(6, 2)), int.Parse(yPathTrimmed.Slice(9, 2)), int.Parse(yPathTrimmed.Slice(11, 2)), int.Parse(yPathTrimmed.Slice(13, 2)));
                     return DateTime.Compare(xDT, yDT);
                 });
                 foreach (Avalonia.Platform.Storage.IStorageFile file in result)

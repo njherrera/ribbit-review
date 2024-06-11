@@ -36,10 +36,10 @@ function createConstraintsObject(constraints) {
     const indivConstraints = constraints.split(" ");
 
     var gameConstraints = {
-    userId: null,
-    userChar: null,
-    oppChar: null,
-    stageId: null
+    userId: "",
+    userChar: "",
+    oppChar: "",
+    stageId: ""
     };
 
     const uId = indivConstraints[0].substring(indivConstraints[0].indexOf(":") + 1);
