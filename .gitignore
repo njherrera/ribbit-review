@@ -11,6 +11,9 @@ testJSONs/
 # test .slp files
 .slp*files/
 
+# benchmarking project
+CSharpBenchmarker/
+
 # dev variables
 CSharpTests/userVars.cs
 GUI/UserPaths.xml

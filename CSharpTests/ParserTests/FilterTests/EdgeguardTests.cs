@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
 using CSharpParser.SlpJSObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
 
 namespace CSharpTests.ParserTests.FilterTests
 {
     [TestClass]
     public class EdgeguardTests
     {
-        JObject o1 = JObject.Parse(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardTest.txt"));
-        GameConversions testConversions = GameConversions.jsonToConversions(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardTest.txt"));
+        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardTest.txt"));
         Edgeguards Edgeguards = new Edgeguards();
 
         [TestMethod]
@@ -32,16 +31,16 @@ namespace CSharpTests.ParserTests.FilterTests
             Assert.AreEqual(Edgeguards.getLedgePositions(null), 0);
             Assert.AreEqual(Edgeguards.getLedgePositions(100), 0);
 
-            Assert.AreEqual(Edgeguards.getLedgePositions(testConversions.GameSettings.StageId), 68.4);
+            Assert.AreEqual(Edgeguards.getLedgePositions(testConversions.gameSettings.stageId), 68.4);
         }
 
         [TestMethod]
         public void testIsEdgeguard()
         {
-            Conversion shouldBeEdgeuard = testConversions.ConversionList.ElementAt(6);
-            Conversion notAnEdgeguard = testConversions.ConversionList.ElementAt(2);
-            Assert.IsTrue(Edgeguards.isInstance(shouldBeEdgeuard, testConversions.GameSettings));
-            Assert.IsFalse(Edgeguards.isInstance(notAnEdgeguard, testConversions.GameSettings));
+            Conversion shouldBeEdgeuard = testConversions.conversionList.ElementAt(6);
+            Conversion notAnEdgeguard = testConversions.conversionList.ElementAt(2);
+            Assert.IsTrue(Edgeguards.isInstance(shouldBeEdgeuard, testConversions.gameSettings));
+            Assert.IsFalse(Edgeguards.isInstance(notAnEdgeguard, testConversions.gameSettings));
         }
 
         [TestMethod]
@@ -60,7 +59,8 @@ namespace CSharpTests.ParserTests.FilterTests
             PlaybackQueue pbackQueue = new PlaybackQueue();
             EdgeguardSettings eSettings = new EdgeguardSettings();
             Edgeguards.addToQueue(testConversions, pbackQueue, eSettings);
-            string edgeguardJson = JsonConvert.SerializeObject(pbackQueue, Formatting.Indented);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string edgeguardJson = JsonSerializer.Serialize(pbackQueue, options);
             string jsonPath = @"Q:\programming\ribbit-review\testJSONs\EdgeguardsJSON.json";
             File.WriteAllText(jsonPath, edgeguardJson);
             cmdText ="-i " + jsonPath + " -e " + userVars.meleePath;

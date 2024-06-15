@@ -10,8 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NamedPipeAPI;
 using CSharpParser.JSON_Objects;
 using CSharpParser.Filters;
-using Newtonsoft.Json;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Diagnostics;
@@ -27,6 +25,7 @@ using System.Linq;
 using GUI.Models;
 using GUI.Helpers.StringReaderStream;
 using System.Collections.Immutable;
+using System.Text.Json;
 
 namespace GUI.ViewModels
 {
@@ -135,30 +134,23 @@ namespace GUI.ViewModels
             string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
             PipeManager.sendRequest(requestedPaths);
 
-            List<GameConversions> requestedConversions = new List<GameConversions>();
-
-            using (StringReaderStream jsonStream = new StringReaderStream(PipeManager.readJson()))
-            using (StreamReader sr = new StreamReader(jsonStream))
-            using (JsonTextReader reader = new JsonTextReader(sr))
-            {
-                reader.SupportMultipleContent = true;
-                var serializer = new JsonSerializer();
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonToken.StartObject)
-                    {
-                        GameConversions gc = serializer.Deserialize<GameConversions>(reader);
-                        requestedConversions.Add(gc);
-                    }
-                }
-            }
+            List<GameConversions> requestedConversions = JsonToGCList(PipeManager.readJson());
 
             PlaybackQueue returnQueue = new PlaybackQueue(); 
             ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
-            string filterJson = JsonConvert.SerializeObject(returnQueue, Newtonsoft.Json.Formatting.Indented);
+            var options = new JsonSerializerOptions {  WriteIndented = true };
+            string filterJson = JsonSerializer.Serialize(returnQueue, options);
 
             PipeManager.openRequestPipe();
             await SaveJsonFile(filterJson);
+        }
+
+        public List<GameConversions> JsonToGCList(string json)
+        {
+            List<GameConversions> requestedConversions = new List<GameConversions>();
+
+            requestedConversions = JsonSerializer.Deserialize<List<GameConversions>>(json);
+            return requestedConversions;
         }
 
         public ICommand ViewJsonCommand { get; }

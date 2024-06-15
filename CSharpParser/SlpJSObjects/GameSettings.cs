@@ -1,51 +1,25 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-
-namespace CSharpParser.SlpJSObjects
+﻿namespace CSharpParser.SlpJSObjects
 {
     public class GameSettings
     {
-        [JsonProperty("slpVersion")]
-        public string SlpVersion { get; set; }
-        [JsonProperty("timerType")]
-        public int? TimerType { get; set; }
-        [JsonProperty("inGameMode")]
-        public int? InGameMode { get; set; }
-        [JsonProperty("friendlyFireEnabled")]
-        public bool? FriendlyFireEnabled { get; set; }
-        [JsonProperty("isTeams")]
-        public bool? IsTeams { get; set; }  // 0 if teams, non-zero if not
-        [JsonProperty("itemSpawnBehavior")]
-        public int? ItemSpawnBehavior { get; set; }  // how frequently items spawn, -1 is off, 0 very low, 1 low, and so on
-        [JsonProperty("stageId")]
-        public int? StageId { get; set; }  // in-game stage ID
-        [JsonProperty("startingTimerSeconds")]
-        public int? StartingTimerSeconds { get; set; }  // number of seconds timer starts at
-        [JsonProperty("enabledItems")]
-        public double? EnabledItems { get; set; }
-        [JsonProperty("players")]
-        public List<Player> Players { get; set; }  // info of players playing in game
-        [JsonProperty("scene")]
-        public int? Scene { get; set; }  // should always be 2
-        [JsonProperty("gameMode")]
-        public int? GameMode { get; set; }  // 2 = versus mode, 8 = online
-        [JsonProperty("language")]
-        public int? Language { get; set; }  // 0 = japanese, 1 = english
-        [JsonProperty("gameInfoBlock")]
-        public Dictionary<string, string>? GameInfoBlock { get; set; }
-        [JsonProperty("randomSeed")]
-        public int? RandomSeed { get; set; }  // random seed before the game start
-        [JsonProperty("isPAL")]
-        public bool? IsPAL { get; set; }
-        [JsonProperty("isFrozenPS")]
-        public bool? IsFrozenPS { get; set; }
-        [JsonProperty("matchInfo")]
-        public Dictionary<string, string>? MatchInfo { get; set; }
+        public string slpVersion { get; set; }
+        public int? timerType { get; set; }
+        public int? inGameMode { get; set; }
+        public bool? friendlyFireEnabled { get; set; }
+        public bool? isTeams { get; set; }  // 0 if teams, non-zero if not
+        public int? itemSpawnBehavior { get; set; }  // how frequently items spawn, -1 is off, 0 very low, 1 low, and so on
+        public int? stageId { get; set; }  // in-game stage ID
+        public int? startingTimerSeconds { get; set; }  // number of seconds timer starts at
+        public double? enabledItems { get; set; }
+        public List<Player> players { get; set; }  // info of players playing in game
+        public int? scene { get; set; }  // should always be 2
+        public int? gameMode { get; set; }  // 2 = versus mode, 8 = online
+        public int? language { get; set; }  // 0 = japanese, 1 = english
+        public Dictionary<string, object>? gameInfoBlock { get; set; } // having this be a <string, object> dictionary is a bit stinky, these values will also not be accessed
+        public int? randomSeed { get; set; }  // random seed before the game start
+        public bool? isPAL { get; set; }
+        public bool? isFrozenPS { get; set; }
+        public MatchInfo matchInfo { get; set; }
 
     }
 }

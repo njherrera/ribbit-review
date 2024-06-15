@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpParser.Filters.Settings;
-using CSharpParser.JSON_Objects;
-using CSharpParser.SlpJSObjects;
+﻿using CSharpParser.SlpJSObjects;
 
 namespace CSharpParser.Filters
 {
@@ -15,7 +8,7 @@ namespace CSharpParser.Filters
         public override bool isInstance(Conversion conversion, GameSettings settings)
         {
             bool isEdgeguardPosition = false;
-            double ledgePosition = getLedgePositions(settings.StageId);
+            double ledgePosition = getLedgePositions(settings.stageId);
             double leftLedge = ledgePosition * -1;
             double rightLedge = ledgePosition;
 

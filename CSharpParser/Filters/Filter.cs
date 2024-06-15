@@ -1,11 +1,6 @@
 ﻿using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
 using CSharpParser.SlpJSObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSharpParser.Filters
 {
@@ -15,13 +10,13 @@ namespace CSharpParser.Filters
 
         public void addToQueue(GameConversions gameConversions, PlaybackQueue pbackQueue, FilterSettings fSettings)
         {
-            foreach (Conversion conversion in gameConversions.ConversionList)
+            foreach (Conversion conversion in gameConversions.conversionList)
             {
-                if (conversion.beingHitFrames.Count() > 0 && fSettings.checkConversion(conversion) == true && isInstance(conversion, gameConversions.GameSettings) == true)
+                if (conversion.beingHitFrames.Count() > 0 && fSettings.checkConversion(conversion) == true && isInstance(conversion, gameConversions.gameSettings) == true)
                 {
                     int? startFrame = conversion.beingHitFrames.First().frame;
                     int? endFrame = conversion.beingHitFrames.Last().frame;
-                    QueueItem qi = new QueueItem(gameConversions.GameLocation, startFrame, endFrame);
+                    QueueItem qi = new QueueItem(gameConversions.gameLocation, startFrame, endFrame);
                     pbackQueue.queue.Add(qi);
                 }
                 else continue;

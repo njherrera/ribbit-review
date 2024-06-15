@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CSharpTests.ParserTests.FilterTests.SettingsTests
@@ -21,7 +22,7 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
          * # of unsuccessful Sheik edgeguards: 4
          * # of unsuccessful Falco edgeguards: 4
          */
-        GameConversions testConversions = GameConversions.jsonToConversions(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardSettingsTest.json"));
+        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardSettingsTest.json"));
         Edgeguards Edgeguards = new Edgeguards();
 
         [TestMethod]

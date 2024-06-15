@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-namespace CSharpParser.SlpJSObjects
+﻿namespace CSharpParser.SlpJSObjects
 {
     public class Conversion
     {
@@ -15,7 +8,7 @@ namespace CSharpParser.SlpJSObjects
         */
         public int playerBeingHit { get; set; }
         public string beingHitConnectCode { get; set; }
-        public string playerHitting { get; set; }
+        public int playerHitting { get; set; }
         public string hittingConnectCode { get; set; }
         public bool didKill { get; set; }
         public float startPercent { get; set; }
