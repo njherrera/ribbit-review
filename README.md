@@ -1,6 +1,12 @@
 # Design Info: 
 
-Ribbit Review is split into 4 main parts and 2 languages in terms of the application itself, and will likely stay that way for some time (names themselves are also a work in progress). 
+Ribbit Review is split into 4 main parts and 2 languages in terms of the application itself, and will likely stay that way for some time (names themselves are also a work in progress).
+
+The overall goal of the project is to build a multiplatform (Windows + MacOS) desktop app that parses stats generated from user replays, queries the stats to find instances of user-specified situations, then replays them in Playback Dolphin.
+
+In the long term, I also have plans to extend the same query logic to replay files of other players to find instances of the same situation where things go well, particularly replay files from the top level of competition (i.e. top 64 of a major tournament). For example, finding instances of a particular type of situation that end with the opponent being KO'd instead of living.
+
+Currently the project uses named pipe operations to exchange data between the C# and JavaScript code, sending JSON-formatted string data back and forth. This is what allows the CSharpParser class to parse the replay info (since the stats are generated with the JavaScript slippi-js library), but it can also be somewhat cumbersome to work with and I'm working on an alternative design using the Jint JavaScript interpreter. 
 
 ## GUI:
 
