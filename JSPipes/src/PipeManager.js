@@ -59,33 +59,9 @@ function startServer() {
         let returnConversions = getAllConversions(gameConstraints, requestedPaths);
 
         let jsonStream = JSONStream.stringify("[", ",", "]\n");
-        let fileOutputStream = fs.createWriteStream("../testJSONs/JeiConversions.txt");
         jsonStream.pipe(fileOutputStream);
         returnConversions.forEach(jsonStream.write);
         jsonStream.end();
-        //socket.write(JSONStream.stringify(returnConversions) + "\n");
-/*        let chunkSize = 5;
-        let arrayOfCArrays = [];
-        for (let i = 0; i < returnConversions.length; i += chunkSize) {
-            arrayOfCArrays.push(returnConversions.slice(i, i + chunkSize));
-        }
-        var stream = fs.createWriteStream("../testJSONs/JeiConversions.txt", { flags: "a" });
-        for (let i = 0; i < arrayOfCArrays.length; i++) {
-            stream.write(JSON.stringify(arrayOfCArrays[i]));
-        }
-        console.log("wrote conversions vs jei to JeiConversions.txt");
-        for (let i = 0; i < arrayOfCArrays.length; i++) {
-            if (i < (arrayOfCArrays.length - 1)) { // after sending every array except the last one, add a comma to avoid a closing ] followed by an opening [ without a separating comma
-                let data = JSON.stringify(arrayOfCArrays[i]);
-                socket.write(data + ", ");
-                console.log("JS Server: sent a batch of JSON objects through pipe");
-            } else { // for the last array of GameConversions, add a newline character to the end of the message so the C# client knows it's the end
-                let data = JSON.stringify(arrayOfCArrays[i]);
-                socket.write(data + "\n");
-                console.log("JS Server: sent a batch of JSON objects through pipe");
-            }
-        }
-        socket.pipe(socket);*/
     });
 
     jsonServer.on('close', () => {

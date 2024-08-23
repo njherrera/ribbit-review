@@ -15,6 +15,9 @@
         public float? endPercent { get; set; }
         public List<Move> moves { get; set; }
         public string openingType { get; set; }
+        // TODO: change List<PostFrame> to Dictionary<int, PostFrame> or similar HashSet?
+        // might result in better performance from being able to use LINQ to query dictionaries, with int being frame in context of conversion (e.g. 1 = first frame of conversion, 2 = second frame, etc.)
+        // need to look into what performance gains we get (if any) from using LINQ to query dictionaries as opposed to looping through list, also any changes to memory usage
         public List<PostFrame> beingHitFrames { get; set; }
         public List<PostFrame> hittingFrames { get; set; }
     }

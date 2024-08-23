@@ -22,9 +22,9 @@
 			</StackPanel>
 		</Grid>
 		<!--User connect code area-->
-		<Grid Background="BlanchedAlmond" Height="100" Width="1000">
+		<Grid Background="DarkGray" Height="100" Width="1000">
 			<StackPanel Margin="0 15">
-				<TextBlock HorizontalAlignment="Center" Grid.Column="0">Enter your connect code (or in-game tag for locally recorded games): </TextBlock>
+				<TextBlock HorizontalAlignment="Center" Grid.Column="0">Enter your connect code (necessary for converting player/user character/opponent character): </TextBlock>
 				<TextBox Width="200" Margin="0 5" Text="{Binding UserCode}"/>
 			</StackPanel>
 		</Grid>
@@ -94,7 +94,7 @@
 			</DockPanel>
 		</Grid>
 		<!--Filter application buttons-->
-		<Grid Background="LightGray" Height="125" ColumnDefinitions="500, 500">
+		<Grid Background="DarkSlateGray" Height="125" ColumnDefinitions="500, 500">
 			<Button Content="Apply filter to games (results in JSON file)" Command="{Binding ApplyFilterCommand}" HorizontalAlignment="Center" Grid.Column="0"/>
 			<Button Content="Select JSON to watch in replay viewer" Command="{Binding ViewJsonCommand}" HorizontalAlignment="Center" Grid.Column="1"/>
 		</Grid>

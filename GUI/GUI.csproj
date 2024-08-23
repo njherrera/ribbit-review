@@ -6,6 +6,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
+    <ProjectReference Include="..\JSPipes\JSPipes.esproj" />
     <ProjectReference Include="..\NamedPipeAPI\NamedPipeAPI.csproj" />
   </ItemGroup>
 </Project>
