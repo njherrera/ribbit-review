@@ -6,7 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74B53000-219D-4659-8BF4-655D8BB74A44}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		SlippiJS\nuget.config = SlippiJS\nuget.config
+		nuget.config = nuget.config
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -22,9 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI", "GUI\GUI.csproj", "{1
 		{8F00CAAA-DB47-4E19-852B-A36F7EC7E507} = {8F00CAAA-DB47-4E19-852B-A36F7EC7E507}
 	EndProjectSection
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "JSPipes", "JSPipes\JSPipes.esproj", "{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpBenchmarker", "CSharpBenchmarker\CSharpBenchmarker.csproj", "{254937EC-10B7-4832-8621-6F8FFD51610D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlippiJSInterOp", "SlippiJSInterp\SlippiJSInterOp.csproj", "{D5CE1665-2AD6-4570-913D-FC535E1AF136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,23 +63,19 @@ Global
 		{134E9EFB-F910-4003-9485-6E53A948B929}.Release|Any CPU.Build.0 = Release|Any CPU
 		{134E9EFB-F910-4003-9485-6E53A948B929}.Release|x64.ActiveCfg = Release|Any CPU
 		{134E9EFB-F910-4003-9485-6E53A948B929}.Release|x64.Build.0 = Release|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Debug|x64.ActiveCfg = Debug|x64
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Debug|x64.Build.0 = Debug|x64
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Debug|x64.Deploy.0 = Debug|x64
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Release|x64.ActiveCfg = Release|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Release|x64.Build.0 = Release|Any CPU
-		{3950D4A8-62F1-4CC9-B4B6-5935B0C51385}.Release|x64.Deploy.0 = Release|Any CPU
 		{254937EC-10B7-4832-8621-6F8FFD51610D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{254937EC-10B7-4832-8621-6F8FFD51610D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{254937EC-10B7-4832-8621-6F8FFD51610D}.Debug|x64.ActiveCfg = Debug|x64
 		{254937EC-10B7-4832-8621-6F8FFD51610D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{254937EC-10B7-4832-8621-6F8FFD51610D}.Release|x64.ActiveCfg = Release|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Debug|x64.Build.0 = Debug|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Release|x64.ActiveCfg = Release|Any CPU
+		{D5CE1665-2AD6-4570-913D-FC535E1AF136}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

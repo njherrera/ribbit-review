@@ -1,0 +1,22 @@
+{
+  "name": "slippi-js-interop",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njherrera/ribbit-review.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/njherrera/ribbit-review/issues"
+  },
+  "homepage": "https://github.com/njherrera/ribbit-review#readme",
+  "dependencies": {
+    "@slippi/slippi-js": "^6.7.0"
+  }
+}

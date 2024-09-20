@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
-    <ProjectReference Include="..\JSPipes\JSPipes.esproj" />
     <ProjectReference Include="..\NamedPipeAPI\NamedPipeAPI.csproj" />
   </ItemGroup>
 </Project>
