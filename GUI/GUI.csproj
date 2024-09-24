@@ -31,6 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
-    <ProjectReference Include="..\NamedPipeAPI\NamedPipeAPI.csproj" />
+    <ProjectReference Include="..\SlippiJSInterOp\SlippiJSInterOp.csproj" />
   </ItemGroup>
 </Project>

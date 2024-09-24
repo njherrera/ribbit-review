@@ -132,7 +132,7 @@ namespace GUI.ViewModels
                 constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
             }
             string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
-            PipeManager.sendRequest(requestedPaths);
+            PipeManager.sendRequest(requestedPaths); // TODO: Replace call to PipeManager w/ call to SlippiJSInterOp
 
             List<GameConversions> requestedConversions = JsonToGCList(PipeManager.readJson());
 

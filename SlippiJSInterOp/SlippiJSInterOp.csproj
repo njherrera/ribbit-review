@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EdgeJs" Version="20.12.3" />
+    <PackageReference Include="Jering.Javascript.NodeJS" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

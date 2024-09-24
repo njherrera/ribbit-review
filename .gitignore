@@ -7,7 +7,10 @@
 
 TargetFolder/
 
-#JSPipes folder from other branch
+# Named pipe API from other branch
+NamedPipeAPI/
+
+# JSPipes folder from other branch
 JSPipes/
 
 # test JSONs
