@@ -6,7 +6,6 @@ using GUI.ViewModels;
 using GUI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using NamedPipeAPI;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CSharpParser.Filters.Settings;
 
@@ -34,7 +33,6 @@ namespace GUI
                     DataContext = new MainViewModel(),
                 };
                 
-                PipeManager.openRequestPipe();
             }
 
             base.OnFrameworkInitializationCompleted();

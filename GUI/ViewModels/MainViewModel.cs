@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
-using NamedPipeAPI;
 using CSharpParser.JSON_Objects;
 using CSharpParser.Filters;
 using System.Runtime.CompilerServices;
@@ -132,9 +131,9 @@ namespace GUI.ViewModels
                 constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
             }
             string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
-            PipeManager.sendRequest(requestedPaths); // TODO: Replace call to PipeManager w/ call to SlippiJSInterOp
+            // PipeManager.sendRequest(requestedPaths); // TODO: Replace call to PipeManager w/ call to SlippiJSInterOp
 
-            List<GameConversions> requestedConversions = JsonToGCList(PipeManager.readJson());
+  /*          List<GameConversions> requestedConversions = JsonToGCList(PipeManager.readJson());
 
             PlaybackQueue returnQueue = new PlaybackQueue(); 
             ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
@@ -142,7 +141,7 @@ namespace GUI.ViewModels
             string filterJson = JsonSerializer.Serialize(returnQueue, options);
 
             PipeManager.openRequestPipe();
-            await SaveJsonFile(filterJson);
+            await SaveJsonFile(filterJson);*/
         }
 
         public List<GameConversions> JsonToGCList(string json)

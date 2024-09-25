@@ -10,4 +10,8 @@
     <PackageReference Include="Jering.Javascript.NodeJS" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
+  </ItemGroup>
+
 </Project>

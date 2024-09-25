@@ -16,7 +16,7 @@ namespace CSharpTests.ParserTests.FilterTests
     [TestClass]
     public class EdgeguardTests
     {
-        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardTest.txt"));
+        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(@"Q:ribbit-review\\testJSONs\\EdgeguardTest.txt"));
         Edgeguards Edgeguards = new Edgeguards();
 
         [TestMethod]
