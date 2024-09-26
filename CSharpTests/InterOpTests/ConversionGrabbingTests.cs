@@ -24,7 +24,8 @@ namespace CSharpTests.InterOpTests
         [TestMethod]
         public async Task testGetConversions()
         {
-            InterOpHandler.configureNodeService(userVars.interOpPath);
+            InterOpHandler.setProjectPath(userVars.interOpPath);
+
             GameConversions? testConversions = await InterOpHandler.GetFileConversions(userVars.edgeguardSlpPath);
             Assert.IsNotNull(testConversions);
             Assert.AreEqual(testConversions.gameLocation, userVars.edgeguardSlpPath);
@@ -34,6 +35,44 @@ namespace CSharpTests.InterOpTests
             Assert.AreEqual("MMRP#834", testConversions.gameSettings.players[1].connectCode);
             Assert.AreEqual(20, testConversions.gameSettings.players[0].characterId);
             Assert.AreEqual(19, testConversions.gameSettings.players[1].characterId);
+        }
+
+        [TestMethod]
+        public async Task testGetAllConversions()
+        {
+            InterOpHandler.setProjectPath(userVars.interOpPath);
+
+            string dummyConstraints = "userId: userChar: oppChar: stageId: ";
+            List<GameConversions?> testConversions = await InterOpHandler.GetAllConversions(dummyConstraints, "file:\\" + userVars.edgeguardSlpPath + "," + "file:\\" + userVars.meVsPinkSlpPath);
+            
+            Assert.AreEqual(2, testConversions.Count);
+            string edgeguardUri = new System.Uri(userVars.edgeguardSlpPath).AbsoluteUri;
+            Assert.AreEqual(edgeguardUri, testConversions[0].gameLocation);
+
+            string meVsPinkUri = new System.Uri(userVars.meVsPinkSlpPath).AbsoluteUri;
+            Assert.AreEqual(meVsPinkUri, testConversions[1].gameLocation);
+
+            Assert.AreEqual(testConversions[0].gameSettings.players[1].connectCode, testConversions[1].gameSettings.players[0].connectCode);
+            Assert.AreEqual(testConversions[0].gameSettings.players[1].characterId, testConversions[1].gameSettings.players[0].characterId);
+
+            Assert.AreEqual(testConversions[0].gameSettings.stageId, testConversions[1].gameSettings.stageId);
+        }
+
+        [TestMethod]
+        public async Task testGetConversionsWithConstraints()
+        {
+            InterOpHandler.setProjectPath(userVars.interOpPath);
+
+            string dummyConstraints1 = "userId:MMRP#834 userChar: oppChar: stageId:8";
+            List<GameConversions?> testConversions = 
+                await InterOpHandler.GetAllConversions(dummyConstraints1, "file:\\" + userVars.edgeguardSlpPath + "," + "file:\\" + userVars.meVsPinkSlpPath + "," + "file:\\" + userVars.meVsIcsYoshis + "," + "file:\\" + userVars.oogaVsFalconYoshis);
+
+            Assert.AreEqual(1, testConversions.Count);
+
+            string dummyConstraints2 = "userId: userChar: oppChar: stageId:8";
+            List<GameConversions?> testConversions2 = 
+                await InterOpHandler.GetAllConversions(dummyConstraints2, "file:\\" + userVars.edgeguardSlpPath + "," + "file:\\" + userVars.meVsPinkSlpPath + "," + "file:\\" + userVars.meVsIcsYoshis + "," + "file:\\" + userVars.oogaVsFalconYoshis);
+            Assert.AreEqual(2, testConversions2.Count);
         }
     }
 }
