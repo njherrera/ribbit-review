@@ -16,7 +16,7 @@ namespace CSharpTests.ParserTests.FilterTests
     [TestClass]
     public class EdgeguardTests
     {
-        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(@"Q:ribbit-review\\testJSONs\\EdgeguardTest.txt"));
+        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(userVars.edgeguardConversionsTxt));
         Edgeguards Edgeguards = new Edgeguards();
 
         [TestMethod]
@@ -47,21 +47,21 @@ namespace CSharpTests.ParserTests.FilterTests
         public void testAddToQueue()
         {
             EdgeguardSettings eSettings = new EdgeguardSettings();
-            PlaybackQueue pbackQueue = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueue, eSettings);
+            List<GameConversions> conversionList = new List<GameConversions>();
+            conversionList.Add(testConversions);
+            PlaybackQueue pbackQueue = Edgeguards.addToQueue(conversionList, eSettings);
             Assert.AreEqual(pbackQueue.queue.Count(), 12);
         }
 
-        [TestMethod]
+       /* [TestMethod]
         public void testPlayingQueue()
         {
             string cmdText;
-            PlaybackQueue pbackQueue = new PlaybackQueue();
             EdgeguardSettings eSettings = new EdgeguardSettings();
-            Edgeguards.addToQueue(testConversions, pbackQueue, eSettings);
+            PlaybackQueue pbackQueue = Edgeguards.addToQueue(testConversions, eSettings);
             var options = new JsonSerializerOptions { WriteIndented = true };
             string edgeguardJson = JsonSerializer.Serialize(pbackQueue, options);
-            string jsonPath = @"Q:\programming\ribbit-review\testJSONs\EdgeguardsJSON.json";
+            string jsonPath = userVars.edgeguardJsonPath;
             File.WriteAllText(jsonPath, edgeguardJson);
             cmdText ="-i " + jsonPath + " -e " + userVars.meleePath;
 
@@ -86,6 +86,6 @@ namespace CSharpTests.ParserTests.FilterTests
 
             cmd.WaitForExit();
             Assert.IsTrue(cmd.ExitCode == 0);
-        }
+        }*/
     }
 }

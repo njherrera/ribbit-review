@@ -27,7 +27,6 @@ namespace GUI
                 services.AddSingleton<IFilesService>(filesService);
                 Services = services.BuildServiceProvider();
                 Ioc.Default.ConfigureServices(Services);
-
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = new MainViewModel(),

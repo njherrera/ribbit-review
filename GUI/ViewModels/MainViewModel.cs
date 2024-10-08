@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GUI.Models;
 using System.Text.Json;
+using Jering.Javascript.NodeJS;
 
 namespace GUI.ViewModels
 {
@@ -108,7 +109,7 @@ namespace GUI.ViewModels
         {
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
-            var selectedPaths = await SelectSlpFiles(cancelToken);
+            List<string> selectedPaths = await SelectSlpFiles(cancelToken);
 
             Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> 
             { // once user has clicked the apply filter button, their config is locked-in and we can grab it from the active filter VM
@@ -122,24 +123,16 @@ namespace GUI.ViewModels
             {
                 constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
             }
-            // TODO: Replace call to PipeManager w/ call to SlippiJSInterOp.GetFileConversions(string locations, string constraints) 
+            object[] args = { constraints, string.Join(",", selectedPaths) };
 
-  /*    
-            PlaybackQueue returnQueue = new PlaybackQueue(); 
-            ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
-            var options = new JsonSerializerOptions {  WriteIndented = true };
-            string filterJson = JsonSerializer.Serialize(returnQueue, options);
+            List<GameConversions>? requestedConversions =
+                await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", args);
+            PlaybackQueue conversionQueue = ActiveFilterVM.applyFilter(requestedConversions);
 
-            await SaveJsonFile(filterJson);*/
-        }
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string filterJson = JsonSerializer.Serialize(conversionQueue, options);
 
-        // TODO: delete this + make new benchmarking method for SlippiJSInterOp functionality
-        public List<GameConversions> JsonToGCList(string json)
-        {
-            List<GameConversions> requestedConversions = new List<GameConversions>();
-
-            requestedConversions = JsonSerializer.Deserialize<List<GameConversions>>(json);
-            return requestedConversions;
+            await SaveJsonFile(filterJson);
         }
 
         public ICommand ViewJsonCommand { get; }
@@ -291,7 +284,7 @@ namespace GUI.ViewModels
         public void checkForPaths()
         {
 #if DEBUG
-            string devPath = @"Q:/programming/ribbit-review/GUI/UserPaths.xml";
+            string devPath = @"Q:/ribbit-review/GUI/UserPaths.xml";
             if (File.Exists(devPath))
             {
                 userPaths = deserializeUserPaths(devPath);

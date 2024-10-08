@@ -27,4 +27,8 @@
     <ProjectReference Include="..\SlippiJSInterOp\SlippiJSInterOp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ParserTests\JsonObjectTests\" />
+  </ItemGroup>
+
 </Project>

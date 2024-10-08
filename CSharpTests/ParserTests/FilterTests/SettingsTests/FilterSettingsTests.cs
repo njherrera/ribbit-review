@@ -2,6 +2,7 @@
 using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
 using Newtonsoft.Json.Linq;
+using SlippiJSInterOp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,43 +23,45 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
          * # of unsuccessful Sheik edgeguards: 4
          * # of unsuccessful Falco edgeguards: 4
          */
-        GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(@"Q:\\programming\\ribbit-review\\testJSONs\\EdgeguardSettingsTest.json"));
         Edgeguards Edgeguards = new Edgeguards();
 
         [TestMethod]
-        public void testConvertingPlayer()
+        public async Task testConvertingPlayer()
         {
+            string dummyConstraints = "userId: userChar: oppChar: stageId: ";
+            List<GameConversions> testConversions = await InterOpHandler.GetAllConversions(dummyConstraints, userVars.edgeguardSlpPath);
+
             EdgeguardSettingsBuilder sheikBuilder = new EdgeguardSettingsBuilder();
             sheikBuilder.addUserID("mmrp#834");
             sheikBuilder.addConvertingPlayer("user");
             EdgeguardSettings sheikConverting = (EdgeguardSettings)sheikBuilder.Build();
             
-            PlaybackQueue pbackQueueSheik = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueueSheik, sheikConverting);
+            PlaybackQueue pbackQueueSheik = Edgeguards.addToQueue(testConversions, sheikConverting);
 
             EdgeguardSettingsBuilder falcoBuilder = new EdgeguardSettingsBuilder();
             falcoBuilder.addUserID("mmrp#834");
             falcoBuilder.addConvertingPlayer("opponent");
             EdgeguardSettings falcoConverting = (EdgeguardSettings)falcoBuilder.Build();
 
-            PlaybackQueue pbackQueueFalco = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueueFalco, falcoConverting);
+            PlaybackQueue pbackQueueFalco = Edgeguards.addToQueue(testConversions, falcoConverting);
 
             Assert.AreEqual(7, pbackQueueSheik.queue.Count());
             Assert.AreEqual(5, pbackQueueFalco.queue.Count());
         }
 
         [TestMethod]
-        public void testConversionKilled()
+        public async Task testConversionKilled()
         {
+            string dummyConstraints = "userId: userChar: oppChar: stageId: ";
+            List<GameConversions> testConversions = await InterOpHandler.GetAllConversions(dummyConstraints, userVars.edgeguardSlpPath);
+
             EdgeguardSettingsBuilder sheikBuilder = new EdgeguardSettingsBuilder();
             sheikBuilder.addUserID("MMRP#834");
             sheikBuilder.addConvertingPlayer("user");
             sheikBuilder.addConversionKilled(true);
             EdgeguardSettings sheikKilled = (EdgeguardSettings)sheikBuilder.Build();
 
-            PlaybackQueue sheikQueue = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, sheikQueue, sheikKilled);
+            PlaybackQueue sheikQueue = Edgeguards.addToQueue(testConversions, sheikKilled);
 
             EdgeguardSettingsBuilder falcoBuilder = new EdgeguardSettingsBuilder();
             falcoBuilder.addUserID("mmrp#834");
@@ -66,11 +69,10 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
             falcoBuilder.addConversionKilled(true);
             EdgeguardSettings falcoConverting = (EdgeguardSettings)falcoBuilder.Build();
 
-            PlaybackQueue pbackQueueFalco = new PlaybackQueue();
-            Edgeguards.addToQueue(testConversions, pbackQueueFalco, falcoConverting);
+            PlaybackQueue falcoQueue = Edgeguards.addToQueue(testConversions, falcoConverting);
 
             Assert.AreEqual(3, sheikQueue.queue.Count());
-            Assert.AreEqual(1, pbackQueueFalco.queue.Count());
+            Assert.AreEqual(1, falcoQueue.queue.Count());
         }
     }
 }
