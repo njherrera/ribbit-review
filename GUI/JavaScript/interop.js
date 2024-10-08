@@ -9,14 +9,14 @@ const { readFileSync } = require("fs");
  */
 
 
-function getAllConversions(constraints, filePaths) {
+function getAllConversions(constraints, paths) {
     let allConversions = []
 
     const constraintsObject = createConstraintsObject(constraints);
     var constraintsJSON = JSON.stringify(constraintsObject);
     console.log(constraintsJSON.toString());
 
-    let pathsArray = filePaths.split(",");
+    let pathsArray = paths.split(",");
     for (let i = 0; i < pathsArray.length; i++) {
         let pathURL = new URL(pathsArray[i]);
         var pathConversions = getGameConversions(pathURL, constraintsObject);
@@ -64,6 +64,12 @@ function checkGameConstraints(constraints, settings) {
     if (settings.isTeams == true) {
         //console.log("doubles game passed to getGameConversions");
         return false;
+    }
+    if (constraints.userId != "") {
+        const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
+        if (userPlayer == undefined) {
+            return false;
+        }
     }
     if (constraints.userChar !== "") { 
         // if there's no player in the replay w/ a matching connect code/in-game tag, userPlayer = undefined
@@ -184,5 +190,40 @@ function addConversion(conversion, game, settings) {
 }
 
 module.exports = {
-    getAllConversions,
+    getGameConversions: function (callback, location) {
+        let buffer = readFileSync(location); // reading file location into a buffer, THEN making a SlippiGame w/ the buffer is a workaround for JS not having same file access perms that C# does
+        const game = new SlippiGame(buffer);
+        const settings = game.getSettings();
+        const stats = game.getStats();
+
+        let gameConversions = {
+            gameLocation: location,
+            gameSettings: settings,
+            conversionList: []
+        };
+
+        let conversions =
+            stats === null || stats === void 0 ? void 0 : stats.conversions;
+        conversions.forEach(function (conversion) {
+            gameConversions.conversionList.push(addConversion(conversion, game, settings))
+        })
+        callback(null, gameConversions);
+    }, 
+    getAllConversions: function (callback, constraints, paths) {
+        let allConversions = [];
+
+        const constraintsObject = createConstraintsObject(constraints);
+        var constraintsJSON = JSON.stringify(constraintsObject);
+        console.log(constraintsJSON.toString());
+
+        let pathsArray = paths.split(",");
+        for (let i = 0; i < pathsArray.length; i++) {
+            let pathURL = new URL(pathsArray[i]);
+            var pathConversions = getGameConversions(pathURL, constraintsObject);
+            if (pathConversions != null) { // if pathConversions is null, it means that it was either a doubles replay or didn't match constraints
+                allConversions.push(pathConversions);
+            } else continue;
+        }
+        callback(null, allConversions);
+    }
 }

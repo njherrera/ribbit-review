@@ -90,7 +90,7 @@ namespace GUI.Services
 
         public static FilePickerFileType MeleeIso { get; } = new("SSBM Iso")
         {
-            Patterns = new[] {"*Melee*1.02*.iso"}
+            Patterns = new[] {"*Melee*.iso"}
         };
 
     }

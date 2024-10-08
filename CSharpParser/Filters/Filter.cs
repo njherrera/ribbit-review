@@ -8,7 +8,17 @@ namespace CSharpParser.Filters
     {
         public FilterType FilterType { get; init; }
 
-        public void addToQueue(GameConversions gameConversions, PlaybackQueue pbackQueue, FilterSettings fSettings)
+        public PlaybackQueue addToQueue(List<GameConversions> allConversions, FilterSettings fSettings)
+        {
+            PlaybackQueue pbackQueue = new PlaybackQueue();
+            foreach (GameConversions gameConversions in allConversions)
+            {
+                checkGameConversions(gameConversions, fSettings, pbackQueue);
+            }
+            return pbackQueue;
+        }
+
+        private void checkGameConversions(GameConversions gameConversions, FilterSettings fSettings, PlaybackQueue pbackQueue)
         {
             foreach (Conversion conversion in gameConversions.conversionList)
             {

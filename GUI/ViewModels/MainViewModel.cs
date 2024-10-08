@@ -6,26 +6,18 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
-using NamedPipeAPI;
 using CSharpParser.JSON_Objects;
-using CSharpParser.Filters;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Diagnostics;
-using CSharpParser.SlpJSObjects;
 using GUI.Settings;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using CSharpParser.Filters.Settings;
-using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 using GUI.Models;
-using GUI.Helpers.StringReaderStream;
-using System.Collections.Immutable;
 using System.Text.Json;
+using Jering.Javascript.NodeJS;
 
 namespace GUI.ViewModels
 {
@@ -94,7 +86,7 @@ namespace GUI.ViewModels
             {
                 this.stageId = null;
             }
-            else { this.stageId = ((int)value - 1); }
+            else { this.stageId = ((int)value); }
         }
 
         public List<FilterViewModel> AvailableFilterVMs { get; } = new List<FilterViewModel>()
@@ -117,9 +109,9 @@ namespace GUI.ViewModels
         {
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
-            var result = await SelectSlpFiles(cancelToken);
+            List<string> selectedPaths = await SelectSlpFiles(cancelToken);
 
-            Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> // using this to pass GameSettings constraints to JS
+            Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> 
             { // once user has clicked the apply filter button, their config is locked-in and we can grab it from the active filter VM
                 {"userId", ActiveFilterVM.UserId},
                 {"userChar", this.userCharId.ToString()},
@@ -131,26 +123,16 @@ namespace GUI.ViewModels
             {
                 constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
             }
-            string requestedPaths = constraints.ToString() + "|" + string.Join(",", result);
-            PipeManager.sendRequest(requestedPaths);
+            object[] args = { constraints, string.Join(",", selectedPaths) };
 
-            List<GameConversions> requestedConversions = JsonToGCList(PipeManager.readJson());
+            List<GameConversions>? requestedConversions =
+                await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", args);
+            PlaybackQueue conversionQueue = ActiveFilterVM.applyFilter(requestedConversions);
 
-            PlaybackQueue returnQueue = new PlaybackQueue(); 
-            ActiveFilterVM.applyFilter(requestedConversions, returnQueue);
-            var options = new JsonSerializerOptions {  WriteIndented = true };
-            string filterJson = JsonSerializer.Serialize(returnQueue, options);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string filterJson = JsonSerializer.Serialize(conversionQueue, options);
 
-            PipeManager.openRequestPipe();
             await SaveJsonFile(filterJson);
-        }
-
-        public List<GameConversions> JsonToGCList(string json)
-        {
-            List<GameConversions> requestedConversions = new List<GameConversions>();
-
-            requestedConversions = JsonSerializer.Deserialize<List<GameConversions>>(json);
-            return requestedConversions;
         }
 
         public ICommand ViewJsonCommand { get; }
@@ -302,7 +284,7 @@ namespace GUI.ViewModels
         public void checkForPaths()
         {
 #if DEBUG
-            string devPath = @"Q:/programming/ribbit-review/GUI/UserPaths.xml";
+            string devPath = @"Q:/ribbit-review/GUI/UserPaths.xml";
             if (File.Exists(devPath))
             {
                 userPaths = deserializeUserPaths(devPath);

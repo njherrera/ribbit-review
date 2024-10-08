@@ -7,6 +7,15 @@
 
 TargetFolder/
 
+# Named pipe API from other branch
+NamedPipeAPI/
+
+# JSPipes folder from other branch
+JSPipes/
+
+# SlippiJSInterOp folder (now just used for testing/benchmarking)
+SlippiJSInterOp/
+
 # test JSONs
 testJSONs/
 

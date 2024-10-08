@@ -9,4 +9,10 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="TargetFolder\**" />
+    <EmbeddedResource Remove="TargetFolder\**" />
+    <None Remove="TargetFolder\**" />
+  </ItemGroup>
+
 </Project>

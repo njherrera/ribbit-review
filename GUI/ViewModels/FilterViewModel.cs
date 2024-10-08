@@ -46,13 +46,10 @@ namespace GUI.ViewModels
             ConversionDidNotKillCommand = new RelayCommand(ConversionDidNotKill);
         }
 
-        public void applyFilter(List<GameConversions> allGameConversions, PlaybackQueue playbackQueue)
+        public PlaybackQueue applyFilter(List<GameConversions> allGameConversions)
         {
             FilterSettings fSettings = Builder.Build();
-            foreach (GameConversions conversions in allGameConversions)
-            {
-                this.Filter.addToQueue(conversions, playbackQueue, fSettings);
-            }
+            return this.Filter.addToQueue(allGameConversions, fSettings);
         }
 
 /*        private bool checkGameSettings(GameConversions gameConversions)
