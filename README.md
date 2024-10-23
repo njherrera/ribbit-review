@@ -1,52 +1,43 @@
 # Design Info: 
 
-Ribbit Review is split into 4 main parts and 2 languages in terms of the application itself, and will likely stay that way for some time (names themselves are also a work in progress).
+Ribbit Review is split into 2 main parts and 2 languages in terms of the application itself, and will likely stay that way for some time (names themselves are also a work in progress).
 
-The overall goal of the project is to build a multiplatform (Windows + MacOS) desktop app that parses stats generated from user replays, queries the stats to find instances of user-specified situations, then replays them in Playback Dolphin.
+The overall goal of the project is to build a multiplatform (Windows + MacOS) desktop app that parses stats generated from Smash Bros. Melee replays, queries the stats to find instances of user-specified situations, then replays them in Playback Dolphin.
 
-In the long term, I also have plans to extend the same query logic to replay files of other players to find instances of the same situation where things go well, particularly replay files from the top level of competition (i.e. top 64 of a major tournament). For example, finding instances of a particular type of situation that end with the opponent being KO'd instead of living.
+In the long term, I also have plans to extend the same query logic to replay files of other players to find instances of the same situation where things go well, particularly replay files from the top level of competition (i.e. top 64 of a major tournament). For example, finding instances of a particular type of situation that end with the opponent being KO'd instead of surviving.
 
-Currently the project uses named pipe operations to exchange data between the C# and JavaScript code, sending JSON-formatted string data back and forth. This is what allows the CSharpParser class to parse the replay info (since the stats are generated with the JavaScript slippi-js library), but it can also be somewhat cumbersome to work with and I'm working on an alternative design using the Jint JavaScript interpreter. 
+Initially the project used named pipes in order to exchange data between the C# parser/GUI and the slippi-js library, but it now uses the Jering.Javascript.NodeJS library for C#/JS interop functionality. The GUI/JavaScript folder contains the JS code used to perform basic replay filtering + grab stats from replays matching the user's query, which is then called in the GUI via JeringTech's interop library. In deployment, MSBuild also copies that JavaScript folder into the output. One area of improvement in this department is implementing webpack, and bundling those JS assets (along with the required node_modules folder and possibly a Node.js executable) together.  
 
 ## GUI:
 
-Has references to CSharpParser and NamedPipeAPI but *not* JS code, and is what handles the GUI (of course). The GUI is what calls CSharpParser and NamedPipeAPI methods, and is the "main" C# project in terms of getting everything else rolling.
+References CSharpParser, and the project folder contains the JavaScript code used to get the conversion info from replays that we query to find situations. 
+
+Besides being (of course) a GUI following the MVVM design pattern, it's responsible for calling the interop functionality (to obtain the required stats for parsing), then calling CSharpParser functionality to parse those stats and end up with a JSON file/Playback Queue object containing each situation matching the query.
+
+In MVVM terms, the GUI is somewhat unique because it's concerned with View and View Model functionality, but not necessarily Model functionality. Instead, the views/view models of the GUI represent data structures and algorithmic parameters from the CSharpParser project (which is a class library).
 
 ## CSharpParser:
 
-Does not reference anything, and is responsible for parsing JSON files - converting them to C# objects and then analyzing those objects in order to do things like find edgeguard opportunities.
+Class library that does not reference anything, and is responsible for parsing JSON files - converting them to C# objects and then analyzing those objects in order to do things like find edgeguard opportunities.
 
-## NamedPipeAPI
+CSharpParser has representations of various data structures from slippi-js needed to make our queries, and also represents the stats/conversions from each game in a way that plays nice with C#. Additionally, it contains the logic for finding instances of different situations (represented as extensions of the abstract Filter class).
 
-Does not reference anything, and is responsible for operating the two named pipes that tie the C# code to the JS code. One pipe (Pipe A/Request Pipe) sends a request for a JSON file(s) describing a given replay/set of replays to JS, and the other receives said JSON file(s) from JS. 
-Specifics of how the pipes operate and what the JSON files look like are subject to change, but the basic principles will (likely) stay the same throughout the project. 
+Essentially, CSharpParser is responsible for parsing on two fronts - parsing raw JSON-formatted data into workable C# data structures, and then parsing through those data structures in order to make queries for occurrences of specific situations.
 
-This is also what allows the other C# parts of the project to not care about JS at all, and itself doesn't have any JS code.
-
-## SlippiJS
-
-Responsible for the other half of pipe operations, also creating JSON-like objects from .slp files to send through Pipe B.
-
-Does also contain a "Filters" folder with logic for finding edgeguard opportunities, but that's more for easy reference and filter logic will be handled by C#.
+Data structures from CSharpParser are also *used* by the GUI functionality to act as the model for its MVVM design, but the parser isn't inherently concerned with acting as a model for a GUI - it's entirely possible to use it by itself. 
 
 ## Program Flow
 
-For applying a Filter to a .slp file or files (the core functionality), the process broadly looks like:
+For applying a Filter to a .slp file/files (the core functionality), the process broadly looks like:
 
 1. (GUI) Select replay file(s) in file explorer to apply the chosen filter to
 
-2. (NamedPipeAPI.PipeManager) C# sends that file's URL through named pipe 1 to JS
+2. (GUI.MainViewModel) GUI uses C#/JS interop functionality to call getAllConversions method from JavaScript/interop.js (called with `List<GameConversions>? requestedConversions = await GetAllConversions(args)`)
 
-3. (SlippiJS.PipeManager) JS receives the file URL through named pipe 1
+3. (GUI/JavaScript/interop.js) JS creates a SlippiGame from each selected file, then gets the conversions from it along with the game's settings info
 
-4. (SlippiJS.RequestManager) JS creates a SlippiGame from the file URL read into a buffer, then gets the conversions from it
+4. (GUI.MainViewModel) `List<GameConversions>?` returned by interop call is then passed to the active Filter View Model's `applyFilter` method 
 
-5. (SlippiJS.PipeManager) JS converts the conversions to JSON format and sends them through named pipe 2 to C#
+5. (GUI.FilterViewModel) Currently selected filter is applied to the conversions from above step, returning a PlaybackQueue object with timestamps for all matching conversions that's formatted to be readable by Slippi Playback Dolphin
 
-6. (NamedPipeAPI.PipeManager) C# receives the JSON-formatted string of conversions through named pipe 2
-
-7. (CSharpParser) C# translates the JSON conversion list into C# types 
-
-8. (CSharpParser) C# applies whatever filter is currently selected in the GUI to the conversion list
-
-9. (GUI) Another file explorer window pops up to name and save the resulting JSON file
+6. (GUI.MainViewModel) File explorer window pops up to save the resulting PlaybackQueue object as a JSON file, which can then be played in Slippi Playback Dolphin

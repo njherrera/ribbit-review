@@ -3,13 +3,9 @@ using CommunityToolkit.Mvvm.Input;
 using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
-using CSharpParser.SlpJSObjects;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GUI.ViewModels

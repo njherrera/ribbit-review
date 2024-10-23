@@ -1,15 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CSharpParser.Filters.Settings;
+﻿using CSharpParser.Filters.Settings;
 using CSharpParser.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ReactiveUI;
-using System.Windows.Input;
-using CommunityToolkit.Mvvm.Input;
-using CSharpParser.JSON_Objects;
 
 namespace GUI.ViewModels
 {
