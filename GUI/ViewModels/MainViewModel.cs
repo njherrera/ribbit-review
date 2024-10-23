@@ -18,6 +18,7 @@ using System.Linq;
 using GUI.Models;
 using System.Text.Json;
 using Jering.Javascript.NodeJS;
+using Serilog;
 
 namespace GUI.ViewModels
 {
@@ -125,8 +126,8 @@ namespace GUI.ViewModels
             }
             object[] args = { constraints, string.Join(",", selectedPaths) };
 
-            List<GameConversions>? requestedConversions =
-                await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", args);
+            List<GameConversions>? requestedConversions = await GetAllConversions(args);
+
             PlaybackQueue conversionQueue = ActiveFilterVM.applyFilter(requestedConversions);
 
             var options = new JsonSerializerOptions { WriteIndented = true };
@@ -146,9 +147,15 @@ namespace GUI.ViewModels
             // making an array of dolphin exe params because ArgumentList naturally handles paths with spaces in them
             // passing --cout gets us access to dolphin's output feed, and in the current playback build skipping through a queue json in the replay viewer breaks the playbackqueue
             string[] dolphinParamList = { "-i", result, "-e", userPaths.MeleeIsoPath, "--cout", "--hide-seekbar" };
-            runCmdPrompt(dolphinParamList);
+            try
+            {
+                runCmdPrompt(dolphinParamList);
+            } 
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception occurred when calling runCmdPrompt from ViewJson");
+            }
         }
-
 
         private void runCmdPrompt(string[] dolphinParams)
         {
@@ -192,11 +199,26 @@ namespace GUI.ViewModels
             }
         }
         
+        private async Task<List<GameConversions>?> GetAllConversions(object[] interOpArgs)
+        {
+            List<GameConversions>? result;
+            try
+            {
+                result = await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", interOpArgs);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception occurred when calling getAllConversions from ApplyFilter");
+                result = null;
+            }
+            return result;
+        }
+
         // helper method used for selecting .slp file(s) to apply filter to
         private async Task<List<string>> SelectSlpFiles(CancellationToken token)
         {
             List<string> fullPaths = new List<string>();
-            ErrorMessages?.Clear();
             try
             {
                 var filesService = Ioc.Default.GetService<IFilesService>();
@@ -223,9 +245,9 @@ namespace GUI.ViewModels
                     fullPaths.Add(filePath);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ErrorMessages?.Add(e.Message);
+                Log.Error(ex, "Exception occurred when calling SelectSlpFiles from ApplyFilter");
             }
             return fullPaths;
         }
@@ -235,7 +257,6 @@ namespace GUI.ViewModels
         private async Task<string> SelectJsonFile(CancellationToken token)
         {
             string fullPath = "";
-            ErrorMessages?.Clear();
             try
             {
                 var filesService = Ioc.Default.GetService<IFilesService>();
@@ -250,15 +271,14 @@ namespace GUI.ViewModels
                 var result = file.Path.ToString();
                 fullPath = result.Replace(@"file:///", "");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ErrorMessages?.Add(e.Message);
+                Log.Error(ex, "Exception occurred when calling SelectJsonFile from ViewJson");
             }
             return fullPath;
         }
         private async Task SaveJsonFile(string json)
         {
-            ErrorMessages?.Clear();
             try
             {
                 var filesService = Ioc.Default.GetService<IFilesService>();
@@ -271,9 +291,9 @@ namespace GUI.ViewModels
                 await using var writeStream = await file.OpenWriteAsync();
                 await stream.CopyToAsync(writeStream);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ErrorMessages?.Add(e.Message);
+                Log.Error(ex, "Exception occurred when calling SaveJsonFile from ApplyFilter");
             }
         }
 
@@ -333,7 +353,6 @@ namespace GUI.ViewModels
         private async Task<string> SelectMeleeIso(CancellationToken token)
         {
             string fullPath = "";
-            ErrorMessages?.Clear();
             try
             {
                 var filesService = Ioc.Default.GetService<IFilesService>();
@@ -348,9 +367,9 @@ namespace GUI.ViewModels
                 var result = file.Path.ToString();
                 fullPath = result.Replace(@"file:///", ""); 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ErrorMessages?.Add(e.Message);
+                Log.Error(ex, "Exception occurred when calling SelectMeleeIso at app startup");
             }
             return fullPath;
         }

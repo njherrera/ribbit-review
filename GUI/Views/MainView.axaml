@@ -41,6 +41,7 @@
 					<TextBlock TextWrapping="Wrap"
 							   Margin="15,20,0,20"
 							   FontSize="16"
+							   Foreground="Black"
 						       Width="300">Select user character:</TextBlock>
 					<ComboBox ItemsSource="{Binding AvailableChars}"
 							  SelectedIndex="0"
@@ -60,6 +61,7 @@
 					<TextBlock TextWrapping="Wrap"
 							   Margin="15,20,0,20"
 							   FontSize="16"
+							   Foreground="Black"
 						       Width="300">Select opponent's character:</TextBlock>
 					<ComboBox ItemsSource="{Binding AvailableChars}"
 							  SelectedIndex="0"
@@ -79,6 +81,7 @@
 					<TextBlock TextWrapping="Wrap"
 							   Margin="15,20,0,20"
 							   FontSize="16"
+							   Foreground="Black"
 						       Width="300">Select stage:</TextBlock>
 					<ComboBox ItemsSource="{Binding AvailableStages}"
 							  SelectedIndex="0"
@@ -95,8 +98,24 @@
 		</Grid>
 		<!--Filter application buttons-->
 		<Grid Background="DarkSlateGray" Height="125" ColumnDefinitions="500, 500">
-			<Button Content="Apply filter to games (results in JSON file)" Command="{Binding ApplyFilterCommand}" HorizontalAlignment="Center" Grid.Column="0"/>
-			<Button Content="Select JSON to watch in replay viewer" Command="{Binding ViewJsonCommand}" HorizontalAlignment="Center" Grid.Column="1"/>
+			<Button Content="Apply filter to games (results in JSON file)" 
+					Command="{Binding ApplyFilterCommand}"
+					Background="Gray"
+					Foreground="White"
+					BorderBrush="White"
+					BorderThickness="2"
+					CornerRadius="7"
+					HorizontalAlignment="Center" 
+					Grid.Column="0"/>
+			<Button Content="Select JSON to watch in replay viewer" 
+					Command="{Binding ViewJsonCommand}" 
+					Background="Gray"
+					Foreground="White"
+					BorderBrush="White"
+					BorderThickness="2"
+					CornerRadius="7"
+					HorizontalAlignment="Center" 
+					Grid.Column="1"/>
 		</Grid>
 	</StackPanel>
 </UserControl>

@@ -1,5 +1,5 @@
 ﻿using Avalonia;
-using Avalonia.ReactiveUI;
+using Serilog;
 using System;
 
 namespace GUI
@@ -15,10 +15,15 @@ namespace GUI
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace();
+        {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File("logs/RR.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
+            return AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont();
+        }
     }
 }

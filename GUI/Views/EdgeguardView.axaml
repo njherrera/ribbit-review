@@ -12,13 +12,16 @@
 			<TextBlock TextWrapping="Wrap" 
 					   Margin="15,20,0,20"
 					   FontSize="16"
+					   Foreground="Black"
 					   Width="175">Edgeguarding player:</TextBlock>
 			<RadioButton  GroupName="Edgeguarding player" 
 						  FontSize="16"
+						  Foreground="Black"
 						  Content="Me" 
 						  Command="{Binding ConvertingPlayerToMeCommand}"/>
 			<RadioButton GroupName="Edgeguarding player" 
 						 FontSize="16"
+						 Foreground="Black"
 						 Content="Opponent" 
 						 Command="{Binding ConvertingPlayerToOppCommand}"/>
 		</StackPanel>
@@ -26,17 +29,20 @@
 			<TextBlock TextWrapping="Wrap"
 					   Margin="15,20,0,20"
 					   FontSize="16"
+					   Foreground="Black"
 					   Width="175">Edgeguard killed?:</TextBlock>
 			<RadioButton GroupName="Edgeguard killed"
 						 VerticalAlignment="Top"
 						 Margin="0, 14"
 						 FontSize="16"
+						 Foreground="Black"
 						 Content="Yes" 
 						 Command="{Binding ConversionDidKillCommand}"/>
 			<RadioButton GroupName="Edgeguard killed" 
 						 VerticalAlignment="Top"
 						 Margin="0, 14"
 						 FontSize="16"
+						 Foreground="Black"
 						 Content="No" 
 						 Command="{Binding ConversionDidNotKillCommand}"/>
 		</StackPanel>

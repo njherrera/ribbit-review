@@ -7,7 +7,6 @@ using GUI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using CSharpParser.Filters.Settings;
 
 namespace GUI
 {
@@ -20,20 +19,24 @@ namespace GUI
 
         public override void OnFrameworkInitializationCompleted()
         {
+            FilesService filesService = new();
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IFilesService>(filesService);
+
+            Services = services.BuildServiceProvider();
+            Ioc.Default.ConfigureServices(Services);
+
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var services = new ServiceCollection();
-                FilesService filesService = new();
-                services.AddSingleton<IFilesService>(filesService);
-                Services = services.BuildServiceProvider();
-                Ioc.Default.ConfigureServices(Services);
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = new MainViewModel(),
                 };
                 
-            }
-
+            } 
+            
             base.OnFrameworkInitializationCompleted();
         }
 

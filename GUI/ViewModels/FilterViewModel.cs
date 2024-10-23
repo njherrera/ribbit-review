@@ -4,6 +4,7 @@ using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
 using CSharpParser.SlpJSObjects;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,17 @@ namespace GUI.ViewModels
         public PlaybackQueue applyFilter(List<GameConversions> allGameConversions)
         {
             FilterSettings fSettings = Builder.Build();
-            return this.Filter.addToQueue(allGameConversions, fSettings);
+            PlaybackQueue pBackQueue = new PlaybackQueue();
+
+            try
+            {
+                pBackQueue = this.Filter.addToQueue(allGameConversions, fSettings);
+            } 
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception occurred when calling active FilterViewModel's applyFilter method");
+            }
+            return pBackQueue;
         }
 
 /*        private bool checkGameSettings(GameConversions gameConversions)
