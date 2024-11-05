@@ -5,7 +5,8 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 			 xmlns:vm="using:GUI.ViewModels"
 			 x:Class="GUI.Views.EdgeguardView"
-			 x:DataType="vm:EdgeguardViewModel">
+			 x:DataType="vm:EdgeguardViewModel"
+			 xmlns:models="using:GUI.Models">
 
 	<DockPanel Width="500" Height="450">
 		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
@@ -45,6 +46,30 @@
 						 Foreground="Black"
 						 Content="No" 
 						 Command="{Binding ConversionDidNotKillCommand}"/>
+			<RadioButton GroupName="Edgeguard killed"
+						 VerticalAlignment="Top"
+						 Margin="0, 14"
+						 FontSize="16"
+						 Foreground="Black"
+						 Content="Either"
+						 Command="{Binding ResetConversionKilledCommand}"/>
+		</StackPanel>
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
+			<TextBlock TextWrapping="Wrap"
+					   Margin="15,20,0,20"
+					   FontSize="16"
+					   Foreground="Black"
+					   Width="175"> Move used to send offstage:</TextBlock>
+			<ComboBox ItemsSource="{Binding AvailableMoves}"
+							  SelectedIndex="0"
+							  SelectedItem="{Binding SelectedSendOffMove}"
+							  Margin="0,14">
+				<ComboBox.ItemTemplate>
+					<DataTemplate DataType="models:MoveType">
+						<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
 		</StackPanel>
 	</DockPanel>
 </UserControl>

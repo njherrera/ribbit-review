@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace GUI.ViewModels
 {
-    public abstract partial class FilterViewModel : ViewModelBase
+    public abstract partial class FilterViewModel : ViewModelBase 
     {
         [ObservableProperty]
         private string? _userId;
@@ -32,8 +32,6 @@ namespace GUI.ViewModels
         public FilterType FilterType { get; init; }
 
         public abstract FilterSettingsBuilder Builder { get; }
-        
-        public abstract Filter Filter { get; }
 
         public FilterViewModel()
         {
@@ -41,47 +39,10 @@ namespace GUI.ViewModels
             ConvertingPlayerToOppCommand = new RelayCommand(ConvertingPlayerToOpp);
             ConversionDidKillCommand = new RelayCommand(ConversionDidKill);
             ConversionDidNotKillCommand = new RelayCommand(ConversionDidNotKill);
+            ResetConversionKilledCommand = new RelayCommand(ResetConversionKilled);
         }
 
-        public PlaybackQueue applyFilter(List<GameConversions> allGameConversions)
-        {
-            FilterSettings fSettings = Builder.Build();
-            PlaybackQueue pBackQueue = new PlaybackQueue();
-
-            try
-            {
-                pBackQueue = this.Filter.addToQueue(allGameConversions, fSettings);
-            } 
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Exception occurred when calling active FilterViewModel's applyFilter method");
-            }
-            return pBackQueue;
-        }
-
-/*        private bool checkGameSettings(GameConversions gameConversions)
-        {
-            // checking if CharID >= 0 after checking for null because of workaround used in MainViewModel
-            // if user selects a character and then selects "any character", the CharId will be -1
-            if ((userCharId != null) && (userCharId >= 0)) 
-            {
-                string userCodeCaps = UserID.ToUpper();
-                List<Player> gamePlayers = gameConversions.GameSettings.Players;
-                return gamePlayers.Exists(x => (x.connectCode == userCodeCaps) && (x.characterId == userCharId));
-            }
-            else if ((opponentCharId != null) && (userCharId >= 0))
-            {
-                string userCodeCaps = UserID.ToUpper();
-                List<Player> gamePlayers = gameConversions.GameSettings.Players;
-                return gamePlayers.Exists(x => (x.connectCode != userCodeCaps) && (x.characterId == opponentCharId));
-            }
-            else if (stageId != null)
-            {
-                int? gameStageId = gameConversions.GameSettings.StageId;
-                return stageId.Equals(gameStageId);
-            }
-            else { return true; }
-        }*/
+        public abstract PlaybackQueue applyFilter(List<GameConversions> allGameConversions);
 
         public override string ToString()
         {
@@ -101,6 +62,12 @@ namespace GUI.ViewModels
             this.ConvertingPlayer = "opponent";
         }
 
+        public ICommand ResetConversionKilledCommand { get; }
+
+        private void ResetConversionKilled()
+        {
+            this.ConversionKilled = null;
+        }
         public ICommand ConversionDidKillCommand { get; }
 
         private void ConversionDidKill()

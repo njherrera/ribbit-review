@@ -29,7 +29,7 @@
 			</StackPanel>
 		</Grid>
 		<!--Filter settings-->
-		<Grid Background="DarkGray" Height="450" ColumnDefinitions="500, 500">
+		<Grid Background="DarkGray" Height="400" ColumnDefinitions="500, 500">
 			<StackPanel Grid.Column="0">
 				<ContentControl Content="{Binding ActiveFilterVM}"/>
 			</StackPanel>
@@ -96,9 +96,17 @@
 				</StackPanel>
 			</DockPanel>
 		</Grid>
+		<Grid Background="DarkGray" Height="50">
+			<TextBlock Grid.Column="1" 
+					   Foreground="Black"
+					   HorizontalAlignment="Center"  
+					   FontSize="16" FontWeight="Bold" 
+					   Text="{Binding FilterResult}">
+			</TextBlock>
+		</Grid>
 		<!--Filter application buttons-->
 		<Grid Background="DarkSlateGray" Height="125" ColumnDefinitions="500, 500">
-			<Button Content="Apply filter to games (results in JSON file)" 
+			<Button Content="Apply filter to replay files (creates playback queue file)" 
 					Command="{Binding ApplyFilterCommand}"
 					Background="Gray"
 					Foreground="White"
@@ -107,7 +115,7 @@
 					CornerRadius="7"
 					HorizontalAlignment="Center" 
 					Grid.Column="0"/>
-			<Button Content="Select JSON to watch in replay viewer" 
+			<Button Content="Load a playback queue into Slippi Dolphin Playback" 
 					Command="{Binding ViewJsonCommand}" 
 					Background="Gray"
 					Foreground="White"

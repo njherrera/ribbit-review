@@ -1,14 +1,17 @@
-﻿using CSharpParser.SlpJSObjects;
+﻿using CSharpParser.Filters.Settings;
+using CSharpParser.SlpJSObjects;
+using System.Runtime;
 
 namespace CSharpParser.Filters
 {
-    public class Edgeguards : Filter
+    public class Edgeguards<T> : Filter<T> where T : EdgeguardSettings
     {
+        private int ledgeCrossFrame;
 
-        public override bool isInstance(Conversion conversion, GameSettings settings)
+        public override bool IsInstance(Conversion conversion, GameSettings settings)
         {
             bool isEdgeguardPosition = false;
-            double ledgePosition = getLedgePositions(settings.stageId);
+            double ledgePosition = GetLedgePositions(settings.stageId);
             double leftLedge = ledgePosition * -1;
             double rightLedge = ledgePosition;
 
@@ -19,13 +22,46 @@ namespace CSharpParser.Filters
 
                 if (((converteeXPosition < leftLedge) && (converteeXPosition < converterXPosition)) || ((converteeXPosition > rightLedge) && (converteeXPosition > converterXPosition)))
                 {
+                    ledgeCrossFrame = (int)conversion.beingHitFrames[i].frame;
                     isEdgeguardPosition = true;
                 } else continue;
             }
             return isEdgeguardPosition;
         }
 
-        public static double getLedgePositions(int? stageId)
+        protected override bool CheckSettings(Conversion conversion, T fSettings)
+        {
+            // by default going to return true, since if every setting is null then user wants to see every instance of situation
+            bool passesCheck = true;
+
+            // check for edgeguarding player
+            if (fSettings.convertingPlayer != null && fSettings.userID != null)
+            {
+                if (CheckVictim(conversion, fSettings.userID, fSettings.convertingPlayer) == false) { return false; }
+            }
+            // check for whether conversion killed
+            if (fSettings.conversionKilled != null)
+            {
+                bool meetsCondition = fSettings.conversionKilled.Equals(conversion.didKill);
+                if (meetsCondition == false) { return false; }
+            }
+            if (fSettings.sendOffMove != null)
+            {
+                bool meetsCondition = fSettings.sendOffMove.Equals(CheckSendOffMove(conversion));
+                if (meetsCondition == false) { return false; }
+            }
+            return passesCheck;
+        }
+
+        private int CheckSendOffMove(Conversion conversion)
+        {
+            int moveID = -1;
+            Move sendOffMove = conversion.moves.Last(move => move.frame < ledgeCrossFrame && move.playerIndex == conversion.playerHitting);
+            moveID = sendOffMove.moveID;
+            return moveID;
+        }
+
+        public static double GetLedgePositions(int? stageId)
         {
             switch (stageId)
             {
@@ -51,6 +87,5 @@ namespace CSharpParser.Filters
                     return 0;
             }
         }
-
     }
 }

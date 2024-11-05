@@ -17,21 +17,22 @@ namespace CSharpTests.ParserTests.FilterTests
     public class EdgeguardTests
     {
         GameConversions testConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(userVars.edgeguardConversionsTxt));
-        Edgeguards Edgeguards = new Edgeguards();
+        Edgeguards<EdgeguardSettings> edgeguardFilter = new Edgeguards<EdgeguardSettings>(); 
 
         [TestMethod]
         public void testGetLedgePositions()
         {
-            Assert.AreEqual(Edgeguards.getLedgePositions(2), 63.35);
-            Assert.AreEqual(Edgeguards.getLedgePositions(3), 87.75);
-            Assert.AreEqual(Edgeguards.getLedgePositions(8), 56);
-            Assert.AreEqual(Edgeguards.getLedgePositions(28), 77.27);
-            Assert.AreEqual(Edgeguards.getLedgePositions(31), 68.4);
-            Assert.AreEqual(Edgeguards.getLedgePositions(32), 85.57);
-            Assert.AreEqual(Edgeguards.getLedgePositions(null), 0);
-            Assert.AreEqual(Edgeguards.getLedgePositions(100), 0);
+            
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(2), 63.35);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(3), 87.75);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(8), 56);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(28), 77.27);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(31), 68.4);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(32), 85.57);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(null), 0);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(100), 0);
 
-            Assert.AreEqual(Edgeguards.getLedgePositions(testConversions.gameSettings.stageId), 68.4);
+            Assert.AreEqual(Edgeguards<EdgeguardSettings>.GetLedgePositions(testConversions.gameSettings.stageId), 68.4);
         }
 
         [TestMethod]
@@ -39,8 +40,8 @@ namespace CSharpTests.ParserTests.FilterTests
         {
             Conversion shouldBeEdgeuard = testConversions.conversionList.ElementAt(6);
             Conversion notAnEdgeguard = testConversions.conversionList.ElementAt(2);
-            Assert.IsTrue(Edgeguards.isInstance(shouldBeEdgeuard, testConversions.gameSettings));
-            Assert.IsFalse(Edgeguards.isInstance(notAnEdgeguard, testConversions.gameSettings));
+            Assert.IsTrue(edgeguardFilter.IsInstance(shouldBeEdgeuard, testConversions.gameSettings));
+            Assert.IsFalse(edgeguardFilter.IsInstance(notAnEdgeguard, testConversions.gameSettings));
         }
 
         [TestMethod]
@@ -49,7 +50,7 @@ namespace CSharpTests.ParserTests.FilterTests
             EdgeguardSettings eSettings = new EdgeguardSettings();
             List<GameConversions> conversionList = new List<GameConversions>();
             conversionList.Add(testConversions);
-            PlaybackQueue pbackQueue = Edgeguards.addToQueue(conversionList, eSettings);
+            PlaybackQueue pbackQueue = edgeguardFilter.AddToQueue(conversionList, eSettings);
             Assert.AreEqual(pbackQueue.queue.Count(), 12);
         }
 

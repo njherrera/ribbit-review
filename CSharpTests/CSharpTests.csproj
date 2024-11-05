@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
+    <ProjectReference Include="..\GUI\GUI.csproj" />
     <ProjectReference Include="..\SlippiJSInterOp\SlippiJSInterOp.csproj" />
   </ItemGroup>
 

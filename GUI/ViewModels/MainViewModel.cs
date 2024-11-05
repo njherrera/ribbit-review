@@ -41,6 +41,9 @@ namespace GUI.ViewModels
         [ObservableProperty]
         private LegalStageType _selectedStage;
 
+        [ObservableProperty]
+        public string _filterResult;
+
         public CharacterType[] AvailableChars { get; } = Enum.GetValues<CharacterType>();
 
         public LegalStageType[] AvailableStages { get; } = Enum.GetValues<LegalStageType>();
@@ -108,6 +111,7 @@ namespace GUI.ViewModels
 
         private async void ApplyFilter()
         {
+            FilterResult = "";
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
             List<string> selectedPaths = await SelectSlpFiles(cancelToken);
@@ -130,10 +134,14 @@ namespace GUI.ViewModels
 
             PlaybackQueue conversionQueue = ActiveFilterVM.applyFilter(requestedConversions);
 
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string filterJson = JsonSerializer.Serialize(conversionQueue, options);
+            if (conversionQueue.queue.Count > 0)
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string filterJson = JsonSerializer.Serialize(conversionQueue, options);
 
-            await SaveJsonFile(filterJson);
+                await SaveJsonFile(filterJson);
+            }
+            else FilterResult = "No instances of situation found";
         }
 
         public ICommand ViewJsonCommand { get; }
@@ -199,7 +207,7 @@ namespace GUI.ViewModels
             }
         }
         
-        private async Task<List<GameConversions>?> GetAllConversions(object[] interOpArgs)
+        public async Task<List<GameConversions>?> GetAllConversions(object[] interOpArgs)
         {
             List<GameConversions>? result;
             try

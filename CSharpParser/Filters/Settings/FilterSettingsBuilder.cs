@@ -51,6 +51,9 @@
             return this;
         }
 
-        public abstract FilterSettings Build();
+        public FilterSettings Build()
+        {
+            return this.Settings;
+        }
     }
 }

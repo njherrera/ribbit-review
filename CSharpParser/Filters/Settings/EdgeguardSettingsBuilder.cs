@@ -11,9 +11,10 @@
             }
         }
 
-        public override FilterSettings Build()
+        public EdgeguardSettingsBuilder addSendOffMove(int? moveID)
         {
-            return this._settings;
+            _settings.sendOffMove = moveID;
+            return this;
         }
     }
 }
