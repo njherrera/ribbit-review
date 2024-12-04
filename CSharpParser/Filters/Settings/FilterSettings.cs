@@ -15,5 +15,6 @@ namespace CSharpParser.Filters.Settings
         public int[]? movesUsed { get; set; } // when user selects a move, its integer move ID will be used to set this and/or startingMove
         public int? startingMove { get; set; }
         public string? openingType { get; set; }
+        public bool? isLocalReplay { get; set; }
     }
 }

@@ -26,10 +26,10 @@ namespace CSharpParser.Filters
         {
             foreach (Conversion conversion in gameConversions.conversionList)
             {
-                if (conversion.beingHitFrames.Count() > 0 && IsInstance(conversion, gameConversions.gameSettings) == true &&  CheckSettings(conversion, fSettings) == true)
+                if (conversion.victimFrames.Count() > 0 && IsInstance(conversion, gameConversions.gameSettings) == true &&  CheckSettings(conversion, fSettings, gameConversions.gameSettings.players) == true)
                 {
-                    int? startFrame = conversion.beingHitFrames.First().frame;
-                    int? endFrame = conversion.beingHitFrames.Last().frame;
+                    int? startFrame = conversion.victimFrames.First().frame;
+                    int? endFrame = conversion.victimFrames.Last().frame;
                     QueueItem qi = new QueueItem(gameConversions.gameLocation, startFrame, endFrame);
                     pbackQueue.queue.Add(qi);
                 }
@@ -37,20 +37,30 @@ namespace CSharpParser.Filters
             }
         }
 
-        protected abstract bool CheckSettings(Conversion conversion, T fSettings);
+        protected abstract bool CheckSettings(Conversion conversion, T fSettings, List<Player> gamePlayers);
 
-        protected bool CheckVictim(Conversion conversion, string userID, string convertingPlayer)
+        protected bool CheckVictim(Conversion conversion, T fSettings, List<Player> gamePlayers)
         {
-            if (convertingPlayer.Equals("user"))
+            if (fSettings.convertingPlayer.Equals("user") && (fSettings.isLocalReplay == false))
             {
-                string userIDCaps = userID.ToUpper();
-                bool passesCheck = userIDCaps.Equals(conversion.hittingConnectCode);
+                string userIDCaps = fSettings.userID.ToUpper();
+                bool passesCheck = userIDCaps.Equals(conversion.attackerConnectCode);
+                return passesCheck;
+            } else if (fSettings.convertingPlayer.Equals("user") && (fSettings.isLocalReplay == true))
+            {
+                string userIDCaps = fSettings.userID.ToUpper();
+                bool passesCheck = userIDCaps.Equals(conversion.attackerNametag);
+                return passesCheck;
+            } else if (fSettings.convertingPlayer.Equals("opponent") && (fSettings.isLocalReplay == true))
+            {
+                string userIDCaps = fSettings.userID.ToUpper();
+                bool passesCheck = userIDCaps.Equals(conversion.victimNametag);
                 return passesCheck;
             }
-            else // if we're calling this and the user isn't marked as the converting player, the only other option is that the opponent is marked as the converting player
+            else
             {
-                string userIDCaps = userID.ToUpper();
-                bool passesCheck = userIDCaps.Equals(conversion.beingHitConnectCode);
+                string userIDCaps = fSettings.userID.ToUpper();
+                bool passesCheck = userIDCaps.Equals(conversion.victimConnectCode);
                 return passesCheck;
             }
         }

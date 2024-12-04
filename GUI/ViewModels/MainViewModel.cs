@@ -48,15 +48,8 @@ namespace GUI.ViewModels
 
         public LegalStageType[] AvailableStages { get; } = Enum.GetValues<LegalStageType>();
 
-        new Dictionary<string, int?> gameSettingsDict = new Dictionary<string, int?>
-        {
-            {"uId", null },
-            {"uChar", null},
-            {"oChar", null},
-            {"stage", null }
-        };
-
         private int? userCharId, opponentCharId, stageId;
+
         partial void OnUserCodeChanged(string value)
         {
             ActiveFilterVM.UserId = value.ToUpper();
@@ -102,7 +95,10 @@ namespace GUI.ViewModels
         {
             ApplyFilterCommand = new RelayCommand(ApplyFilter);
             ViewJsonCommand = new RelayCommand(ViewJson);
+            SelectSlippiCommand = new RelayCommand(SelectSlippi);
+            SelectLocalCommand = new RelayCommand(SelectLocal);
             _activeFilterVM = AvailableFilterVMs[0];
+            ActiveFilterVM.IsLocalReplay = false;
             checkForPaths();
         }
 
@@ -121,7 +117,8 @@ namespace GUI.ViewModels
                 {"userId", ActiveFilterVM.UserId},
                 {"userChar", this.userCharId.ToString()},
                 {"oppChar", this.opponentCharId.ToString()},
-                {"stageId", this.stageId.ToString()}
+                {"stageId", this.stageId.ToString()},
+                {"isLocal", ActiveFilterVM.IsLocalReplay.ToString()}
             };
             string constraints = "";
             foreach (KeyValuePair<string, string?> kvp in gameSettingsDict)
@@ -165,6 +162,19 @@ namespace GUI.ViewModels
             }
         }
 
+        public ICommand SelectSlippiCommand { get; }
+
+        private void SelectSlippi()
+        {
+            ActiveFilterVM.IsLocalReplay = false;
+        }
+
+        public ICommand SelectLocalCommand { get; }
+
+        private void SelectLocal()
+        {
+            ActiveFilterVM.IsLocalReplay = true;
+        }
         private void runCmdPrompt(string[] dolphinParams)
         {
             using (var dolphin = new Process())
@@ -239,14 +249,14 @@ namespace GUI.ViewModels
                 var result = files.ToList();
                 // .slp file names are in standard iso datetime format (YYYYMMDDTHHMMSS (date, T, time)), so we can use that to sort the list by date created without getting funky with avalonia IStorageFile properties
                 // code still looks a bit stinky, but every .slp file is formatted the same way (the T inbetween date and time and no colons/hyphens/what have you between different parts make it a bit funky for parsing as a DateTime)
-                result.Sort((x, y) =>
+/*                result.Sort((x, y) =>
                 {
                     ReadOnlySpan<char> xPathTrimmed = Path.GetFileNameWithoutExtension(x.Name.Substring(5));
                     DateTime xDT = new DateTime(int.Parse(xPathTrimmed.Slice(0, 4)), int.Parse(xPathTrimmed.Slice(4, 2)), int.Parse(xPathTrimmed.Slice(6, 2)), int.Parse(xPathTrimmed.Slice(9, 2)), int.Parse(xPathTrimmed.Slice(11, 2)), int.Parse(xPathTrimmed.Slice(13, 2)));
                     ReadOnlySpan<char> yPathTrimmed = Path.GetFileNameWithoutExtension(y.Name.Substring(5));
                     DateTime yDT = new DateTime(int.Parse(yPathTrimmed.Slice(0, 4)), int.Parse(yPathTrimmed.Slice(4, 2)), int.Parse(yPathTrimmed.Slice(6, 2)), int.Parse(yPathTrimmed.Slice(9, 2)), int.Parse(yPathTrimmed.Slice(11, 2)), int.Parse(yPathTrimmed.Slice(13, 2)));
                     return DateTime.Compare(xDT, yDT);
-                });
+                });*/
                 foreach (Avalonia.Platform.Storage.IStorageFile file in result)
                 {
                     string filePath = file.Path.ToString();

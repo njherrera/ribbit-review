@@ -18,23 +18,36 @@
 		<!-- Title bar-->
 		<Grid Background="Gray" Height= "25">
 			<StackPanel Grid.Column="0">
-				<Label FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center">ribbit review</Label>
+				<Label FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black">ribbit review</Label>
 			</StackPanel>
 		</Grid>
 		<!--User connect code area-->
-		<Grid Background="DarkGray" Height="100" Width="1000">
+		<Grid Background="DarkGray" Height="100" Width="1000" RowDefinitions="*,*,*">
 			<StackPanel Margin="0 15">
-				<TextBlock HorizontalAlignment="Center" Grid.Column="0">Enter your connect code (necessary for converting player/user character/opponent character): </TextBlock>
+				<TextBlock HorizontalAlignment="Center" Grid.Column="0" Foreground="Black">Enter your connect code or in-game tag (necessary for converting player/user character/opponent character): </TextBlock>
 				<TextBox Width="200" Margin="0 5" Text="{Binding UserCode}"/>
+			</StackPanel>
+			<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+				<RadioButton GroupName="Slippi/Local Replays"
+							 Margin="0,0,0,0"
+							 Foreground="Black"
+							 IsChecked="True"
+							 Content="Search replays from online play"
+							 Command="{Binding SelectSlippiCommand}"/>
+				<RadioButton GroupName="Slippi/Local Replays"
+							 Margin="10,0,0,0"
+							 Foreground="Black"
+							 Content="Search locally recorded offline replays"
+							 Command="{Binding SelectLocalCommand}"/>
 			</StackPanel>
 		</Grid>
 		<!--Filter settings-->
 		<Grid Background="DarkGray" Height="400" ColumnDefinitions="500, 500">
 			<StackPanel Grid.Column="0">
-				<ContentControl Content="{Binding ActiveFilterVM}"/>
+				<ContentControl Content="{Binding ActiveFilterVM}" Margin="0,40,0,0"/>
 			</StackPanel>
 			<!--User character-->
-			<DockPanel Width="500" Height="450" Grid.Column="1">
+			<DockPanel Width="500" Height="400" Grid.Column="1" Margin="0,40,0,0">
 				<StackPanel Orientation="Horizontal" 
 							Width="500" DockPanel.Dock="Top" 
 							Margin="5,10,5,10" Spacing="10">

@@ -7,6 +7,7 @@ using GUI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Jering.Javascript.NodeJS;
 
 namespace GUI
 {
@@ -27,6 +28,8 @@ namespace GUI
             Services = services.BuildServiceProvider();
             Ioc.Default.ConfigureServices(Services);
 
+           /* StaticNodeJSService.Configure<NodeJSProcessOptions>(options => options.NodeAndV8Options = "--inspect-brk");
+            StaticNodeJSService.Configure<OutOfProcessNodeJSServiceOptions>(options => options.InvocationTimeoutMS = -1);*/
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {

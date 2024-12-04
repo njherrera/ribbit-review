@@ -28,6 +28,8 @@ namespace GUI.ViewModels
         private int? _startingMove;
         [ObservableProperty]
         private string? _openingType;
+        [ObservableProperty]
+        private bool? _isLocalReplay;
 
         public FilterType FilterType { get; init; }
 
@@ -93,8 +95,13 @@ namespace GUI.ViewModels
         }
 
         partial void OnConversionKilledChanged(bool? value)
-         {
+        {
             Builder.addConversionKilled(value);
+        }
+
+        partial void OnIsLocalReplayChanged(bool? value)
+        {
+            Builder.addIsLocalReplay(value);
         }
     }
 }

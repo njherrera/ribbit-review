@@ -15,21 +15,21 @@ namespace CSharpParser.Filters
             double leftLedge = ledgePosition * -1;
             double rightLedge = ledgePosition;
 
-            for (int i = 0; i < conversion.beingHitFrames.Count(); i++)
+            for (int i = 0; i < conversion.victimFrames.Count(); i++)
             {
-                double? converterXPosition = conversion.hittingFrames.ElementAt(i).positionX;
-                double? converteeXPosition = conversion.beingHitFrames.ElementAt(i).positionX;
+                double? converterXPosition = conversion.attackerFrames.ElementAt(i).positionX;
+                double? converteeXPosition = conversion.victimFrames.ElementAt(i).positionX;
 
                 if (((converteeXPosition < leftLedge) && (converteeXPosition < converterXPosition)) || ((converteeXPosition > rightLedge) && (converteeXPosition > converterXPosition)))
                 {
-                    ledgeCrossFrame = (int)conversion.beingHitFrames[i].frame;
+                    ledgeCrossFrame = (int)conversion.victimFrames[i].frame;
                     isEdgeguardPosition = true;
                 } else continue;
             }
             return isEdgeguardPosition;
         }
 
-        protected override bool CheckSettings(Conversion conversion, T fSettings)
+        protected override bool CheckSettings(Conversion conversion, T fSettings, List<Player> gamePlayers)
         {
             // by default going to return true, since if every setting is null then user wants to see every instance of situation
             bool passesCheck = true;
@@ -37,7 +37,7 @@ namespace CSharpParser.Filters
             // check for edgeguarding player
             if (fSettings.convertingPlayer != null && fSettings.userID != null)
             {
-                if (CheckVictim(conversion, fSettings.userID, fSettings.convertingPlayer) == false) { return false; }
+                if (CheckVictim(conversion, fSettings, gamePlayers) == false) { return false; }
             }
             // check for whether conversion killed
             if (fSettings.conversionKilled != null)
@@ -56,7 +56,7 @@ namespace CSharpParser.Filters
         private int CheckSendOffMove(Conversion conversion)
         {
             int moveID = -1;
-            Move sendOffMove = conversion.moves.Last(move => move.frame < ledgeCrossFrame && move.playerIndex == conversion.playerHitting);
+            Move sendOffMove = conversion.moves.Last(move => move.frame < ledgeCrossFrame && move.playerIndex == conversion.attackerIndex);
             moveID = sendOffMove.moveID;
             return moveID;
         }

@@ -16,7 +16,7 @@
         public int? gameMode { get; set; }  // 2 = versus mode, 8 = online
         public int? language { get; set; }  // 0 = japanese, 1 = english
         public Dictionary<string, object>? gameInfoBlock { get; set; } // having this be a <string, object> dictionary is a bit stinky, these values will also not be accessed
-        public int? randomSeed { get; set; }  // random seed before the game start
+        public UInt32? randomSeed { get; set; }  // random seed before the game start
         public bool? isPAL { get; set; }
         public bool? isFrozenPS { get; set; }
         public MatchInfo matchInfo { get; set; }

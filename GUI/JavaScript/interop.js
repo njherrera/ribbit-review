@@ -13,8 +13,6 @@ function getAllConversions(constraints, paths) {
     let allConversions = []
 
     const constraintsObject = createConstraintsObject(constraints);
-    var constraintsJSON = JSON.stringify(constraintsObject);
-    console.log(constraintsJSON.toString());
 
     let pathsArray = paths.split(",");
     for (let i = 0; i < pathsArray.length; i++) {
@@ -39,18 +37,21 @@ function createConstraintsObject(constraints) {
     userId: "",
     userChar: "",
     oppChar: "",
-    stageId: ""
+    stageId: "",
+    isLocal: ""
     };
 
     const uId = indivConstraints[0].substring(indivConstraints[0].indexOf(":") + 1);
     const uChar = indivConstraints[1].substring(indivConstraints[1].indexOf(":") + 1);
     const oChar = indivConstraints[2].substring(indivConstraints[2].indexOf(":") + 1);
     const stage = indivConstraints[3].substring(indivConstraints[3].indexOf(":") + 1);
+    const local = indivConstraints[4].substring(indivConstraints[4].indexOf(":") + 1);
 
     gameConstraints.userId = uId;
     gameConstraints.userChar = uChar;
     gameConstraints.oppChar = oChar;
     gameConstraints.stageId = stage;
+    gameConstraints.isLocal = local;
     return gameConstraints;
 }
 /**
@@ -62,47 +63,51 @@ function createConstraintsObject(constraints) {
 function checkGameConstraints(constraints, settings) {
     // checking w/ separate if statements to make sure all relevant checks are executed
     if (settings.isTeams == true) {
-        //console.log("doubles game passed to getGameConversions");
         return false;
     }
-    if (constraints.userId != "") {
+    if (constraints.userId != "" && constraints.isLocal == "False") {
         const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
         if (userPlayer == undefined) {
             return false;
         }
     }
-    if (constraints.userChar !== "") { 
+    if (constraints.userId != "" && constraints.isLocal == "True") {
+        const userPlayer = settings.players.find(element => element.nametag.toString() === constraints.userId.toString());
+        if (userPlayer == undefined) {
+            return false;
+        }
+    }
+    if (constraints.userChar != "") { 
         // if there's no player in the replay w/ a matching connect code/in-game tag, userPlayer = undefined
         // need to handle case where userPlayer = undefined by also returning false (similar thing w/ checking oppChar)
-        const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
+        const userPlayer = settings.players.find(element =>
+            (element.connectCode.toString() === constraints.userId.toString()) || (element.nametag.toString() === constraints.userId.toString()));
         if (userPlayer == undefined) {
-            //console.log("userPlayer undefined, returning false");
             return false;
         }
         let passesCheck = (parseInt(constraints.userChar) == userPlayer.characterId);
         if (passesCheck == false) {
-            //console.log("user char does not match, returning false");
             return false;
         } // if int ID of user char does not match, return false - if true, continue with if statements
     }
     if (constraints.oppChar !== "") {
-        const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
+        const userPlayer = settings.players.find(element =>
+            (element.connectCode.toString() === constraints.userId.toString()) || (element.nametag.toString() === constraints.userId.toString()));
         if (userPlayer == undefined) {
-            //console.log("userPlayer undefined, returning false");
             return false;
         }
 
-        const oPlayer = settings.players.find(element => element.connectCode.toString() != constraints.userId.toString());
+        const oPlayer = settings.players.find(element =>
+            ((element.connectCode.toString() != constraints.userId.toString()) && element.connectCode != "")
+            || element.nametag.toString() != constraints.userId.toString());
         let passesCheck = (parseInt(constraints.oppChar) == oPlayer.characterId);
         if (passesCheck == false) {
-            //console.log("opponent character does not match, returning false");
             return false;
         }
     }
     if (constraints.stageId !== "") {
         let passesCheck = (parseInt(constraints.stageId) == settings.stageId);
-        if (passesCheck == false) {
-            //console.log("stage does not match, returning false");
+        if (passesCheck == false) { 
             return false;
         }
     }
@@ -122,7 +127,7 @@ function getGameConversions(location, constraints) {
     const settings = game.getSettings();
 
     if (checkGameConstraints(constraints, settings) == true) {
-        //console.log("replay matches constraints");
+        console.log("replay matches constraints");
         const stats = game.getStats();
 
         let gameConversions = {
@@ -138,7 +143,7 @@ function getGameConversions(location, constraints) {
         })
         return gameConversions;
     } else {
-        //console.log("replay does not match constraints");
+        console.log("replay does not match constraints");
         return null;
     }
 }
@@ -154,36 +159,52 @@ function addConversion(conversion, game, settings) {
     const startFrameNum = conversion.startFrame;
     const endFrameNum = conversion.endFrame;
 
-    const playerBeingHit = conversion.playerIndex;
-    const pbhConnectCode = settings.players[playerBeingHit].connectCode;
-    const playerHitting = conversion.lastHitBy;
-    const phConnectCode = settings.players[playerHitting].connectCode;
+    const victim = conversion.playerIndex;
+    const attacker = conversion.lastHitBy;
+    var victimPlayersIndex;
+    var attackerPlayersIndex;
+
+    // for games played offline, player index could be > 1 but player with lower player index will always correspond to the 0-index element in the settings.players[] array
+    // therefore to make sure we're accessing the correct settings.Players[], we compare the indices of each player 
+    // games played on slippi will always have players in ports 1 (index 0) and 2 (index 1), but offline games could have players in ports 3 (index 2) and/or 4 (index 3)
+    if (attacker > victim) {
+        attackerPlayersIndex = 1;
+        victimPlayersIndex = 0;
+    } else {
+        attackerPlayersIndex = 0;
+        victimPlayersIndex = 1;
+    }
+
+    const victimCode = settings.players[victimPlayersIndex].connectCode;
+    const attackerCode = settings.players[attackerPlayersIndex].connectCode;
 
     const frames = game.getFrames();
 
     // here we're setting up a JSON object that will eventually become an instance of the CSharpParser.SlpJSObjects.Conversion type
     var conversionFile = {
-        playerBeingHit: playerBeingHit,
-        beingHitConnectCode: pbhConnectCode,
-        playerHitting: playerHitting,
-        hittingConnectCode: phConnectCode,
+        victimIndex: victim,
+        victimConnectCode: victimCode,
+        victimNametag: settings.players[victimPlayersIndex].nametag,
+        attackerIndex: attacker,
+        attackerConnectCode: attackerCode,
+        attackerNametag: settings.players[attackerPlayersIndex].nametag,
         didKill: conversion.didKill,
         startPercent: conversion.startPercent,
         endPercent: conversion.endPercent,
         moves: conversion.moves,
         openingType: conversion.openingType,
-        beingHitFrames: [],
-        hittingFrames: []
+        victimFrames: [],
+        attackerFrames: []
     };
 
     for (var currentFrame = startFrameNum;
         currentFrame <= endFrameNum;
         currentFrame++)
     {
-        let beingHitFrame = frames[currentFrame].players[playerBeingHit].post;
-        let hittingFrame = frames[currentFrame].players[playerHitting].post;
-        conversionFile.beingHitFrames.push(beingHitFrame);
-        conversionFile.hittingFrames.push(hittingFrame);
+        let victimFrame = frames[currentFrame].players[victim].post;
+        let attackerFrame = frames[currentFrame].players[attacker].post;
+        conversionFile.victimFrames.push(victimFrame);
+        conversionFile.attackerFrames.push(attackerFrame);
     }
 
     return conversionFile;
@@ -213,8 +234,6 @@ module.exports = {
         let allConversions = [];
 
         const constraintsObject = createConstraintsObject(constraints);
-        var constraintsJSON = JSON.stringify(constraintsObject);
-        console.log(constraintsJSON.toString());
 
         let pathsArray = paths.split(",");
         for (let i = 0; i < pathsArray.length; i++) {

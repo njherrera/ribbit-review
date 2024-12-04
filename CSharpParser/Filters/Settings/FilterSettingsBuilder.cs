@@ -51,6 +51,12 @@
             return this;
         }
 
+        public FilterSettingsBuilder addIsLocalReplay(bool? isLocalReplay)
+        {
+            Settings.isLocalReplay = isLocalReplay;
+            return this;
+        }
+
         public FilterSettings Build()
         {
             return this.Settings;
