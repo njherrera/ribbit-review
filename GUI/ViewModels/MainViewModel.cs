@@ -19,12 +19,14 @@ using GUI.Models;
 using System.Text.Json;
 using Jering.Javascript.NodeJS;
 using Serilog;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 
 namespace GUI.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        private UserPaths userPaths;
+        private UserPaths? userPaths;
 
         [ObservableProperty]
         private FilterViewModel _activeFilterVM;
@@ -99,7 +101,7 @@ namespace GUI.ViewModels
             SelectLocalCommand = new RelayCommand(SelectLocal);
             _activeFilterVM = AvailableFilterVMs[0];
             ActiveFilterVM.IsLocalReplay = false;
-            checkForPaths();
+            userPaths = UserPaths.CheckForPaths();
         }
 
 
@@ -145,6 +147,11 @@ namespace GUI.ViewModels
 
         private async void ViewJson()
         {
+            if (userPaths is null)
+            {
+                bool userGavePath = await PromptForPaths();
+                if (userGavePath == false) { return; }
+            }
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectJsonFile(cancelToken);
@@ -161,7 +168,26 @@ namespace GUI.ViewModels
                 Log.Error(ex, "Exception occurred when calling runCmdPrompt from ViewJson");
             }
         }
+        private async Task<bool> PromptForPaths()
+        {
+            bool response = false;
+            try
+            {
+                var box = MessageBoxManager.GetMessageBoxStandard("No path to a Melee Iso detected", "Would you like to choose a valid SSBM Iso to use for viewing Playback Queues?", ButtonEnum.YesNo);
 
+                var result = await box.ShowAsync();
+                if (result == ButtonResult.Yes)
+                {
+                    response = true;
+                    userPaths = await UserPaths.CreateUserPaths();
+                }
+                else response = false;
+            } catch (Exception ex) 
+            { 
+                Log.Error(ex, "Exception occurred when calling PromptForPaths from ViewJson");
+            }
+            return response;
+        }
         public ICommand SelectSlippiCommand { get; }
 
         private void SelectSlippi()
@@ -247,16 +273,7 @@ namespace GUI.ViewModels
 
                 var files = await filesService.OpenSlpFilesAsync();
                 var result = files.ToList();
-                // .slp file names are in standard iso datetime format (YYYYMMDDTHHMMSS (date, T, time)), so we can use that to sort the list by date created without getting funky with avalonia IStorageFile properties
-                // code still looks a bit stinky, but every .slp file is formatted the same way (the T inbetween date and time and no colons/hyphens/what have you between different parts make it a bit funky for parsing as a DateTime)
-/*                result.Sort((x, y) =>
-                {
-                    ReadOnlySpan<char> xPathTrimmed = Path.GetFileNameWithoutExtension(x.Name.Substring(5));
-                    DateTime xDT = new DateTime(int.Parse(xPathTrimmed.Slice(0, 4)), int.Parse(xPathTrimmed.Slice(4, 2)), int.Parse(xPathTrimmed.Slice(6, 2)), int.Parse(xPathTrimmed.Slice(9, 2)), int.Parse(xPathTrimmed.Slice(11, 2)), int.Parse(xPathTrimmed.Slice(13, 2)));
-                    ReadOnlySpan<char> yPathTrimmed = Path.GetFileNameWithoutExtension(y.Name.Substring(5));
-                    DateTime yDT = new DateTime(int.Parse(yPathTrimmed.Slice(0, 4)), int.Parse(yPathTrimmed.Slice(4, 2)), int.Parse(yPathTrimmed.Slice(6, 2)), int.Parse(yPathTrimmed.Slice(9, 2)), int.Parse(yPathTrimmed.Slice(11, 2)), int.Parse(yPathTrimmed.Slice(13, 2)));
-                    return DateTime.Compare(xDT, yDT);
-                });*/
+
                 foreach (Avalonia.Platform.Storage.IStorageFile file in result)
                 {
                     string filePath = file.Path.ToString();
@@ -313,100 +330,6 @@ namespace GUI.ViewModels
             {
                 Log.Error(ex, "Exception occurred when calling SaveJsonFile from ApplyFilter");
             }
-        }
-
-        // checkForPaths() is run at the end of the MainViewModel constructor, and checks for a saved instance of the user's playback dolphin .exe and melee .iso paths
-        // we need these paths in order to view a json file in playback dolphin, since they're both passed as arguments to command prompt
-        // if the user has never booted up ribbit review before or their saved paths are missing, they'll be prompted for their melee .iso after the main view loads up and their paths will be saved to disk
-        // if the user has booted up ribbit review, their paths will be loaded from disks and they can proceed to use the program
-        public void checkForPaths()
-        {
-#if DEBUG
-            string devPath = @"Q:/ribbit-review/GUI/UserPaths.xml";
-            if (File.Exists(devPath))
-            {
-                userPaths = deserializeUserPaths(devPath);
-            } 
-            else 
-            { 
-               CreateUserPaths(devPath); 
-            }
-#endif
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            { 
-                var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string pathsLocation = Path.Combine(AppData, "Ribbit Review", "UserPaths.xml");
-                if (File.Exists(pathsLocation))
-                {
-                    userPaths = deserializeUserPaths(pathsLocation);
-                } 
-                else 
-                {
-                    string RRFolder = Path.Combine(AppData, "Ribbit Review");
-                    if (!Directory.Exists(RRFolder))
-                    {
-                        Directory.CreateDirectory(RRFolder);
-                    }
-                    CreateUserPaths(pathsLocation); 
-                }
-            }
-        }
-
-        private void serializeUserPaths(UserPaths paths, string fileName)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(UserPaths)); 
-            StreamWriter myWriter = new StreamWriter(fileName);
-            serializer.Serialize(myWriter, paths);
-            myWriter.Close();
-        }
-
-        private UserPaths deserializeUserPaths(string filePath)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(UserPaths));
-            using var myFileStream = new FileStream(filePath, FileMode.Open);
-            UserPaths savedPaths = (UserPaths)serializer.Deserialize(myFileStream);
-            return savedPaths;
-        }
-
-        private async Task<string> SelectMeleeIso(CancellationToken token)
-        {
-            string fullPath = "";
-            try
-            {
-                var filesService = Ioc.Default.GetService<IFilesService>();
-                if (filesService is null)
-                {
-                    throw new NullReferenceException("Missing File Service instance.");
-                }
-
-                var file = await filesService.OpenIsoFileAsync();
-                if (file is null) return string.Empty;
-
-                var result = file.Path.ToString();
-                fullPath = result.Replace(@"file:///", ""); 
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Exception occurred when calling SelectMeleeIso at app startup");
-            }
-            return fullPath;
-        }
-
-        private async void CreateUserPaths(string fileLocation)
-        {
-            // dolphin install paths are locked, so this should be the same for every user
-            // windows: %APPDATA%/Slippi Launcher/playback
-            // linux: ~/.config/Slippi Launcher/playback
-            // macOS: ~/Library/Application Support/Slippi Launcher/playback
-            var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string defaultPlaybackPath = Path.Combine(AppData, "Slippi Launcher", "playback", "Slippi Dolphin.exe");
-
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            CancellationToken cancelToken = cancelTokenSource.Token;
-            var result = await SelectMeleeIso(cancelToken);
-
-            userPaths = new UserPaths(defaultPlaybackPath, result);
-            serializeUserPaths(userPaths, fileLocation);
         }
 
     }
