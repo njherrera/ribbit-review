@@ -25,6 +25,8 @@ namespace GUI.Settings
             MeleeIsoPath = IsoPath;
         }
 
+        private UserPaths() { }
+
         public static UserPaths? CheckForPaths()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -90,7 +92,13 @@ namespace GUI.Settings
             // macOS: ~/Library/Application Support/Slippi Launcher/playback
             var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string defaultPlaybackPath = Path.Combine(AppData, "Slippi Launcher", "playback", "Slippi Dolphin.exe");
-            string pathsLocation = Path.Combine(AppData, "Ribbit Review", "UserPaths.xml");
+            string RRFolder = Path.Combine(AppData, "Ribbit Review");
+            string pathsLocation = Path.Combine(RRFolder, "UserPaths.xml");
+
+            if (!Directory.Exists(RRFolder))
+            {
+                Directory.CreateDirectory(RRFolder);
+            }
 
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;

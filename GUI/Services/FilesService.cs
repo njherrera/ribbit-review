@@ -31,7 +31,7 @@ namespace GUI.Services
         {
             var files = await _target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
             {
-                Title = "Choose Slippi replay file",
+                Title = "Choose JSON playback queue file",
                 FileTypeFilter = new[] { JsonFile }, // only shows .json files in the choose file window
                 AllowMultiple = false
             });
