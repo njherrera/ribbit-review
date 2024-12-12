@@ -112,9 +112,34 @@ namespace GUI.ViewModels
             FilterResult = "";
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
-            List<string> selectedPaths = await SelectSlpFiles(cancelToken);
+            List<string>? selectedPaths = await SelectSlpFiles(cancelToken);
+            if (selectedPaths is null) { return; }
 
-            Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?> 
+            object[] args = GetInterOpArgs(selectedPaths);
+            List<GameConversions>? requestedConversions = await GetAllConversions(args);
+
+            if (requestedConversions is null && selectedPaths.Count() > 0)
+            {
+                FilterResult = "No matching games found";
+                return;
+            } else if (requestedConversions is null)
+            {
+                return;
+            }
+            PlaybackQueue conversionQueue = ActiveFilterVM.applyFilter(requestedConversions);
+
+            if (conversionQueue.queue.Count > 0)
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string filterJson = JsonSerializer.Serialize(conversionQueue, options);
+
+                await SaveJsonFile(filterJson);
+            } else FilterResult = "No instances of situation found";
+        }
+
+        private object[] GetInterOpArgs(List<string> selectedPaths)
+        {
+            Dictionary<string, string?> gameSettingsDict = new Dictionary<string, string?>
             { // once user has clicked the apply filter button, their config is locked-in and we can grab it from the active filter VM
                 {"userId", ActiveFilterVM.UserId},
                 {"userChar", this.userCharId.ToString()},
@@ -128,21 +153,8 @@ namespace GUI.ViewModels
                 constraints += string.Format("{0}:{1} ", kvp.Key, kvp.Value);
             }
             object[] args = { constraints, string.Join(",", selectedPaths) };
-
-            List<GameConversions>? requestedConversions = await GetAllConversions(args);
-
-            PlaybackQueue conversionQueue = ActiveFilterVM.applyFilter(requestedConversions);
-
-            if (conversionQueue.queue.Count > 0)
-            {
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                string filterJson = JsonSerializer.Serialize(conversionQueue, options);
-
-                await SaveJsonFile(filterJson);
-            }
-            else FilterResult = "No instances of situation found";
+            return args;
         }
-
         public ICommand ViewJsonCommand { get; }
 
         private async void ViewJson()
@@ -155,13 +167,15 @@ namespace GUI.ViewModels
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             CancellationToken cancelToken = cancelTokenSource.Token;
             var result = await SelectJsonFile(cancelToken);
+            if (result is null) { return; }
 
             // making an array of dolphin exe params because ArgumentList naturally handles paths with spaces in them
             // passing --cout gets us access to dolphin's output feed, and in the current playback build skipping through a queue json in the replay viewer breaks the playbackqueue
             string[] dolphinParamList = { "-i", result, "-e", userPaths.MeleeIsoPath, "--cout", "--hide-seekbar" };
+
             try
             {
-                runCmdPrompt(dolphinParamList);
+                RunCmdPrompt(dolphinParamList);
             } 
             catch (Exception ex)
             {
@@ -201,7 +215,7 @@ namespace GUI.ViewModels
         {
             ActiveFilterVM.IsLocalReplay = true;
         }
-        private void runCmdPrompt(string[] dolphinParams)
+        private void RunCmdPrompt(string[] dolphinParams)
         {
             using (var dolphin = new Process())
             {
@@ -260,7 +274,7 @@ namespace GUI.ViewModels
         }
 
         // helper method used for selecting .slp file(s) to apply filter to
-        private async Task<List<string>> SelectSlpFiles(CancellationToken token)
+        private async Task<List<string>?> SelectSlpFiles(CancellationToken token)
         {
             List<string> fullPaths = new List<string>();
             try
@@ -272,8 +286,9 @@ namespace GUI.ViewModels
                 }
 
                 var files = await filesService.OpenSlpFilesAsync();
-                var result = files.ToList();
+                var result = files?.ToList();
 
+                if (result is null) { return null; } 
                 foreach (Avalonia.Platform.Storage.IStorageFile file in result)
                 {
                     string filePath = file.Path.ToString();
@@ -283,13 +298,14 @@ namespace GUI.ViewModels
             catch (Exception ex)
             {
                 Log.Error(ex, "Exception occurred when calling SelectSlpFiles from ApplyFilter");
+                return fullPaths;
             }
             return fullPaths;
         }
 
         // helper method for selecting .json file to load into playback dolphin
         // this can only select *one* .json file
-        private async Task<string> SelectJsonFile(CancellationToken token)
+        private async Task<string?> SelectJsonFile(CancellationToken token)
         {
             string fullPath = "";
             try
@@ -301,7 +317,7 @@ namespace GUI.ViewModels
                 }
 
                 var file = await filesService.OpenJsonFileAsync();
-                if (file is null) return string.Empty;
+                if (file is null) return null;
 
                 var result = file.Path.ToString();
                 fullPath = result.Replace(@"file:///", "");

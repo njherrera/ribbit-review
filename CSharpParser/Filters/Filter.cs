@@ -8,7 +8,6 @@ namespace CSharpParser.Filters
     {
         public FilterType FilterType { get; init; }
 
-        // TODO: handle List<GameConversions> with no GameConversions objects in it (null check)
         public PlaybackQueue? AddToQueue(List<GameConversions>? allConversions, T fSettings)
         {
             if (allConversions != null)
