@@ -7,23 +7,26 @@ namespace CSharpParser.Filters
     public class Edgeguards<T> : Filter<T> where T : EdgeguardSettings
     {
         private int ledgeCrossFrame;
+        private (double left, double right) ledgeCoords;
 
         public override bool IsInstance(Conversion conversion, GameSettings settings)
         {
+            ledgeCrossFrame = -1;
             bool isEdgeguardPosition = false;
-            double ledgePosition = GetLedgePositions(settings.stageId);
-            double leftLedge = ledgePosition * -1;
-            double rightLedge = ledgePosition;
 
             for (int i = 0; i < conversion.victimFrames.Count(); i++)
             {
-                double? converterXPosition = conversion.attackerFrames.ElementAt(i).positionX;
-                double? converteeXPosition = conversion.victimFrames.ElementAt(i).positionX;
+                double? attackerXPos = conversion.attackerFrames.ElementAt(i).positionX;
+                double? victimXPos = conversion.victimFrames.ElementAt(i).positionX;
 
-                if (((converteeXPosition < leftLedge) && (converteeXPosition < converterXPosition)) || ((converteeXPosition > rightLedge) && (converteeXPosition > converterXPosition)))
+                // if victim's x position is past either ledge, attacker's x position is closer to stage, and ledgeCrossFrame is -1
+                // it's first time so far in conversion that they've gone offstage and it's an edgeguard position
+                if (((victimXPos < ledgeCoords.left) && (victimXPos < attackerXPos)) 
+                    || ((victimXPos > ledgeCoords.right) && (victimXPos > attackerXPos)))
                 {
                     ledgeCrossFrame = (int)conversion.victimFrames[i].frame;
                     isEdgeguardPosition = true;
+                    return isEdgeguardPosition;
                 } else continue;
             }
             return isEdgeguardPosition;
@@ -61,7 +64,19 @@ namespace CSharpParser.Filters
             return moveID;
         }
 
-        public static double GetLedgePositions(int? stageId)
+        private (double, double)? CheckHitstunExitPos(Conversion conversion)
+        {
+            PostFrame? exitFrame = conversion.victimFrames.FirstOrDefault(frame
+                => (frame.positionX < ledgeCoords.left || frame.positionX > ledgeCoords.right)
+                    && frame.miscActionState == 0);
+            if (exitFrame != null && exitFrame.positionX.HasValue && exitFrame.positionY.HasValue)
+            {
+                (double xPos, double yPos) hitstunExitPos = (exitFrame.positionX.Value, exitFrame.positionY.Value);
+                return hitstunExitPos;
+            }
+            else return null;
+        }
+        private static double GetLedgePositions(int? stageId)
         {
             switch (stageId)
             {
@@ -86,6 +101,13 @@ namespace CSharpParser.Filters
                 default:
                     return 0;
             }
+        }
+
+        protected override void InitializeStageVars(GameSettings settings)
+        {
+            double ledgePosition = GetLedgePositions(settings.stageId);
+            ledgeCoords.left = ledgePosition * -1;
+            ledgeCoords.right = ledgePosition;
         }
     }
 }

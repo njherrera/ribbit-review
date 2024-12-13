@@ -15,6 +15,7 @@ namespace CSharpParser.Filters
                 PlaybackQueue pbackQueue = new PlaybackQueue();
                 foreach (GameConversions gameConversions in allConversions)
                 {
+                    InitializeStageVars(gameConversions.gameSettings);
                     CheckGameConversions(gameConversions, fSettings, pbackQueue);
                 }
                 return pbackQueue;
@@ -25,7 +26,7 @@ namespace CSharpParser.Filters
         {
             foreach (Conversion conversion in gameConversions.conversionList)
             {
-                if (conversion.victimFrames.Count() > 0 && IsInstance(conversion, gameConversions.gameSettings) == true &&  CheckSettings(conversion, fSettings, gameConversions.gameSettings.players) == true)
+                if (conversion.victimFrames.Count() > 0 && IsInstance(conversion, gameConversions.gameSettings) == true && CheckSettings(conversion, fSettings, gameConversions.gameSettings.players) == true)
                 {
                     int? startFrame = conversion.victimFrames.First().frame;
                     int? endFrame = conversion.victimFrames.Last().frame;
@@ -64,6 +65,7 @@ namespace CSharpParser.Filters
             }
         }
 
+        protected abstract void InitializeStageVars(GameSettings settings);
         public abstract bool IsInstance(Conversion conversion, GameSettings settings);
 
         public override string ToString()
