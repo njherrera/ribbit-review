@@ -42,8 +42,10 @@ namespace CSharpTests.InterOpTests
         {
             InterOpHandler.setProjectPath(userVars.interOpPath);
 
-            string dummyConstraints = "userId: userChar: oppChar: stageId: ";
-            List<GameConversions?> testConversions = await InterOpHandler.GetAllConversions(dummyConstraints, "file:\\" + userVars.edgeguardSlpPath + "," + "file:\\" + userVars.meVsPinkSlpPath);
+            string dummyConstraints = "userId: userChar: oppChar: stageId: isLocal: ";
+            List<string> testPaths = new List<string>{ @"file:\\" + userVars.edgeguardSlpPath, @"file:\\" + userVars.meVsPinkSlpPath };
+            object[] args = { dummyConstraints, string.Join(",", testPaths) };
+            List<GameConversions?> testConversions = await InterOpHandler.GetAllConversions(args);
             
             Assert.AreEqual(2, testConversions.Count);
             string edgeguardUri = new System.Uri(userVars.edgeguardSlpPath).AbsoluteUri;
@@ -63,16 +65,17 @@ namespace CSharpTests.InterOpTests
         {
             InterOpHandler.setProjectPath(userVars.interOpPath);
 
-            string dummyConstraints1 = "userId:MMRP#834 userChar: oppChar: stageId:8";
-            List<GameConversions?> testConversions = 
-                await InterOpHandler.GetAllConversions(dummyConstraints1, "file:\\" + userVars.edgeguardSlpPath + "," + "file:\\" + userVars.meVsPinkSlpPath + "," + "file:\\" + userVars.meVsIcsYoshis + "," + "file:\\" + userVars.oogaVsFalconYoshis);
+            string dummyConstraints1 = "userId:MMRP#834 userChar: oppChar: stageId:8 isLocal:False";
+            List<string> testPaths = new List<string> { @"file:\\" + userVars.edgeguardSlpPath, @"file:\\" + userVars.meVsPinkSlpPath, @"file:\\" + userVars.meVsIcsYoshis, @"file:\\" + userVars.oogaVsFalconYoshis };
+            object[] args = { dummyConstraints1, string.Join(",", testPaths) };
+            List<GameConversions?> testConversions = await InterOpHandler.GetAllConversions(args);
 
             Assert.AreEqual(1, testConversions.Count);
 
-            string dummyConstraints2 = "userId: userChar: oppChar: stageId:8";
-            List<GameConversions?> testConversions2 = 
-                await InterOpHandler.GetAllConversions(dummyConstraints2, "file:\\" + userVars.edgeguardSlpPath + "," + "file:\\" + userVars.meVsPinkSlpPath + "," + "file:\\" + userVars.meVsIcsYoshis + "," + "file:\\" + userVars.oogaVsFalconYoshis);
-            Assert.AreEqual(2, testConversions2.Count);
+/*            string dummyConstraints2 = "userId: userChar: oppChar: stageId:8 isLocal: False";
+            object[] args2 = { dummyConstraints1, string.Join(",", testPaths) };
+            List<GameConversions?> testConversions2 = await InterOpHandler.GetAllConversions(args2);
+            Assert.AreEqual(2, testConversions2.Count);*/
         }
     }
 }

@@ -65,13 +65,13 @@ function checkGameConstraints(constraints, settings) {
     if (settings.isTeams == true) {
         return false;
     }
-    if (constraints.userId != "" && constraints.isLocal == "False") {
+    if (constraints.userId != "" && constraints.isLocal.toString() === "False") {
         const userPlayer = settings.players.find(element => element.connectCode.toString() === constraints.userId.toString());
         if (userPlayer == undefined) {
             return false;
         }
     }
-    if (constraints.userId != "" && constraints.isLocal == "True") {
+    if (constraints.userId != "" && constraints.isLocal.toString() === "True") {
         const userPlayer = settings.players.find(element => element.nametag.toString() === constraints.userId.toString());
         if (userPlayer == undefined) {
             return false;
