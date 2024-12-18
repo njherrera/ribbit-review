@@ -103,7 +103,7 @@ namespace CSharpParser.Filters
             }
         }
 
-        protected override void InitializeStageVars(GameSettings settings)
+        public override void InitializeStageVars(GameSettings settings)
         {
             double ledgePosition = GetLedgePositions(settings.stageId);
             ledgeCoords.left = ledgePosition * -1;

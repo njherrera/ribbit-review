@@ -1,15 +1,7 @@
 ﻿using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
 using CSharpParser.JSON_Objects;
-using Newtonsoft.Json.Linq;
-using SlippiJSInterOp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using GUI.ViewModels;
+using Jering.Javascript.NodeJS;
 namespace CSharpTests.ParserTests.FilterTests.SettingsTests
 {
     [TestClass]
@@ -24,17 +16,22 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
          * # of unsuccessful Falco edgeguards: 4
          */
         Edgeguards<EdgeguardSettings> edgeguardFilter = new Edgeguards<EdgeguardSettings>();
-        GameConversions edgeguardConversions = JsonSerializer.Deserialize<GameConversions>(File.ReadAllText(userVars.edgeguardConversionsTxt));
-        List<GameConversions> testConversions = new List<GameConversions>();
 
 
         [TestMethod]
         public async Task testConvertingPlayer()
         {
-            testConversions.Add(edgeguardConversions);
+            string dummyConstraints = "userId: userChar: oppChar: stageId: isLocal: ";
+            List<string> testPaths = new List<string> { @"file:\\" + userVars.edgeguardSlpPath};
+            object[] args = { dummyConstraints, string.Join(",", testPaths) };
+
+            StaticNodeJSService.Configure<NodeJSProcessOptions>(options => options.ProjectPath = userVars.interOpPath);
+            List<GameConversions> testConversions = await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", args);
+
             EdgeguardSettingsBuilder sheikBuilder = new EdgeguardSettingsBuilder();
             sheikBuilder.addUserID("mmrp#834");
             sheikBuilder.addConvertingPlayer("user");
+            sheikBuilder.addIsLocalReplay(false);
             EdgeguardSettings sheikConverting = (EdgeguardSettings)sheikBuilder.Build();
             
             PlaybackQueue pbackQueueSheik = edgeguardFilter.AddToQueue(testConversions, sheikConverting);
@@ -53,11 +50,18 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
         [TestMethod]
         public async Task testConversionKilled()
         {
-            testConversions.Add(edgeguardConversions);
+            string dummyConstraints = "userId: userChar: oppChar: stageId: isLocal: ";
+            List<string> testPaths = new List<string> { @"file:\\" + userVars.edgeguardSlpPath };
+            object[] args = { dummyConstraints, string.Join(",", testPaths) };
+
+            StaticNodeJSService.Configure<NodeJSProcessOptions>(options => options.ProjectPath = userVars.interOpPath);
+            List<GameConversions> testConversions = await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", args);
+
             EdgeguardSettingsBuilder sheikBuilder = new EdgeguardSettingsBuilder();
             sheikBuilder.addUserID("MMRP#834");
             sheikBuilder.addConvertingPlayer("user");
             sheikBuilder.addConversionKilled(true);
+            sheikBuilder.addIsLocalReplay(false);
             EdgeguardSettings sheikKilled = (EdgeguardSettings)sheikBuilder.Build();
 
             PlaybackQueue sheikQueue = edgeguardFilter.AddToQueue(testConversions, sheikKilled);
@@ -66,6 +70,7 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
             falcoBuilder.addUserID("mmrp#834");
             falcoBuilder.addConvertingPlayer("opponent");
             falcoBuilder.addConversionKilled(true);
+            falcoBuilder.addIsLocalReplay(false);
             EdgeguardSettings falcoConverting = (EdgeguardSettings)falcoBuilder.Build();
 
             PlaybackQueue falcoQueue = edgeguardFilter.AddToQueue(testConversions, falcoConverting);
