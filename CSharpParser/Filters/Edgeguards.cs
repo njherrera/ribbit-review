@@ -1,5 +1,6 @@
 ﻿using CSharpParser.Filters.Settings;
 using CSharpParser.SlpJSObjects;
+using System.ComponentModel.Design;
 using System.Runtime;
 
 namespace CSharpParser.Filters
@@ -53,6 +54,21 @@ namespace CSharpParser.Filters
                 bool meetsCondition = fSettings.sendOffMove.Equals(CheckSendOffMove(conversion));
                 if (meetsCondition == false) { return false; }
             }
+            if (fSettings.hitstunExitBelowLedge != null)
+            {
+                (double xPos, double yPos)? HSExitPos = CheckHitstunExitPos(conversion);
+                if (fSettings.hitstunExitBelowLedge == true && HSExitPos is not null)
+                {
+                    bool meetsCondition = HSExitPos.Value.yPos < 0;
+                    if (meetsCondition == false) { return false; }
+                }
+                else if (fSettings.hitstunExitBelowLedge == false && HSExitPos is not null)
+                {
+                    bool meetsCondition = HSExitPos.Value.yPos > 0;
+                    if (meetsCondition == false) { return false; }
+                }
+                else return false;
+            }
             return passesCheck;
         }
 
@@ -64,7 +80,7 @@ namespace CSharpParser.Filters
             return moveID;
         }
 
-        private (double, double)? CheckHitstunExitPos(Conversion conversion)
+        private (double xPos, double yPos)? CheckHitstunExitPos(Conversion conversion)
         {
             PostFrame? exitFrame = conversion.victimFrames.FirstOrDefault(frame
                 => (frame.positionX < ledgeCoords.left || frame.positionX > ledgeCoords.right)

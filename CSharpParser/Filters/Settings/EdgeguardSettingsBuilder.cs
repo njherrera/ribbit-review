@@ -16,5 +16,11 @@
             _settings.sendOffMove = moveID;
             return this;
         }
+
+        public EdgeguardSettingsBuilder addHitstunExitBelowLedge(bool? below)
+        {
+            _settings.hitstunExitBelowLedge = below;
+            return this;
+        }
     }
 }
