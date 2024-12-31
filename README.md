@@ -1,3 +1,29 @@
+# Feature Overview
+
+**Searches locally recorded or online replays for instances of edgeguard situations, with options for:** 
+
+User's/the opponent’s edgeguards
+
+Edgeguards that killed/didn’t kill
+
+Selecting move used to send the opponent offstage (last move used before the opponent crossed over the ledge) 
+
+**Filtering out replays, based on:**
+
+User's character
+
+Opponent’s character 
+
+Stage
+
+**Future plans:**
+
+Searching for instances of CC/shield drop reverals + reversals out of juggles/player's conversions
+
+Searching for dropped combos
+
+Searching for getting hit in neutral while cornered/having center stage
+
 # Design Info: 
 
 Ribbit Review is split into 2 main parts and 2 languages in terms of the application itself, and will likely stay that way for some time (names themselves are also a work in progress).
