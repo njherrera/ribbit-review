@@ -1,5 +1,7 @@
 # Feature Overview
 
+![image](https://github.com/user-attachments/assets/c6403608-8d71-4061-b5f2-f671dd71da98)
+
 **Searches locally recorded or online replays for instances of edgeguard situations, with options for:** 
 
 User's/the opponent’s edgeguards
