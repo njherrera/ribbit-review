@@ -71,5 +71,22 @@
 				</ComboBox.ItemTemplate>
 			</ComboBox>
 		</StackPanel>
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
+			<TextBlock TextWrapping="Wrap"
+					   Margin="15,20,0,20"
+					   FontSize="16"
+					   Foreground="Black"
+					   Width="175"> Location of victim's exit from hitstun:</TextBlock>
+			<ComboBox ItemsSource="{Binding HitstunExits}"
+							  SelectedIndex="0"
+							  SelectedItem="{Binding SelectedHSEP}"
+							  Margin="0,14">
+				<ComboBox.ItemTemplate>
+					<DataTemplate DataType="models:HitstunExitPositionType">
+						<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</StackPanel>
 	</DockPanel>
 </UserControl>

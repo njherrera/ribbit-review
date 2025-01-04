@@ -13,8 +13,13 @@ namespace GUI.ViewModels
     {
         public MoveType[] AvailableMoves { get; } = Enum.GetValues<MoveType>();
 
+        public HitstunExitPositionType[] HitstunExits { get; } = Enum.GetValues<HitstunExitPositionType>();
+
         [ObservableProperty]
         private MoveType _selectedSendOffMove;
+
+        [ObservableProperty]
+        private HitstunExitPositionType _selectedHSEP;
 
         partial void OnSelectedSendOffMoveChanged(MoveType value)
         {
@@ -22,7 +27,23 @@ namespace GUI.ViewModels
             {
                 _builder.addSendOffMove(null);
             }
-            else { _builder.addSendOffMove((int)value); }
+            else { _builder.addSendOffMove((int)value);}
+        }
+
+        partial void OnSelectedHSEPChanged(HitstunExitPositionType value)
+        {
+            switch ((int)value)
+            {
+                case 0:
+                    _builder.addHitstunExitBelowLedge(null);
+                    break;
+                case 1: 
+                    _builder.addHitstunExitBelowLedge(false);
+                    break;
+                case 2: 
+                    _builder.addHitstunExitBelowLedge(true);
+                    break;
+            }
         }
 
         public override PlaybackQueue applyFilter(List<GameConversions> allGameConversions)
