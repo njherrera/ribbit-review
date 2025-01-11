@@ -70,6 +70,12 @@ namespace CSharpParser.Filters
                 }
                 else return false;
             }
+            if (fSettings.moveBeforeHSE != null)
+            {
+                int? moveID = CheckMoveBeforeHSE(conversion);
+                if (moveID is null) { return false; }
+                if (fSettings.moveBeforeHSE != 0 && moveID != fSettings.moveBeforeHSE) { return false; }
+            }
             return passesCheck;
         }
 
