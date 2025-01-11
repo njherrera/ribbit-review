@@ -2,6 +2,7 @@
 using CSharpParser.SlpJSObjects;
 using System.ComponentModel.Design;
 using System.Runtime;
+using System.Runtime.InteropServices;
 
 namespace CSharpParser.Filters
 {
@@ -72,6 +73,26 @@ namespace CSharpParser.Filters
             return passesCheck;
         }
 
+        private int? CheckMoveBeforeHSE(Conversion conversion)
+        {
+            int HSEFrame;
+            PostFrame? exitFrame = conversion.victimFrames.FirstOrDefault(frame
+                => (frame.positionX < ledgeCoords.left || frame.positionX > ledgeCoords.right)
+                    && frame.miscActionState == 0);
+            if (exitFrame != null && exitFrame.frame.HasValue)
+            {
+                HSEFrame = exitFrame.frame.Value;
+            }
+            else return null;
+
+            Move? moveBeforeHSE = conversion.moves.LastOrDefault(move => move.frame > ledgeCrossFrame && move.frame < HSEFrame);
+            
+            if (moveBeforeHSE is null) { return null; }
+            else
+            {
+                return moveBeforeHSE.moveID;
+            }
+        }
         private int CheckSendOffMove(Conversion conversion)
         {
             int moveID = -1;
