@@ -22,5 +22,11 @@
             _settings.hitstunExitBelowLedge = below;
             return this;
         }
+
+        public EdgeguardSettingsBuilder addMoveBeforeHSE(int? moveID)
+        {
+            _settings.moveBeforeHSE = moveID;
+            return this;
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace CSharpParser.Filters.Settings
         public int? sendOffMove { get; set; }
         public bool? hitstunExitBelowLedge { get; set; }
 
-        public 
+        public int? moveBeforeHSE { get; set; }
     }
 }
 
