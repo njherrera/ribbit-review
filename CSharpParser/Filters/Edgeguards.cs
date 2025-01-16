@@ -1,8 +1,5 @@
 ﻿using CSharpParser.Filters.Settings;
 using CSharpParser.SlpJSObjects;
-using System.ComponentModel.Design;
-using System.Runtime;
-using System.Runtime.InteropServices;
 
 namespace CSharpParser.Filters
 {
@@ -23,7 +20,7 @@ namespace CSharpParser.Filters
 
                 // if victim's x position is past either ledge, attacker's x position is closer to stage, and ledgeCrossFrame is -1
                 // it's first time so far in conversion that they've gone offstage and it's an edgeguard position
-                if (((victimXPos < ledgeCoords.left) && (victimXPos < attackerXPos)) 
+                if (((victimXPos < ledgeCoords.left) && (victimXPos < attackerXPos))
                     || ((victimXPos > ledgeCoords.right) && (victimXPos > attackerXPos)))
                 {
                     ledgeCrossFrame = (int)conversion.victimFrames[i].frame;
@@ -70,33 +67,32 @@ namespace CSharpParser.Filters
                 }
                 else return false;
             }
-            if (fSettings.moveBeforeHSE != null)
+            if (fSettings.offstageMove != null)
             {
-                int? moveID = CheckMoveBeforeHSE(conversion);
-                if (moveID is null) { return false; }
-                if (fSettings.moveBeforeHSE != 0 && moveID != fSettings.moveBeforeHSE) { return false; }
+                bool meetsCondition = CheckOffstageMove(conversion, fSettings.offstageMove.Value);
+                if (meetsCondition == false) { return false; }
             }
             return passesCheck;
         }
 
-        private int? CheckMoveBeforeHSE(Conversion conversion)
+        private bool CheckOffstageMove(Conversion conversion, int offstageMoveID)
         {
-            int HSEFrame;
-            PostFrame? exitFrame = conversion.victimFrames.FirstOrDefault(frame
-                => (frame.positionX < ledgeCoords.left || frame.positionX > ledgeCoords.right)
-                    && frame.miscActionState == 0);
-            if (exitFrame != null && exitFrame.frame.HasValue)
-            {
-                HSEFrame = exitFrame.frame.Value;
-            }
-            else return null;
-
-            Move? moveBeforeHSE = conversion.moves.LastOrDefault(move => move.frame > ledgeCrossFrame && move.frame < HSEFrame);
-            
-            if (moveBeforeHSE is null) { return null; }
+            Dictionary<int, int> vicFrameIndices = conversion.moves.ToDictionary(move => move.frame, move => move.frame - conversion.victimFrames.ElementAt(0).frame.Value);
+            List<Move> offstageMoves = conversion.moves.Where(move => move.frame > ledgeCrossFrame && move.playerIndex == conversion.attackerIndex 
+                                                                    && (conversion.victimFrames.ElementAt(vicFrameIndices[move.frame]).positionX < ledgeCoords.left
+                                                                    || conversion.victimFrames.ElementAt(vicFrameIndices[move.frame]).positionX < ledgeCoords.right)).ToList();
+            List<int> offstageMoveIDs;
+            if (offstageMoves.Count == 0) { return false; }
             else
+            { 
+                offstageMoveIDs = offstageMoves.Select(move => move.moveID).ToList();
+            }
+
+            if (offstageMoveID == 0) { return true; } 
+            else 
             {
-                return moveBeforeHSE.moveID;
+                bool passesCheck = offstageMoveIDs.Contains(offstageMoveID);
+                return passesCheck;
             }
         }
         private int CheckSendOffMove(Conversion conversion)

@@ -23,9 +23,9 @@
             return this;
         }
 
-        public EdgeguardSettingsBuilder addMoveBeforeHSE(int? moveID)
+        public EdgeguardSettingsBuilder addOffstageMove(int? moveID)
         {
-            _settings.moveBeforeHSE = moveID;
+            _settings.offstageMove = moveID;
             return this;
         }
     }

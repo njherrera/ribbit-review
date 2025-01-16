@@ -9,12 +9,12 @@
 			 xmlns:models="using:GUI.Models">
 
 	<DockPanel Width="500" Height="400">
-		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,5,5,3" Spacing="10">
 			<TextBlock TextWrapping="Wrap" 
 					   Margin="15,20,0,20"
 					   FontSize="16"
 					   Foreground="Black"
-					   Width="175">Edgeguarding player:</TextBlock>
+					   Width="200">Edgeguarding player:</TextBlock>
 			<RadioButton  GroupName="Edgeguarding player" 
 						  FontSize="16"
 						  Foreground="Black"
@@ -26,12 +26,12 @@
 						 Content="Opponent" 
 						 Command="{Binding ConvertingPlayerToOppCommand}"/>
 		</StackPanel>
-		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,5,5,3" Spacing="10">
 			<TextBlock TextWrapping="Wrap"
 					   Margin="15,20,0,20"
 					   FontSize="16"
 					   Foreground="Black"
-					   Width="175">Edgeguard killed?:</TextBlock>
+					   Width="200">Edgeguard killed?:</TextBlock>
 			<RadioButton GroupName="Edgeguard killed"
 						 VerticalAlignment="Top"
 						 Margin="0, 14"
@@ -54,12 +54,12 @@
 						 Content="Either"
 						 Command="{Binding ResetConversionKilledCommand}"/>
 		</StackPanel>
-		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,5,5,3" Spacing="10">
 			<TextBlock TextWrapping="Wrap"
 					   Margin="15,20,0,20"
 					   FontSize="16"
 					   Foreground="Black"
-					   Width="175"> Move used to send offstage:</TextBlock>
+					   Width="200"> Move used to send offstage:</TextBlock>
 			<ComboBox ItemsSource="{Binding AvailableMoves}"
 							  SelectedIndex="0"
 							  SelectedItem="{Binding SelectedSendOffMove}"
@@ -71,18 +71,35 @@
 				</ComboBox.ItemTemplate>
 			</ComboBox>
 		</StackPanel>
-		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,10,5,10" Spacing="10">
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,5,5,3" Spacing="10">
 			<TextBlock TextWrapping="Wrap"
 					   Margin="15,20,0,20"
 					   FontSize="16"
 					   Foreground="Black"
-					   Width="175"> Location of victim's exit from hitstun:</TextBlock>
+					   Width="200"> Location of victim's exit from hitstun:</TextBlock>
 			<ComboBox ItemsSource="{Binding HitstunExits}"
 							  SelectedIndex="0"
 							  SelectedItem="{Binding SelectedHSEP}"
 							  Margin="0,14">
 				<ComboBox.ItemTemplate>
 					<DataTemplate DataType="models:HitstunExitPositionType">
+						<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</StackPanel>
+		<StackPanel Orientation="Horizontal" Width="500" DockPanel.Dock="Top" Margin="5,5,5,3" Spacing="10">
+			<TextBlock TextWrapping="Wrap"
+					   Margin="15,20,0,20"
+					   FontSize="16"
+					   Foreground="Black"
+					   Width="200"> Move used while victim was offstage:</TextBlock>
+			<ComboBox ItemsSource="{Binding AvailableOffstageMoves}"
+							  SelectedIndex="0"
+							  SelectedItem="{Binding SelectedOffstageMove}"
+							  Margin="0,14">
+				<ComboBox.ItemTemplate>
+					<DataTemplate DataType="models:HitOffstageMoveType">
 						<TextBlock Text="{Binding Converter={StaticResource EnumToStringConverter}}"/>
 					</DataTemplate>
 				</ComboBox.ItemTemplate>

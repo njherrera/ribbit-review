@@ -42,7 +42,7 @@
 			</StackPanel>
 		</Grid>
 		<!--Filter settings-->
-		<Grid Background="DarkGray" Height="400" ColumnDefinitions="500, 500">
+		<Grid Background="DarkGray" Height="450" ColumnDefinitions="500, 500">
 			<StackPanel Grid.Column="0">
 				<ContentControl Content="{Binding ActiveFilterVM}" Margin="0,40,0,0"/>
 			</StackPanel>
@@ -118,7 +118,7 @@
 			</TextBlock>
 		</Grid>
 		<!--Filter application buttons-->
-		<Grid Background="DarkSlateGray" Height="125" ColumnDefinitions="500, 500">
+		<Grid Background="DarkSlateGray" Height="75" ColumnDefinitions="500, 500">
 			<Button Content="Apply filter to replay files (creates playback queue file)" 
 					Command="{Binding ApplyFilterCommand}"
 					Background="Gray"

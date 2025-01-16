@@ -15,11 +15,16 @@ namespace GUI.ViewModels
 
         public HitstunExitPositionType[] HitstunExits { get; } = Enum.GetValues<HitstunExitPositionType>();
 
+        public HitOffstageMoveType[] AvailableOffstageMoves { get; } = Enum.GetValues<HitOffstageMoveType>();
+
         [ObservableProperty]
         private MoveType _selectedSendOffMove;
 
         [ObservableProperty]
         private HitstunExitPositionType _selectedHSEP;
+
+        [ObservableProperty]
+        private HitOffstageMoveType _selectedOffstageMove;
 
         partial void OnSelectedSendOffMoveChanged(MoveType value)
         {
@@ -42,6 +47,22 @@ namespace GUI.ViewModels
                     break;
                 case 2: 
                     _builder.addHitstunExitBelowLedge(true);
+                    break;
+            }
+        }
+
+        partial void OnSelectedOffstageMoveChanged(HitOffstageMoveType value)
+        {
+            switch ((int)value)
+            {
+                case 0:
+                    _builder.addOffstageMove(null);
+                    break;
+                case 1:
+                    _builder.addOffstageMove(0);
+                    break;
+                default:
+                    _builder.addOffstageMove((int)(value));
                     break;
             }
         }
