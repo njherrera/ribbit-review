@@ -8,7 +8,7 @@ namespace CSharpParser.Filters
         private int ledgeCrossFrame;
         private (double left, double right) ledgeCoords;
 
-        public override bool IsInstance(Conversion conversion, GameSettings settings)
+        protected override bool IsInstance(Conversion conversion, GameSettings settings)
         {
             ledgeCrossFrame = -1;
             bool isEdgeguardPosition = false;

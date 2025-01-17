@@ -3,21 +3,17 @@ using CSharpParser.SlpJSObjects;
 
 namespace CSharpParser.Filters
 {
-    public class Reversal<T> : Filter<T> where T : ReversalSettings
+    public abstract class Reversal<T> : Filter<T> where T : ReversalSettings
     {
+        private (PostFrame atkFrame, PostFrame vicFrame) reversalFrames;
+        private Move reversalMove;
         public override void InitializeStageVars(GameSettings settings)
         {
             throw new NotImplementedException();
         }
 
-        public override bool IsInstance(Conversion conversion, GameSettings settings)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract override bool IsInstance(Conversion conversion, GameSettings settings);
 
-        protected override bool CheckSettings(Conversion conversion, T fSettings, List<Player> gamePlayers)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract override bool CheckSettings(Conversion conversion, T fSettings, List<Player> gamePlayers);
     }
 }

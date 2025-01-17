@@ -66,7 +66,7 @@ namespace CSharpParser.Filters
         }
 
         public abstract void InitializeStageVars(GameSettings settings);
-        public abstract bool IsInstance(Conversion conversion, GameSettings settings);
+        protected abstract bool IsInstance(Conversion conversion, GameSettings settings);
 
         public override string ToString()
         {
