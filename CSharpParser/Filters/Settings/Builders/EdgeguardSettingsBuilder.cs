@@ -1,4 +1,4 @@
-﻿namespace CSharpParser.Filters.Settings
+﻿namespace CSharpParser.Filters.Settings.Builders
 {
     public class EdgeguardSettingsBuilder : FilterSettingsBuilder
     {
@@ -7,7 +7,7 @@
         {
             get
             {
-                return this._settings;
+                return _settings;
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace CSharpParser.Filters.Settings
+﻿namespace CSharpParser.Filters.Settings.Builders
 {
     public abstract class FilterSettingsBuilder
     {
@@ -59,7 +59,7 @@
 
         public FilterSettings Build()
         {
-            return this.Settings;
+            return Settings;
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using CSharpParser.SlpJSObjects;
-
-namespace CSharpParser.Filters.Settings
+﻿namespace CSharpParser.Filters.Settings
 {
     public class EdgeguardSettings : FilterSettings
     {

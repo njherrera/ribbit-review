@@ -1,5 +1,6 @@
 ﻿using CSharpParser.Filters;
 using CSharpParser.Filters.Settings;
+using CSharpParser.Filters.Settings.Builders;
 using CSharpParser.JSON_Objects;
 using Jering.Javascript.NodeJS;
 namespace CSharpTests.ParserTests.FilterTests.SettingsTests

@@ -3,6 +3,7 @@ using CSharpParser.Filters;
 using CSharpParser.JSON_Objects;
 using Jering.Javascript.NodeJS;
 using CSharpParser.SlpJSObjects;
+using CSharpParser.Filters.Settings.Builders;
 
 namespace CSharpTests.ParserTests.FilterTests.SettingsTests
 {

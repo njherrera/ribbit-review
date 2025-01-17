@@ -1,6 +1,4 @@
-﻿using CSharpParser.SlpJSObjects;
-
-namespace CSharpParser.Filters.Settings
+﻿namespace CSharpParser.Filters.Settings
 {
     // this class serves as a way to control when and how a filter is applied
     public abstract class FilterSettings

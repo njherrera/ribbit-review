@@ -6,6 +6,7 @@ using System;
 using CSharpParser.JSON_Objects;
 using System.Collections.Generic;
 using Serilog;
+using CSharpParser.Filters.Settings.Builders;
 
 namespace GUI.ViewModels
 {

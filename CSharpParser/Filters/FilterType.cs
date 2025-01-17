@@ -2,6 +2,7 @@
 {
     public enum FilterType
     {
-        Edgeguards
+        Edgeguards,
+        Reversals
     }
 }

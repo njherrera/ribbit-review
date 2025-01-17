@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CSharpParser.Filters;
-using CSharpParser.Filters.Settings;
+using CSharpParser.Filters.Settings.Builders;
 using CSharpParser.JSON_Objects;
 using Serilog;
 using System;
