@@ -80,7 +80,7 @@ namespace CSharpParser.Filters
             Dictionary<int, int> vicFrameIndices = conversion.moves.ToDictionary(move => move.frame, move => move.frame - conversion.victimFrames.ElementAt(0).frame.Value);
             List<Move> offstageMoves = conversion.moves.Where(move => move.frame > ledgeCrossFrame && move.playerIndex == conversion.attackerIndex 
                                                                     && (conversion.victimFrames.ElementAt(vicFrameIndices[move.frame]).positionX < ledgeCoords.left
-                                                                    || conversion.victimFrames.ElementAt(vicFrameIndices[move.frame]).positionX < ledgeCoords.right)).ToList();
+                                                                    || conversion.victimFrames.ElementAt(vicFrameIndices[move.frame]).positionX > ledgeCoords.right)).ToList();
             List<int> offstageMoveIDs;
             if (offstageMoves.Count == 0) { return false; }
             else

@@ -2,6 +2,7 @@
 using CSharpParser.Filters;
 using CSharpParser.JSON_Objects;
 using Jering.Javascript.NodeJS;
+using CSharpParser.SlpJSObjects;
 
 namespace CSharpTests.ParserTests.FilterTests.SettingsTests
 {
@@ -62,6 +63,27 @@ namespace CSharpTests.ParserTests.FilterTests.SettingsTests
 
             PlaybackQueue offstageMoveUsedQueue = edgeguardFilter.AddToQueue(testConversions, anyOffstageMove);
             Assert.AreEqual(4, offstageMoveUsedQueue.queue.Count);
+        }
+
+        [TestMethod]
+        public async Task testPuffFairUsedOffstage()
+        {
+            string dummyConstraints = "userId: userChar: oppChar: stageId: isLocal: ";
+            List<string> testPaths = new List<string> { @"file:\\" + userVars.puffVsMarthYoshis };
+            object[] args = { dummyConstraints, string.Join(",", testPaths) };
+
+            StaticNodeJSService.Configure<NodeJSProcessOptions>(options => options.ProjectPath = userVars.interOpPath);
+            List<GameConversions> testConversions = await StaticNodeJSService.InvokeFromFileAsync<List<GameConversions>>("./JavaScript/interop.js", "getAllConversions", args);
+
+            EdgeguardSettingsBuilder offstageMoveBuilder = new EdgeguardSettingsBuilder();
+            offstageMoveBuilder.addOffstageMove(14);
+            offstageMoveBuilder.addConvertingPlayer("user");
+            offstageMoveBuilder.addUserID("MMRP#834");
+            offstageMoveBuilder.addIsLocalReplay(false);
+            EdgeguardSettings anyOffstageMove = (EdgeguardSettings)offstageMoveBuilder.Build();
+
+            PlaybackQueue offstageMoveUsedQueue = edgeguardFilter.AddToQueue(testConversions, anyOffstageMove);
+            Assert.AreEqual(2, offstageMoveUsedQueue.queue.Count);
         }
     }
 }
