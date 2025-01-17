@@ -10,6 +10,10 @@ Edgeguards that killed/didn’t kill
 
 Selecting move used to send the opponent offstage (last move used before the opponent crossed over the ledge) 
 
+Location of victim's exit from hitstun (above ledge/below ledge/either)
+
+Selecting move used while victim was offstage
+
 **Filtering out replays, based on:**
 
 User's character
@@ -24,7 +28,6 @@ Searching for instances of CC/shield drop reverals + reversals out of juggles/pl
 
 Searching for dropped combos
 
-Searching for getting hit in neutral while cornered/having center stage
 
 # Design Info: 
 
