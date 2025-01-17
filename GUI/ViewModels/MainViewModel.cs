@@ -132,6 +132,7 @@ namespace GUI.ViewModels
             {
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string filterJson = JsonSerializer.Serialize(conversionQueue, options);
+                FilterResult = conversionQueue.queue.Count + " instances of situation found";
 
                 await SaveJsonFile(filterJson);
             } else FilterResult = "No instances of situation found";
