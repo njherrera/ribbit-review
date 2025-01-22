@@ -17,9 +17,9 @@
 	<StackPanel>
 		<!-- Title bar-->
 		<Grid Background="Gray" Height= "25">
-			<StackPanel Grid.Column="0">
-				<Label FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black">ribbit review</Label>
-			</StackPanel>
+			<DockPanel Grid.Column="0">
+				<Label FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black">Ribbit Review</Label>
+			</DockPanel>
 		</Grid>
 		<!--User connect code area-->
 		<Grid Background="DarkGray" Height="100" Width="1000" RowDefinitions="*,*,*">
@@ -109,16 +109,18 @@
 				</StackPanel>
 			</DockPanel>
 		</Grid>
-		<Grid Background="DarkGray" Height="50">
+		<DockPanel Background="DarkGray" Height="50">
 			<TextBlock Grid.Column="1" 
 					   Foreground="Black"
-					   HorizontalAlignment="Center"  
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
 					   FontSize="16" FontWeight="Bold" 
-					   Text="{Binding FilterResult}">
+					   Text="{Binding FilterResult}"
+					   DockPanel.Dock="Bottom">
 			</TextBlock>
-		</Grid>
+		</DockPanel>
 		<!--Filter application buttons-->
-		<Grid Background="DarkSlateGray" Height="75" ColumnDefinitions="500, 500">
+		<DockPanel Background="DarkSlateGray" Height="75" Width="1000">
 			<Button Content="Apply filter to replay files (creates playback queue file)" 
 					Command="{Binding ApplyFilterCommand}"
 					Background="Gray"
@@ -126,8 +128,9 @@
 					BorderBrush="White"
 					BorderThickness="2"
 					CornerRadius="7"
-					HorizontalAlignment="Center" 
-					Grid.Column="0"/>
+					HorizontalAlignment="Left" 
+					DockPanel.Dock="Left"
+					Margin="75,0,0,0"/>
 			<Button Content="Load a playback queue into Slippi Dolphin Playback" 
 					Command="{Binding ViewJsonCommand}" 
 					Background="Gray"
@@ -135,8 +138,9 @@
 					BorderBrush="White"
 					BorderThickness="2"
 					CornerRadius="7"
-					HorizontalAlignment="Center" 
-					Grid.Column="1"/>
-		</Grid>
+					HorizontalAlignment="Right" 
+					DockPanel.Dock="Right"
+					Margin="0,0,75,0"/>
+		</DockPanel>
 	</StackPanel>
 </UserControl>
